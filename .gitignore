@@ -84,4 +84,8 @@ Temporary Items
 
 # End of https://www.toptal.com/developers/gitignore/api/macos,c++,visualstudiocode
 
-# Zian editting
+# Zian adding
+
+bin/*
+data/*
+obj/*
