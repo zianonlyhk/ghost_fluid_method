@@ -6,7 +6,7 @@
 /*   By: Zian Huang <zianhuang00@gmail.com>           || room214n.com ||      */
 /*                                                    ##################      */
 /*   Created: 2023/01/21 10:44:41 by Zian Huang                               */
-/*   Updated: 2023/01/21 16:12:55 by Zian Huang                               */
+/*   Updated: 2023/01/21 18:59:37 by Zian Huang                               */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,8 +81,8 @@ int main()
     double y1;
     double c;
     double tStop;
-    nCells_x = 200;
-    nCells_y = 200;
+    nCells_x = 100;
+    nCells_y = 100;
     x0 = 0.0;
     x1 = 2.0;
     y0 = 0.0;
@@ -111,7 +111,7 @@ int main()
     testSolverClass.setBound(x0, x1, y0, y1, tStop);
     testSolverClass.setCFL(c);
     testSolverClass.setName((std::string) "test");
-    testSolverClass.setRepoDir((std::string) "/Users/zianhuang/Room214N/dev/SLIC_EulerSolver2D/");
+    testSolverClass.setRepoDir((std::string) "/Users/zianhuang/Room214N/dev/MPhil_writtenAssignment_GFM/");
 
     testSolverClass.updateBoundary_transmissive();
 
@@ -128,12 +128,12 @@ int main()
 
         t += testSolverClass.dt();
 
-        testSolverClass.slicLeapX();
+        testSolverClass.musclHancock_sweepX();
         testSolverClass.updateBoundary_transmissive();
         testSolverClass.slicLeapY();
         testSolverClass.updateBoundary_transmissive();
 
-        if (numIter % 3 == 0)
+        if (numIter % 2 == 0)
         {
             testSolverClass.writeToFiles(t);
             std::cout << t << " / " << testSolverClass.tStop() << std::endl;
