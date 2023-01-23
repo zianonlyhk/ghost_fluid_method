@@ -6,7 +6,7 @@
 /*   By: Zian Huang <zianhuang00@gmail.com>           || room214n.com ||      */
 /*                                                    ##################      */
 /*   Created: 2023/01/21 10:44:41 by Zian Huang                               */
-/*   Updated: 2023/01/23 17:43:36 by Zian Huang                               */
+/*   Updated: 2023/01/23 18:07:12 by Zian Huang                               */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,13 +81,13 @@ int main()
     double y1;
     double c;
     double tStop;
-    nCells_x = 80;
-    nCells_y = 80;
+    nCells_x = 100;
+    nCells_y = 100;
     x0 = 0.0;
     x1 = 2.0;
     y0 = 0.0;
     y1 = 2.0;
-    c = 0.8;
+    c = 0.95;
     tStop = 0.25;
 
     std::vector<std::vector<std::array<double, 4>>> compDomain;
@@ -128,9 +128,9 @@ int main()
 
         t += testSolverClass.dt();
 
-        testSolverClass.slicLeapX();
+        testSolverClass.musclHancock_sweepX();
         testSolverClass.updateBoundary_transmissive();
-        testSolverClass.slicLeapY();
+        testSolverClass.musclHancock_sweepY();
         testSolverClass.updateBoundary_transmissive();
 
         if (numIter % 1 == 0)

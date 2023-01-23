@@ -6,7 +6,7 @@
 /*   By: Zian Huang <zianhuang00@gmail.com>           || room214n.com ||      */
 /*                                                    ##################      */
 /*   Created: 2023/01/21 16:12:23 by Zian Huang                               */
-/*   Updated: 2023/01/23 17:54:26 by Zian Huang                               */
+/*   Updated: 2023/01/23 18:08:59 by Zian Huang                               */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,38 +16,6 @@
 #include "flux_func.hh"
 #include "inline/primitive_tran.hh"
 #include "inline/cell_operation.hh"
-
-std::array<double, 4> vanLeerLimiter(std::array<double, 4> i_arr0, std::array<double, 4> i_arr1, std::array<double, 4> i_arr2)
-{
-    std::array<double, 4> delta_formerHalf = diffCell(i_arr1, i_arr0);
-    std::array<double, 4> delta_laterHalf = diffCell(i_arr2, i_arr1);
-
-    std::array<double, 4> r = divisionCell(delta_formerHalf, delta_laterHalf);
-
-    std::array<double, 4> e_L = divisionCell(scalingCell(2, r), scalarAdditionCell(1, r));
-    std::array<double, 4> e_R = scalarDivisionCell(2, scalarAdditionCell(1, r));
-
-    std::array<double, 4> cellToBeReturned;
-    for (int i = 0; i < 4; ++i)
-    {
-        if (r[i] > 0)
-        {
-            cellToBeReturned[i] = std::min(e_L[i], e_R[i]);
-        }
-        else
-        {
-            cellToBeReturned[i] = 0;
-        }
-    }
-
-    // for (int i = 0; i < 4; ++i)
-    // {
-    //     std::cout << cellToBeReturned[i] << ' ';
-    // }
-    // std::cout << std::endl;
-
-    return cellToBeReturned;
-};
 
 std::array<double, 4> minbeeLimiter(std::array<double, 4> i_arr0, std::array<double, 4> i_arr1, std::array<double, 4> i_arr2)
 {
@@ -76,14 +44,46 @@ std::array<double, 4> minbeeLimiter(std::array<double, 4> i_arr0, std::array<dou
         }
     }
 
-    for (int i = 0; i < 4; ++i)
-    {
-        std::cout << cellToBeReturned[i] << ' ';
-    }
-    std::cout << std::endl;
-
     return cellToBeReturned;
 };
+
+std::array<double, 4> superbeeLimiter(std::array<double, 4> i_arr0, std::array<double, 4> i_arr1, std::array<double, 4> i_arr2)
+{
+    std::array<double, 4> delta_formerHalf = diffCell(i_arr1, i_arr0);
+    std::array<double, 4> delta_laterHalf = diffCell(i_arr2, i_arr1);
+
+    std::array<double, 4> r = divisionCell(delta_formerHalf, delta_laterHalf);
+
+    std::array<double, 4> e_L = divisionCell(scalingCell(2, r), scalarAdditionCell(1, r));
+    std::array<double, 4> e_R = scalarDivisionCell(2, scalarAdditionCell(1, r));
+
+    std::array<double, 4> cellToBeReturned;
+    for (int i = 0; i < 4; ++i)
+    {
+        if (r[i] <= 0)
+        {
+            cellToBeReturned[i] = 0;
+        }
+        else if (r[i] > 0 && r[i] <= 0.5)
+        {
+            cellToBeReturned[i] = 2 * r[i];
+        }
+        else if (r[i] > 0.5 && r[i] <= 1)
+        {
+            cellToBeReturned[i] = 1;
+        }
+        else
+        {
+            cellToBeReturned[i] = std::min(2.0, std::min(r[i], e_R[i]));
+        }
+    }
+
+    return cellToBeReturned;
+}
+
+// #########################################################################################################################################################################
+// 楚河漢界
+// #########################################################################################################################################################################
 
 FluxFunc::FluxFunc() {}
 
@@ -161,6 +161,10 @@ std::array<double, 4> FluxFunc::musclHancock_HLLC_Flux_y(std::array<double, 4> i
     return HLLC_Riemannflux_y(leftRightHalftimeLimitedState[0], leftRightHalftimeLimitedState[1]);
 }
 
+// #########################################################################################################################################################################
+// 楚河漢界
+// #########################################################################################################################################################################
+
 std::array<std::array<double, 4>, 2> FluxFunc::slopeLimitedLR_U_x(std::array<double, 4> i_uVector_0, std::array<double, 4> i_uVector_1, std::array<double, 4> i_uVector_2, std::array<double, 4> i_uVector_3, double i_dx, double i_dt)
 {
     // const parameter
@@ -175,19 +179,14 @@ std::array<std::array<double, 4>, 2> FluxFunc::slopeLimitedLR_U_x(std::array<dou
     std::array<double, 4> Delta_i_1 = sumCell(scalingCell(0.5 * (1 + local_omega), diffCell(i_uVector_1, i_uVector_0)), scalingCell(0.5 * (1 - local_omega), diffCell(i_uVector_2, i_uVector_1)));
     std::array<double, 4> Delta_i_2 = sumCell(scalingCell(0.5 * (1 + local_omega), diffCell(i_uVector_2, i_uVector_1)), scalingCell(0.5 * (1 - local_omega), diffCell(i_uVector_3, i_uVector_2)));
 
-    std::array<double, 4> limiter_1 = minbeeLimiter(i_uVector_0, i_uVector_1, i_uVector_2);
-    std::array<double, 4> limiter_2 = minbeeLimiter(i_uVector_1, i_uVector_2, i_uVector_3);
+    std::array<double, 4> limiter_1 = superbeeLimiter(i_uVector_0, i_uVector_1, i_uVector_2);
+    std::array<double, 4> limiter_2 = superbeeLimiter(i_uVector_1, i_uVector_2, i_uVector_3);
 
     // interpret left and right flux
     uVec_1_L = diffCell(i_uVector_1, scalingCell(0.5, productCell(limiter_1, Delta_i_1)));
     uVec_1_R = sumCell(i_uVector_1, scalingCell(0.5, productCell(limiter_1, Delta_i_1)));
     uVec_2_L = diffCell(i_uVector_2, scalingCell(0.5, productCell(limiter_2, Delta_i_2)));
     uVec_2_R = sumCell(i_uVector_2, scalingCell(0.5, productCell(limiter_2, Delta_i_2)));
-    // interpret left and right flux
-    // uVec_1_L = diffCell(i_uVector_1, scalingCell(0.5, Delta_i_1));
-    // uVec_1_R = sumCell(i_uVector_1, scalingCell(0.5, Delta_i_1));
-    // uVec_2_L = diffCell(i_uVector_2, scalingCell(0.5, Delta_i_2));
-    // uVec_2_R = sumCell(i_uVector_2, scalingCell(0.5, Delta_i_2));
 
     // locally half time evolve
     uVec_1_R = diffCell(uVec_1_R, scalingCell(0.5 * i_dt / i_dx, diffCell(conservationFlux_x(uVec_1_R), conservationFlux_x(uVec_1_L))));
@@ -210,19 +209,14 @@ std::array<std::array<double, 4>, 2> FluxFunc::slopeLimitedLR_U_y(std::array<dou
     std::array<double, 4> Delta_i_1 = sumCell(scalingCell(0.5 * (1 + local_omega), diffCell(i_uVector_1, i_uVector_0)), scalingCell(0.5 * (1 - local_omega), diffCell(i_uVector_2, i_uVector_1)));
     std::array<double, 4> Delta_i_2 = sumCell(scalingCell(0.5 * (1 + local_omega), diffCell(i_uVector_2, i_uVector_1)), scalingCell(0.5 * (1 - local_omega), diffCell(i_uVector_3, i_uVector_2)));
 
-    std::array<double, 4> limiter_1 = minbeeLimiter(i_uVector_0, i_uVector_1, i_uVector_2);
-    std::array<double, 4> limiter_2 = minbeeLimiter(i_uVector_1, i_uVector_2, i_uVector_3);
+    std::array<double, 4> limiter_1 = superbeeLimiter(i_uVector_0, i_uVector_1, i_uVector_2);
+    std::array<double, 4> limiter_2 = superbeeLimiter(i_uVector_1, i_uVector_2, i_uVector_3);
 
     // interpret left and right flux
     uVec_1_L = diffCell(i_uVector_1, scalingCell(0.5, productCell(limiter_1, Delta_i_1)));
     uVec_1_R = sumCell(i_uVector_1, scalingCell(0.5, productCell(limiter_1, Delta_i_1)));
     uVec_2_L = diffCell(i_uVector_2, scalingCell(0.5, productCell(limiter_2, Delta_i_2)));
     uVec_2_R = sumCell(i_uVector_2, scalingCell(0.5, productCell(limiter_2, Delta_i_2)));
-    // interpret left and right flux
-    // uVec_1_L = diffCell(i_uVector_1, scalingCell(0.5, Delta_i_1));
-    // uVec_1_R = sumCell(i_uVector_1, scalingCell(0.5, Delta_i_1));
-    // uVec_2_L = diffCell(i_uVector_2, scalingCell(0.5, Delta_i_2));
-    // uVec_2_R = sumCell(i_uVector_2, scalingCell(0.5, Delta_i_2));
 
     // locally half time evolve
     uVec_1_R = diffCell(uVec_1_R, scalingCell(0.5 * i_dt / i_dy, diffCell(conservationFlux_y(uVec_1_R), conservationFlux_y(uVec_1_L))));
