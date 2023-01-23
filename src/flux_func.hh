@@ -6,7 +6,7 @@
 /*   By: Zian Huang <zianhuang00@gmail.com>           || room214n.com ||      */
 /*                                                    ##################      */
 /*   Created: 2023/01/21 16:12:07 by Zian Huang                               */
-/*   Updated: 2023/01/23 17:42:32 by Zian Huang                               */
+/*   Updated: 2023/01/23 18:19:41 by Zian Huang                               */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,8 @@ public:
     std::array<double, 4> slicFlux_y(std::array<double, 4>, std::array<double, 4>, std::array<double, 4>, std::array<double, 4>, double, double);
 
     // MUSCL-Hancock HLLC
-    std::array<double, 4> musclHancock_HLLC_Flux_x(std::array<double, 4>, std::array<double, 4>, std::array<double, 4>, std::array<double, 4>, double, double);
-    std::array<double, 4> musclHancock_HLLC_Flux_y(std::array<double, 4>, std::array<double, 4>, std::array<double, 4>, std::array<double, 4>, double, double);
+    std::array<double, 4> musclHancockHllcFlux_x(std::array<double, 4>, std::array<double, 4>, std::array<double, 4>, std::array<double, 4>, double, double);
+    std::array<double, 4> musclHancockHllcFlux_y(std::array<double, 4>, std::array<double, 4>, std::array<double, 4>, std::array<double, 4>, double, double);
 
 private:
     // Slope limiting for SLIC and MUSCL-Hancock

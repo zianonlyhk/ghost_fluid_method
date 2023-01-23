@@ -6,7 +6,7 @@
 /*   By: Zian Huang <zianhuang00@gmail.com>           || room214n.com ||      */
 /*                                                    ##################      */
 /*   Created: 2023/01/21 10:45:26 by Zian Huang                               */
-/*   Updated: 2023/01/23 16:55:36 by Zian Huang                               */
+/*   Updated: 2023/01/23 18:19:18 by Zian Huang                               */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,8 +93,8 @@ std::vector<std::vector<std::array<double, 4>>> VecTran::musclHancockVecTranHLLC
     {
         for (int iter_x = 2; iter_x < xVecLen - 2; ++iter_x)
         {
-            fluxNext = fluxFunc.musclHancock_HLLC_Flux_x(i_inputU_Vec[iter_y][iter_x - 1], i_inputU_Vec[iter_y][iter_x], i_inputU_Vec[iter_y][iter_x + 1], i_inputU_Vec[iter_y][iter_x + 2], i_dx, i_dt);
-            fluxBefore = fluxFunc.musclHancock_HLLC_Flux_x(i_inputU_Vec[iter_y][iter_x - 2], i_inputU_Vec[iter_y][iter_x - 1], i_inputU_Vec[iter_y][iter_x], i_inputU_Vec[iter_y][iter_x + 1], i_dx, i_dt);
+            fluxNext = fluxFunc.musclHancockHllcFlux_x(i_inputU_Vec[iter_y][iter_x - 1], i_inputU_Vec[iter_y][iter_x], i_inputU_Vec[iter_y][iter_x + 1], i_inputU_Vec[iter_y][iter_x + 2], i_dx, i_dt);
+            fluxBefore = fluxFunc.musclHancockHllcFlux_x(i_inputU_Vec[iter_y][iter_x - 2], i_inputU_Vec[iter_y][iter_x - 1], i_inputU_Vec[iter_y][iter_x], i_inputU_Vec[iter_y][iter_x + 1], i_dx, i_dt);
             toBeReturnVec[iter_y][iter_x] = diffCell(i_inputU_Vec[iter_y][iter_x], scalingCell(i_dt / i_dx, diffCell(fluxNext, fluxBefore)));
         }
     }
@@ -121,8 +121,8 @@ std::vector<std::vector<std::array<double, 4>>> VecTran::musclHancockVecTranHLLC
     {
         for (int iter_x = 2; iter_x < xVecLen - 2; ++iter_x)
         {
-            fluxNext = fluxFunc.musclHancock_HLLC_Flux_y(i_inputU_Vec[iter_y - 1][iter_x], i_inputU_Vec[iter_y][iter_x], i_inputU_Vec[iter_y + 1][iter_x], i_inputU_Vec[iter_y + 2][iter_x], i_dy, i_dt);
-            fluxBefore = fluxFunc.musclHancock_HLLC_Flux_y(i_inputU_Vec[iter_y - 2][iter_x], i_inputU_Vec[iter_y - 1][iter_x], i_inputU_Vec[iter_y][iter_x], i_inputU_Vec[iter_y + 1][iter_x], i_dy, i_dt);
+            fluxNext = fluxFunc.musclHancockHllcFlux_y(i_inputU_Vec[iter_y - 1][iter_x], i_inputU_Vec[iter_y][iter_x], i_inputU_Vec[iter_y + 1][iter_x], i_inputU_Vec[iter_y + 2][iter_x], i_dy, i_dt);
+            fluxBefore = fluxFunc.musclHancockHllcFlux_y(i_inputU_Vec[iter_y - 2][iter_x], i_inputU_Vec[iter_y - 1][iter_x], i_inputU_Vec[iter_y][iter_x], i_inputU_Vec[iter_y + 1][iter_x], i_dy, i_dt);
             toBeReturnVec[iter_y][iter_x] = diffCell(i_inputU_Vec[iter_y][iter_x], scalingCell(i_dt / i_dy, diffCell(fluxNext, fluxBefore)));
         }
     }

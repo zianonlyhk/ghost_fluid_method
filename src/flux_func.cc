@@ -6,7 +6,7 @@
 /*   By: Zian Huang <zianhuang00@gmail.com>           || room214n.com ||      */
 /*                                                    ##################      */
 /*   Created: 2023/01/21 16:12:23 by Zian Huang                               */
-/*   Updated: 2023/01/23 18:08:59 by Zian Huang                               */
+/*   Updated: 2023/01/23 18:19:04 by Zian Huang                               */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ std::array<double, 4> superbeeLimiter(std::array<double, 4> i_arr0, std::array<d
 }
 
 // #########################################################################################################################################################################
-// 楚河漢界
+// 楚河
 // #########################################################################################################################################################################
 
 FluxFunc::FluxFunc() {}
@@ -147,14 +147,14 @@ std::array<double, 4> FluxFunc::slicFlux_y(std::array<double, 4> i_uVector_0, st
     return forceFlux_y(leftRightHalftimeLimitedState[0], leftRightHalftimeLimitedState[1], i_dy, i_dt);
 }
 
-std::array<double, 4> FluxFunc::musclHancock_HLLC_Flux_x(std::array<double, 4> i_uVector_0, std::array<double, 4> i_uVector_1, std::array<double, 4> i_uVector_2, std::array<double, 4> i_uVector_3, double i_dx, double i_dt)
+std::array<double, 4> FluxFunc::musclHancockHllcFlux_x(std::array<double, 4> i_uVector_0, std::array<double, 4> i_uVector_1, std::array<double, 4> i_uVector_2, std::array<double, 4> i_uVector_3, double i_dx, double i_dt)
 {
     std::array<std::array<double, 4>, 2> leftRightHalftimeLimitedState = slopeLimitedLR_U_x(i_uVector_0, i_uVector_1, i_uVector_2, i_uVector_3, i_dx, i_dt);
 
     return HLLC_Riemannflux_x(leftRightHalftimeLimitedState[0], leftRightHalftimeLimitedState[1]);
 }
 
-std::array<double, 4> FluxFunc::musclHancock_HLLC_Flux_y(std::array<double, 4> i_uVector_0, std::array<double, 4> i_uVector_1, std::array<double, 4> i_uVector_2, std::array<double, 4> i_uVector_3, double i_dy, double i_dt)
+std::array<double, 4> FluxFunc::musclHancockHllcFlux_y(std::array<double, 4> i_uVector_0, std::array<double, 4> i_uVector_1, std::array<double, 4> i_uVector_2, std::array<double, 4> i_uVector_3, double i_dy, double i_dt)
 {
     std::array<std::array<double, 4>, 2> leftRightHalftimeLimitedState = slopeLimitedLR_U_y(i_uVector_0, i_uVector_1, i_uVector_2, i_uVector_3, i_dy, i_dt);
 
@@ -162,7 +162,7 @@ std::array<double, 4> FluxFunc::musclHancock_HLLC_Flux_y(std::array<double, 4> i
 }
 
 // #########################################################################################################################################################################
-// 楚河漢界
+// 漢界
 // #########################################################################################################################################################################
 
 std::array<std::array<double, 4>, 2> FluxFunc::slopeLimitedLR_U_x(std::array<double, 4> i_uVector_0, std::array<double, 4> i_uVector_1, std::array<double, 4> i_uVector_2, std::array<double, 4> i_uVector_3, double i_dx, double i_dt)

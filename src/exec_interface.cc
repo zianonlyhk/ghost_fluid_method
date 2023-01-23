@@ -6,7 +6,7 @@
 /*   By: Zian Huang <zianhuang00@gmail.com>           || room214n.com ||      */
 /*                                                    ##################      */
 /*   Created: 2023/01/21 10:44:41 by Zian Huang                               */
-/*   Updated: 2023/01/23 18:07:12 by Zian Huang                               */
+/*   Updated: 2023/01/23 18:15:16 by Zian Huang                               */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,7 +113,7 @@ int main()
     testSolverClass.setName((std::string) "test");
     testSolverClass.setRepoDir((std::string) "/Users/zianhuang/Room214N/dev/MPhil_writtenAssignment_GFM/");
 
-    testSolverClass.updateBoundary_transmissive();
+    testSolverClass.updateBoundaryTrans();
 
     testSolverClass.initiateDataLogging();
 
@@ -128,10 +128,10 @@ int main()
 
         t += testSolverClass.dt();
 
-        testSolverClass.musclHancock_sweepX();
-        testSolverClass.updateBoundary_transmissive();
-        testSolverClass.musclHancock_sweepY();
-        testSolverClass.updateBoundary_transmissive();
+        testSolverClass.mhHllcSweepX();
+        testSolverClass.updateBoundaryTrans();
+        testSolverClass.mhHllcSweepY();
+        testSolverClass.updateBoundaryTrans();
 
         if (numIter % 1 == 0)
         {

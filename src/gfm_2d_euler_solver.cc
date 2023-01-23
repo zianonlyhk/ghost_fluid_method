@@ -6,7 +6,7 @@
 /*   By: Zian Huang <zianhuang00@gmail.com>           || room214n.com ||      */
 /*                                                    ##################      */
 /*   Created: 2023/01/21 10:44:51 by Zian Huang                               */
-/*   Updated: 2023/01/22 12:36:49 by Zian Huang                               */
+/*   Updated: 2023/01/23 18:14:58 by Zian Huang                               */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,7 +136,7 @@ void GFM_2D_EulerSolver::updateDt()
     m_dt = m_c * smallerD / m_aMax;
 }
 
-void GFM_2D_EulerSolver::updateBoundary_transmissive()
+void GFM_2D_EulerSolver::updateBoundaryTrans()
 {
     for (int i = 2; i < m_nCell_y + 2; ++i)
     {
@@ -155,22 +155,22 @@ void GFM_2D_EulerSolver::updateBoundary_transmissive()
     }
 }
 
-void GFM_2D_EulerSolver::musclHancock_sweepX()
+void GFM_2D_EulerSolver::mhHllcSweepX()
 {
     m_uVec = vecTran.musclHancockVecTranHLLC_x(m_uVec, m_dx, m_dt);
 }
 
-void GFM_2D_EulerSolver::musclHancock_sweepY()
+void GFM_2D_EulerSolver::mhHllcSweepY()
 {
     m_uVec = vecTran.musclHancockVecTranHLLC_y(m_uVec, m_dy, m_dt);
 }
 
-void GFM_2D_EulerSolver::slicLeapX()
+void GFM_2D_EulerSolver::slicSweepX()
 {
     m_uVec = vecTran.slicVecTran_x(m_uVec, m_dx, m_dt);
 }
 
-void GFM_2D_EulerSolver::slicLeapY()
+void GFM_2D_EulerSolver::slicSweepY()
 {
     m_uVec = vecTran.slicVecTran_y(m_uVec, m_dy, m_dt);
 }

@@ -6,7 +6,7 @@
 /*   By: Zian Huang <zianhuang00@gmail.com>           || room214n.com ||      */
 /*                                                    ##################      */
 /*   Created: 2023/01/21 10:45:16 by Zian Huang                               */
-/*   Updated: 2023/01/21 19:40:13 by Zian Huang                               */
+/*   Updated: 2023/01/23 18:15:57 by Zian Huang                               */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,11 +36,11 @@ public:
 
     void updateMaxA(int numIter);
     void updateDt();
-    void updateBoundary_transmissive();
-    void musclHancock_sweepX();
-    void musclHancock_sweepY();
-    void slicLeapX();
-    void slicLeapY();
+    void updateBoundaryTrans();
+    void mhHllcSweepX();
+    void mhHllcSweepY();
+    void slicSweepX();
+    void slicSweepY();
 
     void initiateDataLogging();
     void writeToFiles(double time);
