@@ -89,3 +89,5 @@ Temporary Items
 bin/*
 data/*
 obj/*
+
+log

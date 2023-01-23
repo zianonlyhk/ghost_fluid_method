@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                                            */
-/*   inline_cell_operation.hh                          Personal Website       */
+/*   cell_operation.hh                                 Personal Website       */
 /*                                                    ##################      */
 /*   By: Zian Huang <zianhuang00@gmail.com>           || room214n.com ||      */
 /*                                                    ##################      */
 /*   Created: 2022/11/10 10:29:04 by Zian Huang                               */
-/*   Updated: 2022/11/13 17:38:59 by Zian Huang                               */
+/*   Updated: 2023/01/23 17:17:36 by Zian Huang                               */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,30 @@ inline std::array<double, 4> scalingCell(double i_factor, std::array<double, 4> 
     for (int i = 0; i < 4; ++i)
     {
         cellToBeReturned[i] = i_factor * i_inputCell[i];
+    }
+
+    return cellToBeReturned;
+}
+
+inline std::array<double, 4> scalarAdditionCell(double i_added, std::array<double, 4> i_inputCell)
+{
+    std::array<double, 4> cellToBeReturned;
+
+    for (int i = 0; i < 4; ++i)
+    {
+        cellToBeReturned[i] = i_added + i_inputCell[i];
+    }
+
+    return cellToBeReturned;
+}
+
+inline std::array<double, 4> scalarDivisionCell(double i_nominator, std::array<double, 4> i_inputCell)
+{
+    std::array<double, 4> cellToBeReturned;
+
+    for (int i = 0; i < 4; ++i)
+    {
+        cellToBeReturned[i] = i_nominator / i_inputCell[i];
     }
 
     return cellToBeReturned;

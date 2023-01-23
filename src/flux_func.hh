@@ -6,7 +6,7 @@
 /*   By: Zian Huang <zianhuang00@gmail.com>           || room214n.com ||      */
 /*                                                    ##################      */
 /*   Created: 2023/01/21 16:12:07 by Zian Huang                               */
-/*   Updated: 2023/01/21 18:00:45 by Zian Huang                               */
+/*   Updated: 2023/01/23 17:42:32 by Zian Huang                               */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,10 @@
 
 #include <array>
 
-class FluxFVM
+class FluxFunc
 {
 public:
-    FluxFVM();
+    FluxFunc();
 
     // instantaneous flux based on the state of cell
     std::array<double, 4> conservationFlux_x(std::array<double, 4>);
@@ -33,13 +33,16 @@ public:
     std::array<double, 4> slicFlux_y(std::array<double, 4>, std::array<double, 4>, std::array<double, 4>, std::array<double, 4>, double, double);
 
     // MUSCL-Hancock HLLC
-    std::array<double, 4> musclHancockFlux_x(std::array<double, 4>, std::array<double, 4>, std::array<double, 4>, std::array<double, 4>, double, double);
-    std::array<double, 4> musclHancockFlux_y(std::array<double, 4>, std::array<double, 4>, std::array<double, 4>, std::array<double, 4>, double, double);
+    std::array<double, 4> musclHancock_HLLC_Flux_x(std::array<double, 4>, std::array<double, 4>, std::array<double, 4>, std::array<double, 4>, double, double);
+    std::array<double, 4> musclHancock_HLLC_Flux_y(std::array<double, 4>, std::array<double, 4>, std::array<double, 4>, std::array<double, 4>, double, double);
 
 private:
     // Slope limiting for SLIC and MUSCL-Hancock
     std::array<std::array<double, 4>, 2> slopeLimitedLR_U_x(std::array<double, 4>, std::array<double, 4>, std::array<double, 4>, std::array<double, 4>, double, double);
     std::array<std::array<double, 4>, 2> slopeLimitedLR_U_y(std::array<double, 4>, std::array<double, 4>, std::array<double, 4>, std::array<double, 4>, double, double);
+
+    std::array<double, 4> HLL_Riemannflux_x(std::array<double, 4>, std::array<double, 4>);
+    std::array<double, 4> HLL_Riemannflux_y(std::array<double, 4>, std::array<double, 4>);
 
     std::array<double, 4> HLLC_Riemannflux_x(std::array<double, 4>, std::array<double, 4>);
     std::array<double, 4> HLLC_Riemannflux_y(std::array<double, 4>, std::array<double, 4>);

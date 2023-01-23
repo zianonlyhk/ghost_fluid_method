@@ -6,7 +6,7 @@
 /*   By: Zian Huang <zianhuang00@gmail.com>           || room214n.com ||      */
 /*                                                    ##################      */
 /*   Created: 2023/01/21 16:12:23 by Zian Huang                               */
-/*   Updated: 2023/01/21 18:59:19 by Zian Huang                               */
+/*   Updated: 2023/01/23 17:54:26 by Zian Huang                               */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,77 @@
 #include "inline/primitive_tran.hh"
 #include "inline/cell_operation.hh"
 
-FluxFVM::FluxFVM() {}
+std::array<double, 4> vanLeerLimiter(std::array<double, 4> i_arr0, std::array<double, 4> i_arr1, std::array<double, 4> i_arr2)
+{
+    std::array<double, 4> delta_formerHalf = diffCell(i_arr1, i_arr0);
+    std::array<double, 4> delta_laterHalf = diffCell(i_arr2, i_arr1);
 
-std::array<double, 4> FluxFVM::conservationFlux_x(std::array<double, 4> i_inputVec)
+    std::array<double, 4> r = divisionCell(delta_formerHalf, delta_laterHalf);
+
+    std::array<double, 4> e_L = divisionCell(scalingCell(2, r), scalarAdditionCell(1, r));
+    std::array<double, 4> e_R = scalarDivisionCell(2, scalarAdditionCell(1, r));
+
+    std::array<double, 4> cellToBeReturned;
+    for (int i = 0; i < 4; ++i)
+    {
+        if (r[i] > 0)
+        {
+            cellToBeReturned[i] = std::min(e_L[i], e_R[i]);
+        }
+        else
+        {
+            cellToBeReturned[i] = 0;
+        }
+    }
+
+    // for (int i = 0; i < 4; ++i)
+    // {
+    //     std::cout << cellToBeReturned[i] << ' ';
+    // }
+    // std::cout << std::endl;
+
+    return cellToBeReturned;
+};
+
+std::array<double, 4> minbeeLimiter(std::array<double, 4> i_arr0, std::array<double, 4> i_arr1, std::array<double, 4> i_arr2)
+{
+    std::array<double, 4> delta_formerHalf = diffCell(i_arr1, i_arr0);
+    std::array<double, 4> delta_laterHalf = diffCell(i_arr2, i_arr1);
+
+    std::array<double, 4> r = divisionCell(delta_formerHalf, delta_laterHalf);
+
+    std::array<double, 4> e_L = divisionCell(scalingCell(2, r), scalarAdditionCell(1, r));
+    std::array<double, 4> e_R = scalarDivisionCell(2, scalarAdditionCell(1, r));
+
+    std::array<double, 4> cellToBeReturned;
+    for (int i = 0; i < 4; ++i)
+    {
+        if (r[i] <= 0)
+        {
+            cellToBeReturned[i] = 0;
+        }
+        else if (r[i] > 0 && r[i] <= 1)
+        {
+            cellToBeReturned[i] = r[i];
+        }
+        else
+        {
+            cellToBeReturned[i] = std::min(1.0, e_R[i]);
+        }
+    }
+
+    for (int i = 0; i < 4; ++i)
+    {
+        std::cout << cellToBeReturned[i] << ' ';
+    }
+    std::cout << std::endl;
+
+    return cellToBeReturned;
+};
+
+FluxFunc::FluxFunc() {}
+
+std::array<double, 4> FluxFunc::conservationFlux_x(std::array<double, 4> i_inputVec)
 {
     std::array<double, 4> arrayToBeReturned;
 
@@ -31,7 +99,7 @@ std::array<double, 4> FluxFVM::conservationFlux_x(std::array<double, 4> i_inputV
     return arrayToBeReturned;
 }
 
-std::array<double, 4> FluxFVM::conservationFlux_y(std::array<double, 4> i_inputVec)
+std::array<double, 4> FluxFunc::conservationFlux_y(std::array<double, 4> i_inputVec)
 {
     std::array<double, 4> arrayToBeReturned;
 
@@ -43,7 +111,7 @@ std::array<double, 4> FluxFVM::conservationFlux_y(std::array<double, 4> i_inputV
     return arrayToBeReturned;
 }
 
-std::array<double, 4> FluxFVM::forceFlux_x(std::array<double, 4> i_uVector_i, std::array<double, 4> i_uVector_i_next, double i_dx, double i_dt)
+std::array<double, 4> FluxFunc::forceFlux_x(std::array<double, 4> i_uVector_i, std::array<double, 4> i_uVector_i_next, double i_dx, double i_dt)
 {
     std::array<double, 4> lfFluxArr;
     std::array<double, 4> riTempArr;
@@ -54,7 +122,7 @@ std::array<double, 4> FluxFVM::forceFlux_x(std::array<double, 4> i_uVector_i, st
     return scalingCell(0.5, sumCell(lfFluxArr, conservationFlux_x(riTempArr)));
 }
 
-std::array<double, 4> FluxFVM::forceFlux_y(std::array<double, 4> i_uVector_i, std::array<double, 4> i_uVector_i_next, double i_dy, double i_dt)
+std::array<double, 4> FluxFunc::forceFlux_y(std::array<double, 4> i_uVector_i, std::array<double, 4> i_uVector_i_next, double i_dy, double i_dt)
 {
     std::array<double, 4> lfFluxArr;
     std::array<double, 4> riTempArr;
@@ -65,35 +133,35 @@ std::array<double, 4> FluxFVM::forceFlux_y(std::array<double, 4> i_uVector_i, st
     return scalingCell(0.5, sumCell(lfFluxArr, conservationFlux_y(riTempArr)));
 }
 
-std::array<double, 4> FluxFVM::slicFlux_x(std::array<double, 4> i_uVector_0, std::array<double, 4> i_uVector_1, std::array<double, 4> i_uVector_2, std::array<double, 4> i_uVector_3, double i_dx, double i_dt)
+std::array<double, 4> FluxFunc::slicFlux_x(std::array<double, 4> i_uVector_0, std::array<double, 4> i_uVector_1, std::array<double, 4> i_uVector_2, std::array<double, 4> i_uVector_3, double i_dx, double i_dt)
 {
     std::array<std::array<double, 4>, 2> leftRightHalftimeLimitedState = slopeLimitedLR_U_x(i_uVector_0, i_uVector_1, i_uVector_2, i_uVector_3, i_dx, i_dt);
 
     return forceFlux_x(leftRightHalftimeLimitedState[0], leftRightHalftimeLimitedState[1], i_dx, i_dt);
 }
 
-std::array<double, 4> FluxFVM::slicFlux_y(std::array<double, 4> i_uVector_0, std::array<double, 4> i_uVector_1, std::array<double, 4> i_uVector_2, std::array<double, 4> i_uVector_3, double i_dy, double i_dt)
+std::array<double, 4> FluxFunc::slicFlux_y(std::array<double, 4> i_uVector_0, std::array<double, 4> i_uVector_1, std::array<double, 4> i_uVector_2, std::array<double, 4> i_uVector_3, double i_dy, double i_dt)
 {
     std::array<std::array<double, 4>, 2> leftRightHalftimeLimitedState = slopeLimitedLR_U_y(i_uVector_0, i_uVector_1, i_uVector_2, i_uVector_3, i_dy, i_dt);
 
     return forceFlux_y(leftRightHalftimeLimitedState[0], leftRightHalftimeLimitedState[1], i_dy, i_dt);
 }
 
-std::array<double, 4> FluxFVM::musclHancockFlux_x(std::array<double, 4> i_uVector_0, std::array<double, 4> i_uVector_1, std::array<double, 4> i_uVector_2, std::array<double, 4> i_uVector_3, double i_dx, double i_dt)
+std::array<double, 4> FluxFunc::musclHancock_HLLC_Flux_x(std::array<double, 4> i_uVector_0, std::array<double, 4> i_uVector_1, std::array<double, 4> i_uVector_2, std::array<double, 4> i_uVector_3, double i_dx, double i_dt)
 {
     std::array<std::array<double, 4>, 2> leftRightHalftimeLimitedState = slopeLimitedLR_U_x(i_uVector_0, i_uVector_1, i_uVector_2, i_uVector_3, i_dx, i_dt);
 
     return HLLC_Riemannflux_x(leftRightHalftimeLimitedState[0], leftRightHalftimeLimitedState[1]);
 }
 
-std::array<double, 4> FluxFVM::musclHancockFlux_y(std::array<double, 4> i_uVector_0, std::array<double, 4> i_uVector_1, std::array<double, 4> i_uVector_2, std::array<double, 4> i_uVector_3, double i_dy, double i_dt)
+std::array<double, 4> FluxFunc::musclHancock_HLLC_Flux_y(std::array<double, 4> i_uVector_0, std::array<double, 4> i_uVector_1, std::array<double, 4> i_uVector_2, std::array<double, 4> i_uVector_3, double i_dy, double i_dt)
 {
     std::array<std::array<double, 4>, 2> leftRightHalftimeLimitedState = slopeLimitedLR_U_y(i_uVector_0, i_uVector_1, i_uVector_2, i_uVector_3, i_dy, i_dt);
 
     return HLLC_Riemannflux_y(leftRightHalftimeLimitedState[0], leftRightHalftimeLimitedState[1]);
 }
 
-std::array<std::array<double, 4>, 2> FluxFVM::slopeLimitedLR_U_x(std::array<double, 4> i_uVector_0, std::array<double, 4> i_uVector_1, std::array<double, 4> i_uVector_2, std::array<double, 4> i_uVector_3, double i_dx, double i_dt)
+std::array<std::array<double, 4>, 2> FluxFunc::slopeLimitedLR_U_x(std::array<double, 4> i_uVector_0, std::array<double, 4> i_uVector_1, std::array<double, 4> i_uVector_2, std::array<double, 4> i_uVector_3, double i_dx, double i_dt)
 {
     // const parameter
     const double local_omega = 0.0;
@@ -104,11 +172,22 @@ std::array<std::array<double, 4>, 2> FluxFVM::slopeLimitedLR_U_x(std::array<doub
     std::array<double, 4> uVec_2_R;
     std::array<double, 4> uVec_3_R;
 
+    std::array<double, 4> Delta_i_1 = sumCell(scalingCell(0.5 * (1 + local_omega), diffCell(i_uVector_1, i_uVector_0)), scalingCell(0.5 * (1 - local_omega), diffCell(i_uVector_2, i_uVector_1)));
+    std::array<double, 4> Delta_i_2 = sumCell(scalingCell(0.5 * (1 + local_omega), diffCell(i_uVector_2, i_uVector_1)), scalingCell(0.5 * (1 - local_omega), diffCell(i_uVector_3, i_uVector_2)));
+
+    std::array<double, 4> limiter_1 = minbeeLimiter(i_uVector_0, i_uVector_1, i_uVector_2);
+    std::array<double, 4> limiter_2 = minbeeLimiter(i_uVector_1, i_uVector_2, i_uVector_3);
+
     // interpret left and right flux
-    uVec_1_L = diffCell(i_uVector_1, scalingCell(0.5, sumCell(scalingCell(0.5 * (1 + local_omega), diffCell(i_uVector_1, i_uVector_0)), scalingCell(0.5 * (1 - local_omega), diffCell(i_uVector_2, i_uVector_1)))));
-    uVec_1_R = sumCell(i_uVector_1, scalingCell(0.5, sumCell(scalingCell(0.5 * (1 + local_omega), diffCell(i_uVector_1, i_uVector_0)), scalingCell(0.5 * (1 - local_omega), diffCell(i_uVector_2, i_uVector_1)))));
-    uVec_2_L = diffCell(i_uVector_2, scalingCell(0.5, sumCell(scalingCell(0.5 * (1 + local_omega), diffCell(i_uVector_2, i_uVector_1)), scalingCell(0.5 * (1 - local_omega), diffCell(i_uVector_3, i_uVector_2)))));
-    uVec_2_R = sumCell(i_uVector_2, scalingCell(0.5, sumCell(scalingCell(0.5 * (1 + local_omega), diffCell(i_uVector_2, i_uVector_1)), scalingCell(0.5 * (1 - local_omega), diffCell(i_uVector_3, i_uVector_2)))));
+    uVec_1_L = diffCell(i_uVector_1, scalingCell(0.5, productCell(limiter_1, Delta_i_1)));
+    uVec_1_R = sumCell(i_uVector_1, scalingCell(0.5, productCell(limiter_1, Delta_i_1)));
+    uVec_2_L = diffCell(i_uVector_2, scalingCell(0.5, productCell(limiter_2, Delta_i_2)));
+    uVec_2_R = sumCell(i_uVector_2, scalingCell(0.5, productCell(limiter_2, Delta_i_2)));
+    // interpret left and right flux
+    // uVec_1_L = diffCell(i_uVector_1, scalingCell(0.5, Delta_i_1));
+    // uVec_1_R = sumCell(i_uVector_1, scalingCell(0.5, Delta_i_1));
+    // uVec_2_L = diffCell(i_uVector_2, scalingCell(0.5, Delta_i_2));
+    // uVec_2_R = sumCell(i_uVector_2, scalingCell(0.5, Delta_i_2));
 
     // locally half time evolve
     uVec_1_R = diffCell(uVec_1_R, scalingCell(0.5 * i_dt / i_dx, diffCell(conservationFlux_x(uVec_1_R), conservationFlux_x(uVec_1_L))));
@@ -117,7 +196,7 @@ std::array<std::array<double, 4>, 2> FluxFVM::slopeLimitedLR_U_x(std::array<doub
     return std::array<std::array<double, 4>, 2>{uVec_1_R, uVec_2_L};
 }
 
-std::array<std::array<double, 4>, 2> FluxFVM::slopeLimitedLR_U_y(std::array<double, 4> i_uVector_0, std::array<double, 4> i_uVector_1, std::array<double, 4> i_uVector_2, std::array<double, 4> i_uVector_3, double i_dy, double i_dt)
+std::array<std::array<double, 4>, 2> FluxFunc::slopeLimitedLR_U_y(std::array<double, 4> i_uVector_0, std::array<double, 4> i_uVector_1, std::array<double, 4> i_uVector_2, std::array<double, 4> i_uVector_3, double i_dy, double i_dt)
 {
     // const parameter
     const double local_omega = 0.0;
@@ -128,11 +207,22 @@ std::array<std::array<double, 4>, 2> FluxFVM::slopeLimitedLR_U_y(std::array<doub
     std::array<double, 4> uVec_2_R;
     std::array<double, 4> uVec_3_R;
 
+    std::array<double, 4> Delta_i_1 = sumCell(scalingCell(0.5 * (1 + local_omega), diffCell(i_uVector_1, i_uVector_0)), scalingCell(0.5 * (1 - local_omega), diffCell(i_uVector_2, i_uVector_1)));
+    std::array<double, 4> Delta_i_2 = sumCell(scalingCell(0.5 * (1 + local_omega), diffCell(i_uVector_2, i_uVector_1)), scalingCell(0.5 * (1 - local_omega), diffCell(i_uVector_3, i_uVector_2)));
+
+    std::array<double, 4> limiter_1 = minbeeLimiter(i_uVector_0, i_uVector_1, i_uVector_2);
+    std::array<double, 4> limiter_2 = minbeeLimiter(i_uVector_1, i_uVector_2, i_uVector_3);
+
     // interpret left and right flux
-    uVec_1_L = diffCell(i_uVector_1, scalingCell(0.5, sumCell(scalingCell(0.5 * (1 + local_omega), diffCell(i_uVector_1, i_uVector_0)), scalingCell(0.5 * (1 - local_omega), diffCell(i_uVector_2, i_uVector_1)))));
-    uVec_1_R = sumCell(i_uVector_1, scalingCell(0.5, sumCell(scalingCell(0.5 * (1 + local_omega), diffCell(i_uVector_1, i_uVector_0)), scalingCell(0.5 * (1 - local_omega), diffCell(i_uVector_2, i_uVector_1)))));
-    uVec_2_L = diffCell(i_uVector_2, scalingCell(0.5, sumCell(scalingCell(0.5 * (1 + local_omega), diffCell(i_uVector_2, i_uVector_1)), scalingCell(0.5 * (1 - local_omega), diffCell(i_uVector_3, i_uVector_2)))));
-    uVec_2_R = sumCell(i_uVector_2, scalingCell(0.5, sumCell(scalingCell(0.5 * (1 + local_omega), diffCell(i_uVector_2, i_uVector_1)), scalingCell(0.5 * (1 - local_omega), diffCell(i_uVector_3, i_uVector_2)))));
+    uVec_1_L = diffCell(i_uVector_1, scalingCell(0.5, productCell(limiter_1, Delta_i_1)));
+    uVec_1_R = sumCell(i_uVector_1, scalingCell(0.5, productCell(limiter_1, Delta_i_1)));
+    uVec_2_L = diffCell(i_uVector_2, scalingCell(0.5, productCell(limiter_2, Delta_i_2)));
+    uVec_2_R = sumCell(i_uVector_2, scalingCell(0.5, productCell(limiter_2, Delta_i_2)));
+    // interpret left and right flux
+    // uVec_1_L = diffCell(i_uVector_1, scalingCell(0.5, Delta_i_1));
+    // uVec_1_R = sumCell(i_uVector_1, scalingCell(0.5, Delta_i_1));
+    // uVec_2_L = diffCell(i_uVector_2, scalingCell(0.5, Delta_i_2));
+    // uVec_2_R = sumCell(i_uVector_2, scalingCell(0.5, Delta_i_2));
 
     // locally half time evolve
     uVec_1_R = diffCell(uVec_1_R, scalingCell(0.5 * i_dt / i_dy, diffCell(conservationFlux_y(uVec_1_R), conservationFlux_y(uVec_1_L))));
@@ -141,7 +231,71 @@ std::array<std::array<double, 4>, 2> FluxFVM::slopeLimitedLR_U_y(std::array<doub
     return std::array<std::array<double, 4>, 2>{uVec_1_R, uVec_2_L};
 }
 
-std::array<double, 4> FluxFVM::HLLC_Riemannflux_x(std::array<double, 4> i_UL, std::array<double, 4> i_UR)
+std::array<double, 4> FluxFunc::HLL_Riemannflux_x(std::array<double, 4> i_UL, std::array<double, 4> i_UR)
+{
+    double local_gamma = 1.4;
+
+    double rho_L = i_UL[0];
+    double rho_R = i_UR[0];
+    double u_L = primitiveX_Vel(i_UL);
+    double u_R = primitiveX_Vel(i_UR);
+    double v_L = primitiveY_Vel(i_UL);
+    double v_R = primitiveY_Vel(i_UR);
+    double p_L = primitivePressure(i_UL);
+    double p_R = primitivePressure(i_UR);
+    double a_L = sqrt(local_gamma * p_L / rho_L);
+    double a_R = sqrt(local_gamma * p_R / rho_R);
+
+    double S_L = std::min(u_L - a_L, u_R - a_R);
+    double S_R = std::max(u_L + a_L, u_R + a_R);
+
+    if (S_L >= 0)
+    {
+        return conservationFlux_x(i_UL);
+    }
+    else if (S_R <= 0)
+    {
+        return conservationFlux_x(i_UR);
+    }
+    else
+    {
+        return scalingCell(1 / (S_R - S_L), sumCell(diffCell(scalingCell(S_R, conservationFlux_x(i_UL)), scalingCell(S_L, conservationFlux_x(i_UR))), scalingCell(S_L * S_R, diffCell(i_UR, i_UL))));
+    }
+}
+
+std::array<double, 4> FluxFunc::HLL_Riemannflux_y(std::array<double, 4> i_UL, std::array<double, 4> i_UR)
+{
+    double local_gamma = 1.4;
+
+    double rho_L = i_UL[0];
+    double rho_R = i_UR[0];
+    double u_L = primitiveX_Vel(i_UL);
+    double u_R = primitiveX_Vel(i_UR);
+    double v_L = primitiveY_Vel(i_UL);
+    double v_R = primitiveY_Vel(i_UR);
+    double p_L = primitivePressure(i_UL);
+    double p_R = primitivePressure(i_UR);
+    double a_L = sqrt(local_gamma * p_L / rho_L);
+    double a_R = sqrt(local_gamma * p_R / rho_R);
+
+    double S_L = std::min(v_L - a_L, v_R - a_R);
+    double S_R = std::max(v_L + a_L, v_R + a_R);
+
+    if (S_L >= 0)
+    {
+        return conservationFlux_y(i_UL);
+    }
+    else if (S_R <= 0)
+    {
+        return conservationFlux_y(i_UR);
+    }
+    else
+    {
+        return scalingCell(1 / (S_R - S_L), sumCell(diffCell(scalingCell(S_R, conservationFlux_y(i_UL)), scalingCell(S_L, conservationFlux_y(i_UR))), scalingCell(S_L * S_R, diffCell(i_UR, i_UL))));
+    }
+}
+
+std::array<double, 4> FluxFunc::HLLC_Riemannflux_x(std::array<double, 4> i_UL, std::array<double, 4> i_UR)
 {
     double local_gamma = 1.4;
 
@@ -162,6 +316,11 @@ std::array<double, 4> FluxFVM::HLLC_Riemannflux_x(std::array<double, 4> i_UL, st
     double a_bar = 0.5 * (a_L + a_R);
     double p_pvrs = 0.5 * (p_L + p_R) - 0.5 * (u_R - u_L) * rho_bar * a_bar;
     double p_star = std::max(0.0, p_pvrs);
+
+    // std::cout << rho_L << ' ' << u_L << ' ' << v_L << ' ' << p_L << ' ' << a_L << std::endl;
+    // std::cout << rho_R << ' ' << u_R << ' ' << v_R << ' ' << p_R << ' ' << a_R << std::endl;
+    // std::cout << rho_bar << ' ' << a_bar << ' ' << p_pvrs << ' ' << p_star << std::endl;
+    // std::cout << std::endl;
 
     // Toro Step 2
     double q_L;
@@ -185,8 +344,8 @@ std::array<double, 4> FluxFVM::HLLC_Riemannflux_x(std::array<double, 4> i_UL, st
         q_R = 1;
     }
 
-    double S_L = u_L - a_L * q_L;
-    double S_R = u_R + a_R * q_R;
+    double S_L = std::min(u_L - a_L * q_L, u_R - a_R * q_R);
+    double S_R = std::min(u_L + a_L * q_L, u_R + a_R * q_R);
 
     double S_star = (p_R - p_L + rho_L * u_L * (S_L - u_L) - rho_R * u_R * (S_R - u_R)) / (rho_L * (S_L - u_L) - rho_R * (S_R - u_R));
 
@@ -236,7 +395,7 @@ std::array<double, 4> FluxFVM::HLLC_Riemannflux_x(std::array<double, 4> i_UL, st
     }
 }
 
-std::array<double, 4> FluxFVM::HLLC_Riemannflux_y(std::array<double, 4> i_UL, std::array<double, 4> i_UR)
+std::array<double, 4> FluxFunc::HLLC_Riemannflux_y(std::array<double, 4> i_UL, std::array<double, 4> i_UR)
 {
     double local_gamma = 1.4;
 

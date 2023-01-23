@@ -6,7 +6,7 @@
 /*   By: Zian Huang <zianhuang00@gmail.com>           || room214n.com ||      */
 /*                                                    ##################      */
 /*   Created: 2023/01/21 10:44:51 by Zian Huang                               */
-/*   Updated: 2023/01/21 17:56:31 by Zian Huang                               */
+/*   Updated: 2023/01/22 12:36:49 by Zian Huang                               */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,12 +157,12 @@ void GFM_2D_EulerSolver::updateBoundary_transmissive()
 
 void GFM_2D_EulerSolver::musclHancock_sweepX()
 {
-    m_uVec = vecTran.musclHancockVecTran_x(m_uVec, m_dx, m_dt);
+    m_uVec = vecTran.musclHancockVecTranHLLC_x(m_uVec, m_dx, m_dt);
 }
 
 void GFM_2D_EulerSolver::musclHancock_sweepY()
 {
-    m_uVec = vecTran.musclHancockVecTran_y(m_uVec, m_dy, m_dt);
+    m_uVec = vecTran.musclHancockVecTranHLLC_y(m_uVec, m_dy, m_dt);
 }
 
 void GFM_2D_EulerSolver::slicLeapX()
