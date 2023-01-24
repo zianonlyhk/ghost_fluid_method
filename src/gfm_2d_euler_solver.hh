@@ -6,7 +6,7 @@
 /*   By: Zian Huang <zianhuang00@gmail.com>           || room214n.com ||      */
 /*                                                    ##################      */
 /*   Created: 2023/01/21 10:45:16 by Zian Huang                               */
-/*   Updated: 2023/01/23 18:15:57 by Zian Huang                               */
+/*   Updated: 2023/01/24 13:12:47 by Zian Huang                               */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,9 @@ public:
     GFM_2D_EulerSolver(std::vector<std::vector<std::array<double, 4>>> uVec, int nCell_x, int nCell_y, double x0, double x1, double y0, double y1, double tStop, double c);
 
     // ADDITIONAL CONSTRUCTION
-    void setLevelSet(std::vector<std::vector<double>> levelSet);
     void setBound(double x0, double x1, double y0, double y1, double tStop);
     void setCFL(double c);
+    void setLevelSet(std::vector<std::vector<double>> levelSet);
     void setName(std::string name);
     void setRepoDir(std::string repoDir);
 
@@ -36,7 +36,12 @@ public:
 
     void updateMaxA(int numIter);
     void updateDt();
+
+    void updateGhostCellBoundary();
+    void propagateGhostCell();
+
     void updateBoundaryTrans();
+
     void mhHllcSweepX();
     void mhHllcSweepY();
     void slicSweepX();
@@ -61,6 +66,7 @@ public:
     const double gamma();
     const double aMax();
     const double dt();
+    const std::vector<std::vector<std::array<double, 4>>> uVec();
 
 private:
     // CONSTANT ATTRIBUTES

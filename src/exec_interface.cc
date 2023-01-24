@@ -6,10 +6,11 @@
 /*   By: Zian Huang <zianhuang00@gmail.com>           || room214n.com ||      */
 /*                                                    ##################      */
 /*   Created: 2023/01/21 10:44:41 by Zian Huang                               */
-/*   Updated: 2023/01/23 18:15:16 by Zian Huang                               */
+/*   Updated: 2023/01/24 11:11:15 by Zian Huang                               */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "inline/debug_tools.hh"
 #include "gfm_2d_euler_solver.hh"
 #include <fstream>
 #include <iostream>
@@ -81,8 +82,8 @@ int main()
     double y1;
     double c;
     double tStop;
-    nCells_x = 100;
-    nCells_y = 100;
+    nCells_x = 50;
+    nCells_y = 50;
     x0 = 0.0;
     x1 = 2.0;
     y0 = 0.0;
@@ -91,20 +92,16 @@ int main()
     tStop = 0.25;
 
     std::vector<std::vector<std::array<double, 4>>> compDomain;
+    std::vector<std::vector<double>> levelSetCompDomain;
     compDomain.resize(nCells_y + 4);
+    levelSetCompDomain.resize(nCells_y + 4);
     for (int i = 0; i < nCells_y + 4; ++i)
     {
         compDomain[i].resize(nCells_x + 4);
+        levelSetCompDomain[i].resize(nCells_x + 4);
     }
 
-    std::vector<std::vector<double>> levelSetcompDomain;
-    levelSetcompDomain.resize(nCells_y + 4);
-    for (int i = 0; i < nCells_y + 4; ++i)
-    {
-        levelSetcompDomain[i].resize(nCells_x + 4);
-    }
-
-    setInitialConditions(compDomain, levelSetcompDomain, x0, x1, y0, y1);
+    setInitialConditions(compDomain, levelSetCompDomain, x0, x1, y0, y1);
     conservativeFormTransform(compDomain);
 
     GFM_2D_EulerSolver testSolverClass(compDomain, nCells_x, nCells_y);
@@ -112,6 +109,7 @@ int main()
     testSolverClass.setCFL(c);
     testSolverClass.setName((std::string) "test");
     testSolverClass.setRepoDir((std::string) "/Users/zianhuang/Room214N/dev/MPhil_writtenAssignment_GFM/");
+    testSolverClass.setLevelSet(levelSetCompDomain);
 
     testSolverClass.updateBoundaryTrans();
 
@@ -127,6 +125,8 @@ int main()
         testSolverClass.updateDt();
 
         t += testSolverClass.dt();
+
+        // printDomainDensity(testSolverClass.uVec());
 
         testSolverClass.mhHllcSweepX();
         testSolverClass.updateBoundaryTrans();

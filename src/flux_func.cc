@@ -6,16 +6,16 @@
 /*   By: Zian Huang <zianhuang00@gmail.com>           || room214n.com ||      */
 /*                                                    ##################      */
 /*   Created: 2023/01/21 16:12:23 by Zian Huang                               */
-/*   Updated: 2023/01/23 18:19:04 by Zian Huang                               */
+/*   Updated: 2023/01/24 13:09:19 by Zian Huang                               */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <math.h>
-#include <algorithm>
-#include <iostream>
 #include "flux_func.hh"
 #include "inline/primitive_tran.hh"
 #include "inline/cell_operation.hh"
+#include <math.h>
+#include <algorithm>
+#include <iostream>
 
 std::array<double, 4> minbeeLimiter(std::array<double, 4> i_arr0, std::array<double, 4> i_arr1, std::array<double, 4> i_arr2)
 {
@@ -81,8 +81,9 @@ std::array<double, 4> superbeeLimiter(std::array<double, 4> i_arr0, std::array<d
     return cellToBeReturned;
 }
 
+// public:
 // #########################################################################################################################################################################
-// 楚河
+// 楚河 =====================================================================================================================================================================
 // #########################################################################################################################################################################
 
 FluxFunc::FluxFunc() {}
@@ -161,8 +162,9 @@ std::array<double, 4> FluxFunc::musclHancockHllcFlux_y(std::array<double, 4> i_u
     return HLLC_Riemannflux_y(leftRightHalftimeLimitedState[0], leftRightHalftimeLimitedState[1]);
 }
 
+// private:
 // #########################################################################################################################################################################
-// 漢界
+// 漢界 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // #########################################################################################################################################################################
 
 std::array<std::array<double, 4>, 2> FluxFunc::slopeLimitedLR_U_x(std::array<double, 4> i_uVector_0, std::array<double, 4> i_uVector_1, std::array<double, 4> i_uVector_2, std::array<double, 4> i_uVector_3, double i_dx, double i_dt)
@@ -310,11 +312,6 @@ std::array<double, 4> FluxFunc::HLLC_Riemannflux_x(std::array<double, 4> i_UL, s
     double a_bar = 0.5 * (a_L + a_R);
     double p_pvrs = 0.5 * (p_L + p_R) - 0.5 * (u_R - u_L) * rho_bar * a_bar;
     double p_star = std::max(0.0, p_pvrs);
-
-    // std::cout << rho_L << ' ' << u_L << ' ' << v_L << ' ' << p_L << ' ' << a_L << std::endl;
-    // std::cout << rho_R << ' ' << u_R << ' ' << v_R << ' ' << p_R << ' ' << a_R << std::endl;
-    // std::cout << rho_bar << ' ' << a_bar << ' ' << p_pvrs << ' ' << p_star << std::endl;
-    // std::cout << std::endl;
 
     // Toro Step 2
     double q_L;

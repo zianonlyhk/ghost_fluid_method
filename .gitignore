@@ -89,5 +89,6 @@ Temporary Items
 bin/*
 data/*
 obj/*
+doc/*
 
-log
+debug/*

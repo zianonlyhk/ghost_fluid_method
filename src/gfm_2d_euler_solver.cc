@@ -6,7 +6,7 @@
 /*   By: Zian Huang <zianhuang00@gmail.com>           || room214n.com ||      */
 /*                                                    ##################      */
 /*   Created: 2023/01/21 10:44:51 by Zian Huang                               */
-/*   Updated: 2023/01/23 18:14:58 by Zian Huang                               */
+/*   Updated: 2023/01/24 11:07:24 by Zian Huang                               */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,11 +64,6 @@ GFM_2D_EulerSolver::GFM_2D_EulerSolver(std::vector<std::vector<std::array<double
     m_uVec = i_uVec;
 }
 
-void GFM_2D_EulerSolver::setName(std::string i_name)
-{
-    m_name = i_name;
-}
-
 void GFM_2D_EulerSolver::setBound(double i_x0, double i_x1, double i_y0, double i_y1, double i_tStop)
 {
     m_x0 = i_x0;
@@ -85,6 +80,16 @@ void GFM_2D_EulerSolver::setBound(double i_x0, double i_x1, double i_y0, double 
 void GFM_2D_EulerSolver::setCFL(double i_c)
 {
     m_c = i_c;
+}
+
+void GFM_2D_EulerSolver::setLevelSet(std::vector<std::vector<double>> i_levelSet)
+{
+    m_levelSet = i_levelSet;
+}
+
+void GFM_2D_EulerSolver::setName(std::string i_name)
+{
+    m_name = i_name;
 }
 
 void GFM_2D_EulerSolver::setRepoDir(std::string repoDir)
@@ -218,3 +223,4 @@ const double GFM_2D_EulerSolver::c() { return m_c; }
 const double GFM_2D_EulerSolver::gamma() { return m_gamma; }
 const double GFM_2D_EulerSolver::aMax() { return m_aMax; }
 const double GFM_2D_EulerSolver::dt() { return m_dt; }
+const std::vector<std::vector<std::array<double, 4>>> GFM_2D_EulerSolver::uVec() { return m_uVec; }
