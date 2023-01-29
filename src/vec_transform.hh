@@ -6,7 +6,7 @@
 /*   By: Zian Huang <zianhuang00@gmail.com>           || room214n.com ||      */
 /*                                                    ##################      */
 /*   Created: 2023/01/21 10:45:20 by Zian Huang                               */
-/*   Updated: 2023/01/24 13:10:44 by Zian Huang                               */
+/*   Updated: 2023/01/25 11:13:36 by Zian Huang                               */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,12 +24,15 @@ public:
     VecTran();
 
     // FVM conservation time update
-
     std::vector<std::vector<std::array<double, 4>>> slicVecTran_x(const std::vector<std::vector<std::array<double, 4>>> &uVec, double dx, double dt);
     std::vector<std::vector<std::array<double, 4>>> slicVecTran_y(const std::vector<std::vector<std::array<double, 4>>> &uVec, double dy, double dt);
-
     std::vector<std::vector<std::array<double, 4>>> musclHancockVecTranHLLC_x(const std::vector<std::vector<std::array<double, 4>>> &uVec, double dx, double dt);
     std::vector<std::vector<std::array<double, 4>>> musclHancockVecTranHLLC_y(const std::vector<std::vector<std::array<double, 4>>> &uVec, double dy, double dt);
+
+    // GFM transformation functions
+    std::vector<std::vector<std::array<double, 4>>> ghostCellBoundary(const std::vector<std::vector<std::array<double, 4>>> &uVec, const std::vector<std::vector<double>> &levelSet);
+    std::vector<std::vector<std::array<double, 4>>> solveRiemannAtInterface(const std::vector<std::vector<std::array<double, 4>>> &uVec, const std::vector<std::vector<double>> &levelSet);
+    std::vector<std::vector<std::array<double, 4>>> propagateGhostInterface(const std::vector<std::vector<std::array<double, 4>>> &uVec, const std::vector<std::vector<double>> &levelSet);
 
 private:
     FluxFunc fluxFunc;

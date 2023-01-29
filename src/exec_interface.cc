@@ -6,7 +6,7 @@
 /*   By: Zian Huang <zianhuang00@gmail.com>           || room214n.com ||      */
 /*                                                    ##################      */
 /*   Created: 2023/01/21 10:44:41 by Zian Huang                               */
-/*   Updated: 2023/01/24 11:11:15 by Zian Huang                               */
+/*   Updated: 2023/01/26 11:41:45 by Zian Huang                               */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,7 +133,7 @@ int main()
         testSolverClass.mhHllcSweepY();
         testSolverClass.updateBoundaryTrans();
 
-        if (numIter % 1 == 0)
+        if (numIter % 3 == 0)
         {
             testSolverClass.writeToFiles(t);
             std::cout << t << " / " << testSolverClass.tStop() << std::endl;
