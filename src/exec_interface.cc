@@ -6,7 +6,7 @@
 /*   By: Zian Huang <zianhuang00@gmail.com>           || room214n.com ||      */
 /*                                                    ##################      */
 /*   Created: 2023/01/21 10:44:41 by Zian Huang                               */
-/*   Updated: 2023/01/30 15:01:50 by Zian Huang                               */
+/*   Updated: 2023/01/30 16:14:01 by Zian Huang                               */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,14 +26,24 @@ void setInitialConditions(std::vector<std::vector<std::array<double, 4>>> &i_inp
 
     double currX;
     double currY;
+
+    for (int j = 0; j < nCell_y + 4; ++j)
+    {
+        for (int i = 0; i < nCell_x + 4; ++i)
+        {
+            currX = i_x0 + (i - 2) * dx;
+            currY = i_y0 + (j - 2) * dy;
+
+            i_levelSetFunc[j][i] = 0.4 - (pow(currX - 1, 2) + pow(currY - 1, 2));
+        }
+    }
+
     for (int j = 2; j < nCell_y + 2; ++j)
     {
         for (int i = 2; i < nCell_x + 2; ++i)
         {
             currX = i_x0 + (i - 2) * dx;
             currY = i_y0 + (j - 2) * dy;
-
-            i_levelSetFunc[j][i] = 0.4 - (pow(currX - 1, 2) + pow(currY - 1, 2));
 
             if (pow(currX - 1, 2) + pow(currY - 1, 2) < 0.4)
             {

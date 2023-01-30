@@ -6,7 +6,7 @@
 /*   By: Zian Huang <zianhuang00@gmail.com>           || room214n.com ||      */
 /*                                                    ##################      */
 /*   Created: 2023/01/24 12:32:25 by Zian Huang                               */
-/*   Updated: 2023/01/30 15:14:46 by Zian Huang                               */
+/*   Updated: 2023/01/30 22:30:11 by Zian Huang                               */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,16 +23,15 @@ public:
 
     std::vector<std::array<int, 2>> ghostBoundaryCellCoor(const std::vector<std::vector<double>> &levelSet);
 
-    std::array<double, 4> ghostCellValues(const std::vector<std::vector<double>> &compDomain, const std::vector<std::vector<std::array<double, 4>>> &levelSet, std::array<int, 2> coor);
+    std::array<double, 4> ghostCellValues(const std::vector<std::vector<double>> &levelSet, const std::vector<std::vector<std::array<double, 4>>> &compDomain, std::array<int, 2> coor);
+    std::array<double, 4> ghostCellValues(const std::vector<std::vector<double>> &levelSet, const std::vector<std::vector<std::array<double, 4>>> &compDomain, std::array<int, 2> coor, std::array<double, 2> rigidBodyVel);
 
 private:
-    std::array<double, 2> normalUnitVector(const std::vector<std::vector<double>> &levelSet, int x, int y, double dx, double dy);
+    std::array<double, 2> normalUnitVector(const std::vector<std::vector<double>> &levelSet, int x, int y);
+    std::array<double, 2> probeCoor(const std::vector<std::vector<double>> &levelSet, std::array<int, 2> currCoor);
+    std::array<double, 4> getBilinearlyProbedCell(const std::vector<std::vector<std::array<double, 4>>> &compDomain, const std::vector<std::vector<double>> &levelSet, std::array<int, 2> coor);
 
-    std::array<double, 4> binearInterpolation(std::array<int, 4> p1, std::array<int, 4> p2, std::array<int, 4> p3, std::array<int, 4> p4);
-
-    std::array<double, 4> ghostCellReflectiveBoundary();
-    std::array<double, 2> tangentialVel();
-    std::array<std::array<double, 3>, 2> normalRiemannStates();
+    std::array<double, 3> HLLC_1D(std::array<double, 3> W_L, std::array<double, 3> W_R);
 };
 
 #endif

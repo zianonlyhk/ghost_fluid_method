@@ -6,14 +6,17 @@
 /*   By: Zian Huang <zianhuang00@gmail.com>           || room214n.com ||      */
 /*                                                    ##################      */
 /*   Created: 2023/01/24 12:32:28 by Zian Huang                               */
-/*   Updated: 2023/01/30 15:01:43 by Zian Huang                               */
+/*   Updated: 2023/01/30 22:55:35 by Zian Huang                               */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ghost_fluid_utilities.hh"
+#include "inline/cell_operation.hh"
+#include "inline/primitive_tran.hh"
 #include <math.h>
 #include <algorithm>
 #include <iostream>
+#include <assert.h>
 
 // public:
 // #########################################################################################################################################################################
@@ -121,18 +124,154 @@ std::vector<std::array<int, 2>> GhostFluidUtilities::ghostBoundaryCellCoor(const
     return toBeReturn;
 }
 
+std::array<double, 4> GhostFluidUtilities::ghostCellValues(const std::vector<std::vector<double>> &i_levelSet, const std::vector<std::vector<std::array<double, 4>>> &i_compDomain, std::array<int, 2> i_coor)
+{
+    double local_gamma = 1.4;
+
+    std::array<double, 2> normalVec = normalUnitVector(i_levelSet, i_coor[0], i_coor[1]);
+    std::array<double, 4> mirrorState = getBilinearlyProbedCell(i_compDomain, i_levelSet, i_coor);
+
+    // turn into primitive form here
+    double mirrorVelX = primitiveX_Vel(mirrorState);
+    double mirrorVelY = primitiveY_Vel(mirrorState);
+    double mirrorP = primitivePressure(mirrorState);
+
+    double dotProduct = normalVec[0] * mirrorVelX + normalVec[1] * mirrorVelY;
+
+    std::array<double, 2> normalComponent = {dotProduct * mirrorVelX, dotProduct * mirrorVelX};
+    std::array<double, 2> tangentialComponent = {mirrorVelX - normalComponent[0], mirrorVelY - normalComponent[1]};
+
+    std::array<double, 3> riemannLeftState = {mirrorState[0], dotProduct, mirrorP};
+    std::array<double, 3> riemannRightState = {mirrorState[0], -dotProduct, mirrorP};
+
+    std::array<double, 3> starredState = HLLC_1D(riemannLeftState, riemannRightState);
+    double finalRho = starredState[0];
+    double finalVelX = starredState[1] * normalVec[0] + tangentialComponent[0];
+    double finalVelY = starredState[1] * normalVec[1] + tangentialComponent[1];
+    double finalP = starredState[2];
+
+    std::array<double, 4> toBeReturned = {finalRho, finalVelX, finalVelY, finalP / (local_gamma - 1) + 0.5 * finalRho * (finalVelX * finalVelX + finalVelY * finalVelY)};
+
+    return toBeReturned;
+}
+
 // private:
 // #########################################################################################################################################################################
 // 漢界 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // #########################################################################################################################################################################
 
-std::array<double, 2> GhostFluidUtilities::normalUnitVector(const std::vector<std::vector<double>> &i_levelSet, int i_x, int i_y, double i_dx, double i_dy)
+std::array<double, 2> GhostFluidUtilities::normalUnitVector(const std::vector<std::vector<double>> &i_levelSet, int i_x, int i_y)
 {
-    double dphidx = (i_levelSet[i_y][i_x + 1] - i_levelSet[i_y][i_x - 1]) / (2 * i_dx);
-    double dphidy = (i_levelSet[i_y + 1][i_x] - i_levelSet[i_y - 1][i_x]) / (2 * i_dy);
+    double dphidx = (i_levelSet[i_y][i_x + 1] - i_levelSet[i_y][i_x - 1]) / 2;
+    double dphidy = (i_levelSet[i_y + 1][i_x] - i_levelSet[i_y - 1][i_x]) / 2;
 
     std::array<double, 2> toBeReturn;
     toBeReturn = std::array<double, 2>{dphidx, dphidy};
 
     return toBeReturn;
+}
+
+std::array<double, 2> GhostFluidUtilities::probeCoor(const std::vector<std::vector<double>> &i_levelSet, std::array<int, 2> i_currCoor)
+{
+    double interfaceX;
+    double interfaceY;
+    double currPhi = i_levelSet[i_currCoor[1]][i_currCoor[0]];
+    std::array<double, 2> i_normalVector = normalUnitVector(i_levelSet, i_currCoor[0], i_currCoor[1]);
+
+    interfaceX = i_currCoor[0] + currPhi * i_normalVector[0];
+    interfaceY = i_currCoor[1] + currPhi * i_normalVector[1];
+
+    assert(interfaceX + 1.5 * i_normalVector[0] > 0 && interfaceY + 1.5 * i_normalVector[1] > 0);
+
+    return std::array<double, 2>{interfaceX + 1.5 * i_normalVector[0], interfaceY + 1.5 * i_normalVector[1]};
+}
+
+std::array<double, 4> GhostFluidUtilities::getBilinearlyProbedCell(const std::vector<std::vector<std::array<double, 4>>> &i_compDomain, const std::vector<std::vector<double>> &i_levelSet, std::array<int, 2> i_coor)
+{
+    std::array<double, 2> exactProbeCoor = probeCoor(i_levelSet, i_coor);
+
+    int lowerBound_x = std::floor(exactProbeCoor[0]);
+    int upperBound_x = lowerBound_x + 1;
+    int lowerBound_y = std::floor(exactProbeCoor[1]);
+    int upperBound_y = lowerBound_y + 1;
+
+    std::array<int, 2> nokia_1 = {lowerBound_x, upperBound_y};
+    std::array<int, 2> nokia_3 = {upperBound_x, upperBound_y};
+    std::array<int, 2> nokia_7 = {lowerBound_x, lowerBound_y};
+    std::array<int, 2> nokia_9 = {upperBound_x, upperBound_y};
+
+    std::array<double, 4> nokia_1_cell = i_compDomain[nokia_1[1]][nokia_1[0]];
+    std::array<double, 4> nokia_3_cell = i_compDomain[nokia_3[1]][nokia_3[0]];
+    std::array<double, 4> nokia_7_cell = i_compDomain[nokia_7[1]][nokia_7[0]];
+    std::array<double, 4> nokia_9_cell = i_compDomain[nokia_9[1]][nokia_9[0]];
+
+    double del_x = exactProbeCoor[0] - lowerBound_x;
+    double del_y = exactProbeCoor[1] - lowerBound_y;
+
+    std::array<double, 4> upper = sumCell(scalingCell(1 - del_x, nokia_1_cell), scalingCell(del_x, nokia_3_cell));
+    std::array<double, 4> lower = sumCell(scalingCell(1 - del_x, nokia_7_cell), scalingCell(del_x, nokia_9_cell));
+
+    return sumCell(scalingCell(1 - del_y, lower), scalingCell(del_y, upper));
+}
+
+std::array<double, 3> GhostFluidUtilities::HLLC_1D(std::array<double, 3> i_W_L, std::array<double, 3> i_W_R)
+{
+    double local_gamma = 1.4;
+
+    // transforming into primitive
+    double rho_L = i_W_L[0];
+    double rho_R = i_W_R[0];
+    double u_L = i_W_L[1];
+    double u_R = i_W_R[1];
+    double p_L = i_W_L[2];
+    double p_R = i_W_R[2];
+
+    // Toro Step 1
+    double rho_bar = 0.5 * (rho_L + rho_R);
+    double a_L = sqrt(local_gamma * p_L / rho_L);
+    double a_R = sqrt(local_gamma * p_R / rho_R);
+    double a_bar = 0.5 * (a_L + a_R);
+    double p_pvrs = 0.5 * (p_L + p_R) - 0.5 * (u_R - u_L) * rho_bar * a_bar;
+    double p_star = std::max(0.0, p_pvrs);
+
+    // Toro Step 2
+    double q_L;
+    double q_R;
+
+    if (p_star > p_L)
+    {
+        q_L = sqrt(1 + (local_gamma + 1) / (2 * local_gamma) * (p_star / p_L - 1));
+    }
+    else
+    {
+        q_L = 1;
+    }
+
+    if (p_star > p_R)
+    {
+        q_R = sqrt(1 + (local_gamma + 1) / (2 * local_gamma) * (p_star / p_R - 1));
+    }
+    else
+    {
+        q_R = 1;
+    }
+
+    double S_L = std::min(u_L - a_L * q_L, u_R - a_R * q_R);
+    double S_R = std::min(u_L + a_L * q_L, u_R + a_R * q_R);
+
+    double S_star = (p_R - p_L + rho_L * u_L * (S_L - u_L) - rho_R * u_R * (S_R - u_R)) / (rho_L * (S_L - u_L) - rho_R * (S_R - u_R));
+
+    // Toro Step 3
+    double toroScaler_L = rho_L * (S_L - u_L) / (S_L - S_star);
+    std::array<double, 3> U_star_L;
+
+    double energy_L = p_L / (local_gamma - 1) + 0.5 * rho_L * (u_L * u_L);
+
+    U_star_L[0] = 1;
+    U_star_L[1] = S_star;
+    U_star_L[2] = energy_L / rho_L + (S_star - u_L) * (S_star + p_L / (rho_L * (S_L - u_L)));
+
+    U_star_L = std::array<double, 3>{toroScaler_L * U_star_L[0], toroScaler_L * U_star_L[1], toroScaler_L * U_star_L[2]};
+
+    return U_star_L;
 }
