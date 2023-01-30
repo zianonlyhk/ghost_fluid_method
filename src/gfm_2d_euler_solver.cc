@@ -6,12 +6,13 @@
 /*   By: Zian Huang <zianhuang00@gmail.com>           || room214n.com ||      */
 /*                                                    ##################      */
 /*   Created: 2023/01/21 10:44:51 by Zian Huang                               */
-/*   Updated: 2023/01/24 11:07:24 by Zian Huang                               */
+/*   Updated: 2023/01/30 14:56:54 by Zian Huang                               */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "gfm_2d_euler_solver.hh"
 #include "inline/primitive_tran.hh"
+#include "inline/debug_tools.hh"
 #include <math.h>
 
 double calcMaxA_eachArr(std::array<double, 4> i_uVec, double i_gamma)
@@ -224,3 +225,9 @@ const double GFM_2D_EulerSolver::gamma() { return m_gamma; }
 const double GFM_2D_EulerSolver::aMax() { return m_aMax; }
 const double GFM_2D_EulerSolver::dt() { return m_dt; }
 const std::vector<std::vector<std::array<double, 4>>> GFM_2D_EulerSolver::uVec() { return m_uVec; }
+const std::vector<std::vector<double>> GFM_2D_EulerSolver::levelSet() { return m_levelSet; }
+
+void GFM_2D_EulerSolver::printBoundaryCoor()
+{
+    printBoundaryCellCoor(vecTran.getBoundaryCellCoor(m_levelSet));
+}

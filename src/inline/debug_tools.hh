@@ -6,7 +6,7 @@
 /*   By: Zian Huang <zianhuang00@gmail.com>           || room214n.com ||      */
 /*                                                    ##################      */
 /*   Created: 2023/01/24 10:58:05 by Zian Huang                               */
-/*   Updated: 2023/01/24 11:10:09 by Zian Huang                               */
+/*   Updated: 2023/01/30 15:13:48 by Zian Huang                               */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,45 @@ inline void printDomainDensity(std::vector<std::vector<std::array<double, 4>>> i
         std::cout << std::endl;
     }
     std::cout << std::endl;
+}
+
+inline void printLevelSet(const std::vector<std::vector<double>> &i_levelSet)
+{
+
+    std::cout.precision(2);
+    std::cout << std::fixed;
+
+    int xVecLen = i_levelSet[0].size();
+    int yVecLen = i_levelSet.size();
+
+    for (int iter_y = 2; iter_y < yVecLen - 2; ++iter_y)
+    {
+        for (int iter_x = 2; iter_x < xVecLen - 2; ++iter_x)
+        {
+            if (i_levelSet[iter_y][iter_x] < 0)
+            {
+                std::cout << i_levelSet[iter_y][iter_x] << ' ';
+            }
+            else
+            {
+                std::cout << ' ' << i_levelSet[iter_y][iter_x] << ' ';
+            }
+        }
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;
+}
+
+inline void printBoundaryCellCoor(const std::vector<std::array<int, 2>> &coorList)
+{
+    int listLen = coorList.size();
+
+    for (int i = 0; i < listLen; ++i)
+    {
+
+        std::cout << coorList[i][0] << ' ' << coorList[i][1];
+        std::cout << std::endl;
+    }
 }
 
 #endif

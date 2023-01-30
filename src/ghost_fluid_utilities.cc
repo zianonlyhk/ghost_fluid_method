@@ -6,7 +6,7 @@
 /*   By: Zian Huang <zianhuang00@gmail.com>           || room214n.com ||      */
 /*                                                    ##################      */
 /*   Created: 2023/01/24 12:32:28 by Zian Huang                               */
-/*   Updated: 2023/01/27 11:00:41 by Zian Huang                               */
+/*   Updated: 2023/01/30 15:01:43 by Zian Huang                               */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ std::vector<std::array<int, 2>> GhostFluidUtilities::ghostBoundaryCellCoor(const
     {
         currPhi = i_levelSet[2][i];
 
-        for (int j = 2; j < nCell_y + 2; ++i)
+        for (int j = 2; j < nCell_y + 2; ++j)
         {
             if (currPhi < 0 && i_levelSet[j][i] > 0)
             {
@@ -104,7 +104,7 @@ std::vector<std::array<int, 2>> GhostFluidUtilities::ghostBoundaryCellCoor(const
     {
         currPhi = i_levelSet[nCell_y + 1][i];
 
-        for (int j = nCell_x + 1; j > 1; --i)
+        for (int j = nCell_x + 1; j > 1; --j)
         {
             if (currPhi < 0 && i_levelSet[j][i] > 0)
             {

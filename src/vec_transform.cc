@@ -6,7 +6,7 @@
 /*   By: Zian Huang <zianhuang00@gmail.com>           || room214n.com ||      */
 /*                                                    ##################      */
 /*   Created: 2023/01/21 10:45:26 by Zian Huang                               */
-/*   Updated: 2023/01/25 11:13:41 by Zian Huang                               */
+/*   Updated: 2023/01/30 15:14:55 by Zian Huang                               */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,4 +128,9 @@ std::vector<std::vector<std::array<double, 4>>> VecTran::musclHancockVecTranHLLC
     }
 
     return toBeReturnVec;
+}
+
+std::vector<std::array<int, 2>> VecTran::getBoundaryCellCoor(const std::vector<std::vector<double>> &i_levelSet)
+{
+    return ghostFluidUtilities.ghostBoundaryCellCoor(i_levelSet);
 }

@@ -6,7 +6,7 @@
 /*   By: Zian Huang <zianhuang00@gmail.com>           || room214n.com ||      */
 /*                                                    ##################      */
 /*   Created: 2023/01/21 10:44:41 by Zian Huang                               */
-/*   Updated: 2023/01/26 11:41:45 by Zian Huang                               */
+/*   Updated: 2023/01/30 15:01:50 by Zian Huang                               */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,8 +82,8 @@ int main()
     double y1;
     double c;
     double tStop;
-    nCells_x = 50;
-    nCells_y = 50;
+    nCells_x = 20;
+    nCells_y = 20;
     x0 = 0.0;
     x1 = 2.0;
     y0 = 0.0;
@@ -115,6 +115,10 @@ int main()
 
     testSolverClass.initiateDataLogging();
 
+    // DEBUG
+    printLevelSet(testSolverClass.levelSet());
+    testSolverClass.printBoundaryCoor();
+
     double t = 0.0;
     int numIter = 0;
     do
@@ -126,6 +130,7 @@ int main()
 
         t += testSolverClass.dt();
 
+        // // DEBUG
         // printDomainDensity(testSolverClass.uVec());
 
         testSolverClass.mhHllcSweepX();
