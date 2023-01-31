@@ -6,7 +6,7 @@
 /*   By: Zian Huang <zianhuang00@gmail.com>           || room214n.com ||      */
 /*                                                    ##################      */
 /*   Created: 2023/01/21 10:44:51 by Zian Huang                               */
-/*   Updated: 2023/01/31 09:00:15 by Zian Huang                               */
+/*   Updated: 2023/01/31 12:10:42 by Zian Huang                               */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,7 +144,7 @@ void GFM_2D_EulerSolver::updateDt()
 
 void GFM_2D_EulerSolver::updateGhostCellBoundary()
 {
-    m_uVec = vecTran.ghostCellBoundary(m_uVec, m_levelSet);
+    m_uVec = vecTran.ghostCellBoundary(m_uVec, m_levelSet, m_dx, m_dy);
 }
 
 void GFM_2D_EulerSolver::updateBoundaryTrans()

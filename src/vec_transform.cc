@@ -6,13 +6,14 @@
 /*   By: Zian Huang <zianhuang00@gmail.com>           || room214n.com ||      */
 /*                                                    ##################      */
 /*   Created: 2023/01/21 10:45:26 by Zian Huang                               */
-/*   Updated: 2023/01/31 09:51:26 by Zian Huang                               */
+/*   Updated: 2023/01/31 12:09:57 by Zian Huang                               */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "vec_transform.hh"
 #include "inline/cell_operation.hh"
 #include "inline/primitive_tran.hh"
+#include <iostream>
 
 // Definitions #####################################################################################
 
@@ -130,7 +131,7 @@ std::vector<std::vector<std::array<double, 4>>> VecTran::musclHancockVecTranHLLC
     return toBeReturnVec;
 }
 
-std::vector<std::vector<std::array<double, 4>>> VecTran::ghostCellBoundary(const std::vector<std::vector<std::array<double, 4>>> &i_uVec, const std::vector<std::vector<double>> &i_levelSet)
+std::vector<std::vector<std::array<double, 4>>> VecTran::ghostCellBoundary(const std::vector<std::vector<std::array<double, 4>>> &i_uVec, const std::vector<std::vector<double>> &i_levelSet, double i_dx, double i_dy)
 {
     int xVecLen = i_uVec[0].size();
     int yVecLen = i_uVec.size();
@@ -145,9 +146,9 @@ std::vector<std::vector<std::array<double, 4>>> VecTran::ghostCellBoundary(const
 
     std::vector<std::array<int, 2>> boundaryCoorArr = getBoundaryCellCoor(i_levelSet);
 
-    for (int i = 0; i < sizeof(boundaryCoorArr) / sizeof(std::array<int, 2>); ++i)
+    for (int i = 0; i < boundaryCoorArr.size(); ++i)
     {
-        toBeReturnVec[boundaryCoorArr[i][1]][boundaryCoorArr[i][0]] = ghostFluidUtilities.ghostCellValues(i_levelSet, i_uVec, std::array<int, 2>{boundaryCoorArr[i][0], boundaryCoorArr[i][1]});
+        toBeReturnVec[boundaryCoorArr[i][1]][boundaryCoorArr[i][0]] = ghostFluidUtilities.ghostCellValues(i_levelSet, i_uVec, std::array<int, 2>{boundaryCoorArr[i][0], boundaryCoorArr[i][1]}, i_dx, i_dy);
     }
 
     return toBeReturnVec;

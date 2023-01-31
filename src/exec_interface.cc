@@ -6,7 +6,7 @@
 /*   By: Zian Huang <zianhuang00@gmail.com>           || room214n.com ||      */
 /*                                                    ##################      */
 /*   Created: 2023/01/21 10:44:41 by Zian Huang                               */
-/*   Updated: 2023/01/31 10:20:29 by Zian Huang                               */
+/*   Updated: 2023/01/31 15:15:10 by Zian Huang                               */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ void setInitialConditions(std::vector<std::vector<std::array<double, 4>>> &i_inp
             currX = i_x0 + (i - 2) * dx;
             currY = i_y0 + (j - 2) * dy;
 
-            i_levelSetFunc[j][i] = 0.4 - (pow(currX - 1, 2) + pow(currY - 1, 2));
+            i_levelSetFunc[j][i] = -(0.4 - (pow(currX - 1, 2) + pow(currY - 1, 2)));
         }
     }
 
@@ -118,7 +118,7 @@ int main()
     testSolverClass.setBound(x0, x1, y0, y1, tStop);
     testSolverClass.setCFL(c);
     testSolverClass.setName((std::string) "test");
-    testSolverClass.setRepoDir((std::string) "/Users/zianhuang/Room214N/dev/MPhil_writtenAssignment_GFM/");
+    testSolverClass.setRepoDir((std::string) "/Users/zianhuang/Room214N/dev/mphil/MPhil_writtenAssignment_GFM/");
     testSolverClass.setLevelSet(levelSetCompDomain);
 
     testSolverClass.updateBoundaryTrans();
@@ -150,7 +150,7 @@ int main()
         testSolverClass.mhHllcSweepY();
         testSolverClass.updateBoundaryTrans();
 
-        if (numIter % 1 == 0)
+        if (numIter % 2 == 0)
         {
             testSolverClass.writeToFiles(t);
             std::cout << t << " / " << testSolverClass.tStop() << std::endl;
