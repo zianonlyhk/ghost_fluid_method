@@ -6,7 +6,7 @@
 /*   By: Zian Huang <zianhuang00@gmail.com>           || room214n.com ||      */
 /*                                                    ##################      */
 /*   Created: 2023/01/21 10:45:26 by Zian Huang                               */
-/*   Updated: 2023/01/30 15:14:55 by Zian Huang                               */
+/*   Updated: 2023/01/31 09:51:26 by Zian Huang                               */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,6 +125,29 @@ std::vector<std::vector<std::array<double, 4>>> VecTran::musclHancockVecTranHLLC
             fluxBefore = fluxFunc.musclHancockHllcFlux_y(i_inputU_Vec[iter_y - 2][iter_x], i_inputU_Vec[iter_y - 1][iter_x], i_inputU_Vec[iter_y][iter_x], i_inputU_Vec[iter_y + 1][iter_x], i_dy, i_dt);
             toBeReturnVec[iter_y][iter_x] = diffCell(i_inputU_Vec[iter_y][iter_x], scalingCell(i_dt / i_dy, diffCell(fluxNext, fluxBefore)));
         }
+    }
+
+    return toBeReturnVec;
+}
+
+std::vector<std::vector<std::array<double, 4>>> VecTran::ghostCellBoundary(const std::vector<std::vector<std::array<double, 4>>> &i_uVec, const std::vector<std::vector<double>> &i_levelSet)
+{
+    int xVecLen = i_uVec[0].size();
+    int yVecLen = i_uVec.size();
+    std::vector<std::vector<std::array<double, 4>>> toBeReturnVec;
+    toBeReturnVec.resize(yVecLen);
+    for (int i = 0; i < yVecLen; ++i)
+    {
+        toBeReturnVec[i].resize(xVecLen);
+    }
+
+    toBeReturnVec = i_uVec;
+
+    std::vector<std::array<int, 2>> boundaryCoorArr = getBoundaryCellCoor(i_levelSet);
+
+    for (int i = 0; i < sizeof(boundaryCoorArr) / sizeof(std::array<int, 2>); ++i)
+    {
+        toBeReturnVec[boundaryCoorArr[i][1]][boundaryCoorArr[i][0]] = ghostFluidUtilities.ghostCellValues(i_levelSet, i_uVec, std::array<int, 2>{boundaryCoorArr[i][0], boundaryCoorArr[i][1]});
     }
 
     return toBeReturnVec;

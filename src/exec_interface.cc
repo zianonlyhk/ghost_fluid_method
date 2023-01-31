@@ -6,7 +6,7 @@
 /*   By: Zian Huang <zianhuang00@gmail.com>           || room214n.com ||      */
 /*                                                    ##################      */
 /*   Created: 2023/01/21 10:44:41 by Zian Huang                               */
-/*   Updated: 2023/01/30 16:14:01 by Zian Huang                               */
+/*   Updated: 2023/01/31 10:20:29 by Zian Huang                               */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,9 +125,9 @@ int main()
 
     testSolverClass.initiateDataLogging();
 
-    // DEBUG
-    printLevelSet(testSolverClass.levelSet());
-    testSolverClass.printBoundaryCoor();
+    // // DEBUG
+    // printLevelSet(testSolverClass.levelSet());
+    // testSolverClass.printBoundaryCoor();
 
     double t = 0.0;
     int numIter = 0;
@@ -140,6 +140,8 @@ int main()
 
         t += testSolverClass.dt();
 
+        testSolverClass.updateGhostCellBoundary();
+
         // // DEBUG
         // printDomainDensity(testSolverClass.uVec());
 
@@ -148,7 +150,7 @@ int main()
         testSolverClass.mhHllcSweepY();
         testSolverClass.updateBoundaryTrans();
 
-        if (numIter % 3 == 0)
+        if (numIter % 1 == 0)
         {
             testSolverClass.writeToFiles(t);
             std::cout << t << " / " << testSolverClass.tStop() << std::endl;

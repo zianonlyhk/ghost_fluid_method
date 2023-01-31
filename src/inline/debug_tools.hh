@@ -6,7 +6,7 @@
 /*   By: Zian Huang <zianhuang00@gmail.com>           || room214n.com ||      */
 /*                                                    ##################      */
 /*   Created: 2023/01/24 10:58:05 by Zian Huang                               */
-/*   Updated: 2023/01/30 15:13:48 by Zian Huang                               */
+/*   Updated: 2023/01/31 10:20:17 by Zian Huang                               */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,11 +26,39 @@ inline void printDomainDensity(std::vector<std::vector<std::array<double, 4>>> i
     int xVecLen = i_compDomain[0].size();
     int yVecLen = i_compDomain.size();
 
-    for (int iter_y = 2; iter_y < yVecLen - 2; ++iter_y)
+    for (int iter_y = 0; iter_y < yVecLen; ++iter_y)
     {
-        for (int iter_x = 2; iter_x < xVecLen - 2; ++iter_x)
+        for (int iter_x = 0; iter_x < xVecLen; ++iter_x)
         {
             std::cout << i_compDomain[iter_y][iter_x][0] << ' ';
+        }
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;
+}
+
+inline void printDomainMomentumY(std::vector<std::vector<std::array<double, 4>>> i_compDomain)
+{
+
+    std::cout.precision(2);
+    std::cout << std::fixed;
+
+    int xVecLen = i_compDomain[0].size();
+    int yVecLen = i_compDomain.size();
+
+    for (int iter_y = 0; iter_y < yVecLen; ++iter_y)
+    {
+        for (int iter_x = 0; iter_x < xVecLen; ++iter_x)
+        {
+
+            if (i_compDomain[iter_y][iter_x][2] < 0)
+            {
+                std::cout << i_compDomain[iter_y][iter_x][2] << ' ';
+            }
+            else
+            {
+                std::cout << ' ' << i_compDomain[iter_y][iter_x][2] << ' ';
+            }
         }
         std::cout << std::endl;
     }

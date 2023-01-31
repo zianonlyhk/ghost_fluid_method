@@ -6,7 +6,7 @@
 /*   By: Zian Huang <zianhuang00@gmail.com>           || room214n.com ||      */
 /*                                                    ##################      */
 /*   Created: 2023/01/21 10:45:16 by Zian Huang                               */
-/*   Updated: 2023/01/30 14:54:59 by Zian Huang                               */
+/*   Updated: 2023/01/31 09:48:03 by Zian Huang                               */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ public:
     void updateDt();
 
     void updateGhostCellBoundary();
-    void solveRiemannAndPropagate();
+    void propagateGhostCell();
 
     void updateBoundaryTrans();
 

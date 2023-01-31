@@ -6,7 +6,7 @@
 /*   By: Zian Huang <zianhuang00@gmail.com>           || room214n.com ||      */
 /*                                                    ##################      */
 /*   Created: 2023/01/21 10:45:20 by Zian Huang                               */
-/*   Updated: 2023/01/30 14:45:35 by Zian Huang                               */
+/*   Updated: 2023/01/31 08:48:29 by Zian Huang                               */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,6 @@ public:
 
     // GFM transformation functions
     std::vector<std::vector<std::array<double, 4>>> ghostCellBoundary(const std::vector<std::vector<std::array<double, 4>>> &uVec, const std::vector<std::vector<double>> &levelSet);
-    std::vector<std::vector<std::array<double, 4>>> solveRiemannAtInterface(const std::vector<std::vector<std::array<double, 4>>> &uVec, const std::vector<std::vector<double>> &levelSet);
     std::vector<std::vector<std::array<double, 4>>> propagateGhostInterface(const std::vector<std::vector<std::array<double, 4>>> &uVec, const std::vector<std::vector<double>> &levelSet);
 
     std::vector<std::array<int, 2>> getBoundaryCellCoor(const std::vector<std::vector<double>> &levelSet);
