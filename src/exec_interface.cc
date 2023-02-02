@@ -6,7 +6,7 @@
 /*   By: Zian Huang <zianhuang00@gmail.com>           || room214n.com ||      */
 /*                                                    ##################      */
 /*   Created: 2023/01/21 10:44:41 by Zian Huang                               */
-/*   Updated: 2023/01/31 15:15:10 by Zian Huang                               */
+/*   Updated: 2023/02/01 14:00:23 by Zian Huang                               */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,11 +47,11 @@ void setInitialConditions(std::vector<std::vector<std::array<double, 4>>> &i_inp
 
             if (pow(currX - 1, 2) + pow(currY - 1, 2) < 0.4)
             {
-                i_inputVec[j][i] = (std::array<double, 4>){1, 0, 0, 1};
+                i_inputVec[j][i] = (std::array<double, 4>){0.125, 0.1, 0, 1};
             }
             else
             {
-                i_inputVec[j][i] = (std::array<double, 4>){0.125, 0, 0, 0.1};
+                i_inputVec[j][i] = (std::array<double, 4>){0.125, 0.1, 0, 0.1};
             }
         }
     }
@@ -125,9 +125,9 @@ int main()
 
     testSolverClass.initiateDataLogging();
 
-    // // DEBUG
-    // printLevelSet(testSolverClass.levelSet());
-    // testSolverClass.printBoundaryCoor();
+    // DEBUG
+    testSolverClass.printBoundaryCoor();
+    printLevelSet(testSolverClass.levelSet());
 
     double t = 0.0;
     int numIter = 0;
@@ -141,9 +141,12 @@ int main()
         t += testSolverClass.dt();
 
         testSolverClass.updateGhostCellBoundary();
+        testSolverClass.propagateGhostCell();
 
         // // DEBUG
+        // std::cout << "density:" << std::endl;
         // printDomainDensity(testSolverClass.uVec());
+        // std::cout << std::endl;
 
         testSolverClass.mhHllcSweepX();
         testSolverClass.updateBoundaryTrans();

@@ -6,7 +6,7 @@
 /*   By: Zian Huang <zianhuang00@gmail.com>           || room214n.com ||      */
 /*                                                    ##################      */
 /*   Created: 2023/01/24 10:58:05 by Zian Huang                               */
-/*   Updated: 2023/01/31 10:20:17 by Zian Huang                               */
+/*   Updated: 2023/02/01 15:14:01 by Zian Huang                               */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,9 +74,9 @@ inline void printLevelSet(const std::vector<std::vector<double>> &i_levelSet)
     int xVecLen = i_levelSet[0].size();
     int yVecLen = i_levelSet.size();
 
-    for (int iter_y = 2; iter_y < yVecLen - 2; ++iter_y)
+    for (int iter_y = 0; iter_y < yVecLen; ++iter_y)
     {
-        for (int iter_x = 2; iter_x < xVecLen - 2; ++iter_x)
+        for (int iter_x = 0; iter_x < xVecLen; ++iter_x)
         {
             if (i_levelSet[iter_y][iter_x] < 0)
             {

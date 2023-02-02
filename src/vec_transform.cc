@@ -6,14 +6,17 @@
 /*   By: Zian Huang <zianhuang00@gmail.com>           || room214n.com ||      */
 /*                                                    ##################      */
 /*   Created: 2023/01/21 10:45:26 by Zian Huang                               */
-/*   Updated: 2023/01/31 12:09:57 by Zian Huang                               */
+/*   Updated: 2023/02/01 16:22:08 by Zian Huang                               */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "vec_transform.hh"
 #include "inline/cell_operation.hh"
+#include "inline/debug_tools.hh"
 #include "inline/primitive_tran.hh"
 #include <iostream>
+#include <algorithm>
+#include <math.h>
 
 // Definitions #####################################################################################
 
@@ -154,7 +157,243 @@ std::vector<std::vector<std::array<double, 4>>> VecTran::ghostCellBoundary(const
     return toBeReturnVec;
 }
 
+std::vector<std::vector<std::array<double, 4>>> VecTran::propagateGhostInterface(const std::vector<std::vector<std::array<double, 4>>> &i_uVec, const std::vector<std::vector<double>> &i_levelSet, double i_dx, double i_dy)
+{
+
+    int xVecLen = i_uVec[0].size();
+    int yVecLen = i_uVec.size();
+    std::vector<std::vector<std::array<double, 4>>> toBeReturnVec;
+    toBeReturnVec.resize(yVecLen);
+    for (int i = 0; i < yVecLen; ++i)
+    {
+        toBeReturnVec[i].resize(xVecLen);
+    }
+    // potential bug here
+    toBeReturnVec = i_uVec;
+
+    // DEBUG
+    std::cout << "before propagation:" << std::endl;
+    printDomainDensity(i_uVec);
+
+    fastSweepingConstantPropagation(toBeReturnVec, i_uVec, i_levelSet, i_dx, i_dy);
+
+    // DEBUG
+    std::cout << "after propagation:" << std::endl;
+    printDomainDensity(toBeReturnVec);
+
+    return toBeReturnVec;
+}
+
 std::vector<std::array<int, 2>> VecTran::getBoundaryCellCoor(const std::vector<std::vector<double>> &i_levelSet)
 {
     return ghostFluidUtilities.ghostBoundaryCellCoor(i_levelSet);
+}
+
+void VecTran::fastSweepingConstantPropagation(std::vector<std::vector<std::array<double, 4>>> &i_toBeReturned, const std::vector<std::vector<std::array<double, 4>>> &i_uVec, const std::vector<std::vector<double>> &i_levelSet, double i_dx, double i_dy)
+{
+    int xVecLen = i_uVec[0].size();
+    int yVecLen = i_uVec.size();
+    bool insideRigidBody;
+    double maxPhi;
+    std::array<double, 4> tempArr;
+
+    // +ve x axis sweep
+    for (int j = 2; j < yVecLen - 2; ++j)
+    {
+        insideRigidBody = false;
+
+        for (int i = 2; i < xVecLen - 2; ++i)
+        {
+            // DEBUG
+            // std::cout << "at coor " << i << ", " << j << std::endl;
+
+            if (i_levelSet[j][i] <= 0 && !insideRigidBody)
+            {
+                // DEBUG
+                // std::cout << "hitting the interface at coor " << i << ", " << j << std::endl;
+
+                insideRigidBody = true;
+                maxPhi = abs(i_levelSet[j][i]);
+                continue;
+            }
+
+            if (insideRigidBody) // starting to propagate each cell
+            {
+                // only solve if the next phi is bigger so not maxed yet
+                if (abs(i_levelSet[j][i]) > maxPhi)
+                {
+                    // DEBUG
+                    std::cout << "solving at coor " << i << ", " << j << std::endl;
+
+                    maxPhi = abs(i_levelSet[j][i]);
+                    tempArr = ghostFluidUtilities.solveForConstantExtrapolation(i_levelSet, i_uVec, std::array<int, 2>{i, j}, i_dx, i_dy);
+
+                    // DEBUG
+                    std::cout << "before comparing min" << std::endl;
+                    std::cout << "tempArr = (" << tempArr[0] << ' ' << tempArr[1] << ' ' << tempArr[2] << ' ' << tempArr[3] << ')' << std::endl;
+
+                    tempArr[0] = std::min(abs(tempArr[0]), abs(i_uVec[j][i][0]));
+                    tempArr[1] = std::min(abs(tempArr[1]), abs(i_uVec[j][i][1]));
+                    tempArr[2] = std::min(abs(tempArr[2]), abs(i_uVec[j][i][2]));
+                    tempArr[3] = std::min(abs(tempArr[3]), abs(i_uVec[j][i][3]));
+
+                    // DEBUG
+                    std::cout << "after comparing min" << std::endl;
+                    std::cout << "tempArr = (" << tempArr[0] << ' ' << tempArr[1] << ' ' << tempArr[2] << ' ' << tempArr[3] << ')' << std::endl;
+
+                    std::copy(std::begin(tempArr), std::end(tempArr), std::begin(i_toBeReturned[j][i]));
+                }
+                else
+                {
+                    // DEBUG
+                    // std::cout << "just crossed the max, breaking" << std::endl;
+                    break;
+                }
+            }
+        }
+    }
+
+    // -ve x axis sweep
+    for (int j = 2; j < yVecLen - 2; ++j)
+    {
+        insideRigidBody = false;
+
+        for (int i = xVecLen - 3; i > 1; --i)
+        {
+            // DEBUG
+            // std::cout << "at coor " << i << ", " << j << std::endl;
+
+            if (i_levelSet[j][i] <= 0 && !insideRigidBody)
+            {
+                // DEBUG
+                // std::cout << "hitting the interface at coor " << i << ", " << j << std::endl;
+
+                insideRigidBody = true;
+                maxPhi = abs(i_levelSet[j][i]);
+                continue;
+            }
+
+            if (insideRigidBody) // starting to propagate each cell
+            {
+                // only solve if the next phi is bigger so not maxed yet
+                if (abs(i_levelSet[j][i]) > maxPhi)
+                {
+                    // DEBUG
+                    // std::cout << "solving at coor " << i << ", " << j << std::endl;
+
+                    maxPhi = abs(i_levelSet[j][i]);
+                    tempArr = ghostFluidUtilities.solveForConstantExtrapolation(i_levelSet, i_uVec, std::array<int, 2>{i, j}, i_dx, i_dy);
+
+                    tempArr[0] = std::min(abs(tempArr[0]), abs(i_uVec[j][i][0]));
+                    tempArr[1] = std::min(abs(tempArr[1]), abs(i_uVec[j][i][1]));
+                    tempArr[2] = std::min(abs(tempArr[2]), abs(i_uVec[j][i][2]));
+                    tempArr[3] = std::min(abs(tempArr[3]), abs(i_uVec[j][i][3]));
+
+                    std::copy(std::begin(tempArr), std::end(tempArr), std::begin(i_toBeReturned[j][i]));
+                }
+                else
+                {
+                    // DEBUG
+                    // std::cout << "just crossed the max, breaking" << std::endl;
+                    break;
+                }
+            }
+        }
+    }
+
+    // +ve y axis sweep
+    for (int i = 2; i < xVecLen - 2; ++i)
+    {
+        insideRigidBody = false;
+
+        for (int j = 2; j < yVecLen - 2; ++j)
+        {
+            // DEBUG
+            // std::cout << "at coor " << i << ", " << j << std::endl;
+
+            if (i_levelSet[j][i] <= 0 && !insideRigidBody)
+            {
+                // DEBUG
+                // std::cout << "hitting the interface at coor " << i << ", " << j << std::endl;
+
+                insideRigidBody = true;
+                maxPhi = abs(i_levelSet[j][i]);
+                continue;
+            }
+
+            if (insideRigidBody) // starting to propagate each cell
+            {
+                // only solve if the next phi is bigger so not maxed yet
+                if (abs(i_levelSet[j][i]) > maxPhi)
+                {
+                    // DEBUG
+                    // std::cout << "solving at coor " << i << ", " << j << std::endl;
+
+                    maxPhi = abs(i_levelSet[j][i]);
+                    tempArr = ghostFluidUtilities.solveForConstantExtrapolation(i_levelSet, i_uVec, std::array<int, 2>{i, j}, i_dx, i_dy);
+
+                    tempArr[0] = std::min(abs(tempArr[0]), abs(i_uVec[j][i][0]));
+                    tempArr[1] = std::min(abs(tempArr[1]), abs(i_uVec[j][i][1]));
+                    tempArr[2] = std::min(abs(tempArr[2]), abs(i_uVec[j][i][2]));
+                    tempArr[3] = std::min(abs(tempArr[3]), abs(i_uVec[j][i][3]));
+
+                    std::copy(std::begin(tempArr), std::end(tempArr), std::begin(i_toBeReturned[j][i]));
+                }
+                else
+                {
+                    // DEBUG
+                    // std::cout << "just crossed the max, breaking" << std::endl;
+                    break;
+                }
+            }
+        }
+    }
+
+    // -ve y axis sweep
+    for (int i = 2; i < xVecLen - 2; ++i)
+    {
+        insideRigidBody = false;
+
+        for (int j = yVecLen - 3; j > 1; --j)
+        {
+            // DEBUG
+            // std::cout << "at coor " << i << ", " << j << std::endl;
+
+            if (i_levelSet[j][i] <= 0 && !insideRigidBody)
+            {
+                // DEBUG
+                // std::cout << "hitting the interface at coor " << i << ", " << j << std::endl;
+
+                insideRigidBody = true;
+                maxPhi = abs(i_levelSet[j][i]);
+                continue;
+            }
+
+            if (insideRigidBody) // starting to propagate each cell
+            {
+                // only solve if the next phi is bigger so not maxed yet
+                if (abs(i_levelSet[j][i]) > maxPhi)
+                {
+                    // DEBUG
+                    // std::cout << "solving at coor " << i << ", " << j << std::endl;
+
+                    maxPhi = abs(i_levelSet[j][i]);
+                    tempArr = ghostFluidUtilities.solveForConstantExtrapolation(i_levelSet, i_uVec, std::array<int, 2>{i, j}, i_dx, i_dy);
+
+                    tempArr[0] = std::min(abs(tempArr[0]), abs(i_uVec[j][i][0]));
+                    tempArr[1] = std::min(abs(tempArr[1]), abs(i_uVec[j][i][1]));
+                    tempArr[2] = std::min(abs(tempArr[2]), abs(i_uVec[j][i][2]));
+                    tempArr[3] = std::min(abs(tempArr[3]), abs(i_uVec[j][i][3]));
+
+                    std::copy(std::begin(tempArr), std::end(tempArr), std::begin(i_toBeReturned[j][i]));
+                }
+                else
+                {
+                    // DEBUG
+                    // std::cout << "just crossed the max, breaking" << std::endl;
+                    break;
+                }
+            }
+        }
+    }
 }
