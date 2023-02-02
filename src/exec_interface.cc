@@ -5,8 +5,7 @@
 /*                                                    ##################      */
 /*   By: Zian Huang <zianhuang00@gmail.com>           || room214n.com ||      */
 /*                                                    ##################      */
-/*   Created: 2023/01/21 10:44:41 by Zian Huang                               */
-/*   Updated: 2023/02/01 14:00:23 by Zian Huang                               */
+/*   Created: 2023/02/02 14:54:13 by Zian Huang                               */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +33,7 @@ void setInitialConditions(std::vector<std::vector<std::array<double, 4>>> &i_inp
             currX = i_x0 + (i - 2) * dx;
             currY = i_y0 + (j - 2) * dy;
 
-            i_levelSetFunc[j][i] = -(0.4 - (pow(currX - 1, 2) + pow(currY - 1, 2)));
+            i_levelSetFunc[j][i] = -(0.1 - pow((pow(currX - 0.5, 2) + pow(currY - 0.5, 2)), 0.5));
         }
     }
 
@@ -45,13 +44,13 @@ void setInitialConditions(std::vector<std::vector<std::array<double, 4>>> &i_inp
             currX = i_x0 + (i - 2) * dx;
             currY = i_y0 + (j - 2) * dy;
 
-            if (pow(currX - 1, 2) + pow(currY - 1, 2) < 0.4)
+            if (currX < 0.2)
             {
-                i_inputVec[j][i] = (std::array<double, 4>){0.125, 0.1, 0, 1};
+                i_inputVec[j][i] = (std::array<double, 4>){1.3764, 0.394, 0.0, 1.5698};
             }
             else
             {
-                i_inputVec[j][i] = (std::array<double, 4>){0.125, 0.1, 0, 0.1};
+                i_inputVec[j][i] = (std::array<double, 4>){1, 0.0, 0.0, 1};
             }
         }
     }
@@ -95,11 +94,11 @@ int main()
     nCells_x = 20;
     nCells_y = 20;
     x0 = 0.0;
-    x1 = 2.0;
+    x1 = 1.0;
     y0 = 0.0;
-    y1 = 2.0;
-    c = 0.95;
-    tStop = 0.25;
+    y1 = 1.0;
+    c = 0.9;
+    tStop = 0.4;
 
     std::vector<std::vector<std::array<double, 4>>> compDomain;
     std::vector<std::vector<double>> levelSetCompDomain;
@@ -141,6 +140,7 @@ int main()
         t += testSolverClass.dt();
 
         testSolverClass.updateGhostCellBoundary();
+        // testSolverClass.cleanupGhostRegion();
         testSolverClass.propagateGhostCell();
 
         // // DEBUG
@@ -149,11 +149,13 @@ int main()
         // std::cout << std::endl;
 
         testSolverClass.mhHllcSweepX();
+        // testSolverClass.slicSweepX();
         testSolverClass.updateBoundaryTrans();
         testSolverClass.mhHllcSweepY();
+        // testSolverClass.slicSweepY();
         testSolverClass.updateBoundaryTrans();
 
-        if (numIter % 2 == 0)
+        if (numIter % 1 == 0)
         {
             testSolverClass.writeToFiles(t);
             std::cout << t << " / " << testSolverClass.tStop() << std::endl;

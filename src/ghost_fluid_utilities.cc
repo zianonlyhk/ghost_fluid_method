@@ -5,8 +5,7 @@
 /*                                                    ##################      */
 /*   By: Zian Huang <zianhuang00@gmail.com>           || room214n.com ||      */
 /*                                                    ##################      */
-/*   Created: 2023/01/24 12:32:28 by Zian Huang                               */
-/*   Updated: 2023/02/02 02:02:59 by Zian Huang                               */
+/*   Created: 2023/02/02 14:53:49 by Zian Huang                               */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,26 +159,26 @@ std::array<double, 4> GhostFluidUtilities::solveForConstantExtrapolation(const s
     std::array<double, 2> normalVec = normalUnitVector(i_levelSet, i_coor[0], i_coor[1], i_dx, i_dy);
 
     // DEBUG
-    std::cout << "normal Vec at (" << i_coor[0] << ", " << i_coor[1] << ") is (" << normalVec[0] << ", " << normalVec[1] << ")" << std::endl;
-
-    // double upperDiff = abs(i_levelSet[i_coor[1] + 1][i_coor[0]] - i_levelSet[i_coor[1]][i_coor[0]]);
-    // double lowerDiff = abs(i_levelSet[i_coor[1]][i_coor[0]] - i_levelSet[i_coor[1] - 1][i_coor[0]]);
-    // double rightDiff = abs(i_levelSet[i_coor[1]][i_coor[0] + 1] - i_levelSet[i_coor[1]][i_coor[0]]);
-    // double leftDiff = abs(i_levelSet[i_coor[1]][i_coor[0]] - i_levelSet[i_coor[1] - 1][i_coor[0]]);
+    // double upDensity = i_compDomain[i_coor[1] + 1][i_coor[0]][0];
+    // double downDensity = i_compDomain[i_coor[1] - 1][i_coor[0]][0];
+    // double leftDensity = i_compDomain[i_coor[1]][i_coor[0] - 1][0];
+    // double rightDensity = i_compDomain[i_coor[1]][i_coor[0] + 1][0];
+    // std::cout << "neighbour cells: " << upDensity << ' ' << downDensity << ' ' << leftDensity << ' ' << rightDensity << std::endl;
+    // std::cout << "normal Vec at (" << i_coor[0] << ", " << i_coor[1] << ") is (" << normalVec[0] << ", " << normalVec[1] << ")" << std::endl;
 
     std::array<double, 4> referenceCell_x;
     std::array<double, 4> referenceCell_y;
 
     // DEBUG
-    if (i_coor[0] == 11 && i_coor[1] == 13)
-    {
-        std::cout << "at coor (" << i_coor[0] << ", " << i_coor[1] << ')' << std::endl;
-        double upDensity = i_compDomain[i_coor[1] + 1][i_coor[0]][0];
-        double downDensity = i_compDomain[i_coor[1] - 1][i_coor[0]][0];
-        double leftDensity = i_compDomain[i_coor[1]][i_coor[0] - 1][0];
-        double rightDensity = i_compDomain[i_coor[1]][i_coor[0] + 1][0];
-        std::cout << "warning: " << upDensity << ' ' << downDensity << ' ' << leftDensity << ' ' << rightDensity << std::endl;
-    }
+    // if (i_coor[0] == 11 && i_coor[1] == 13)
+    // {
+    //     std::cout << "at coor (" << i_coor[0] << ", " << i_coor[1] << ')' << std::endl;
+    //     double upDensity = i_compDomain[i_coor[1] + 1][i_coor[0]][0];
+    //     double downDensity = i_compDomain[i_coor[1] - 1][i_coor[0]][0];
+    //     double leftDensity = i_compDomain[i_coor[1]][i_coor[0] - 1][0];
+    //     double rightDensity = i_compDomain[i_coor[1]][i_coor[0] + 1][0];
+    //     std::cout << "warning: " << upDensity << ' ' << downDensity << ' ' << leftDensity << ' ' << rightDensity << std::endl;
+    // }
 
     if (normalVec[0] > 0)
     {
@@ -212,18 +211,29 @@ std::array<double, 4> GhostFluidUtilities::solveForConstantExtrapolation(const s
 
 std::array<double, 2> GhostFluidUtilities::normalUnitVector(const std::vector<std::vector<double>> &i_levelSet, int i_x, int i_y, double i_dx, double i_dy)
 {
-    double leftSlope = (i_levelSet[i_y][i_x - 1] - i_levelSet[i_y][i_x - 2]) / i_dx;
-    double rightSlope = (i_levelSet[i_y][i_x + 2] - i_levelSet[i_y][i_x + 1]) / i_dx;
-    double upSlope = (i_levelSet[i_y + 2][i_x] - i_levelSet[i_y + 1][i_x]) / i_dy;
-    double downSlope = (i_levelSet[i_y - 1][i_x] - i_levelSet[i_y - 2][i_x]) / i_dy;
+    // double leftSlope = (i_levelSet[i_y][i_x - 1] - i_levelSet[i_y][i_x - 2]) / i_dx;
+    // double rightSlope = (i_levelSet[i_y][i_x + 2] - i_levelSet[i_y][i_x + 1]) / i_dx;
+    // double upSlope = (i_levelSet[i_y + 2][i_x] - i_levelSet[i_y + 1][i_x]) / i_dy;
+    // double downSlope = (i_levelSet[i_y - 1][i_x] - i_levelSet[i_y - 2][i_x]) / i_dy;
 
-    double dphidx = (rightSlope + leftSlope) / 2;
-    double dphidy = (upSlope + downSlope) / 2;
+    // double dphidx = (rightSlope + leftSlope) / 2;
+    // double dphidy = (upSlope + downSlope) / 2;
+
+    double dphidx = (i_levelSet[i_y][i_x + 1] - i_levelSet[i_y][i_x - 1]) / (2 * i_dx);
+    double dphidy = (i_levelSet[i_y + 1][i_x] - i_levelSet[i_y - 1][i_x]) / (2 * i_dy);
+
+    // DEBUG
+    // if (i_x == 12 && i_y == 12)
+    // {
+    //     std::cout << "at (12,12), we have the neighbouring slopes: " << upSlope << ' ' << downSlope << ' ' << leftSlope << ' ' << rightSlope << std::endl;
+    //     std::cout << "and dphidx, dphidy = " << dphidx << ' ' << dphidy << std::endl;
+    // }
 
     double scalingFactor = sqrt(dphidx * dphidx + dphidy * dphidy);
 
     std::array<double, 2> toBeReturn;
     toBeReturn = std::array<double, 2>{dphidx / scalingFactor, dphidy / scalingFactor};
+    // toBeReturn = std::array<double, 2>{dphidx, dphidy};
 
     return toBeReturn;
 }
@@ -240,7 +250,7 @@ std::array<double, 2> GhostFluidUtilities::probeCoor(const std::vector<std::vect
 
     assert(interfaceX + 1.5 * i_normalVector[0] > 0 && interfaceY + 1.5 * i_normalVector[1] > 0);
 
-    // // DEBUG
+    // DEBUG
     // std::cout << "at the coor (" << i_currCoor[0] << ", " << i_currCoor[1] << ')' << std::endl;
 
     return std::array<double, 2>{interfaceX + 1.5 * i_normalVector[0], interfaceY + 1.5 * i_normalVector[1]};
@@ -250,7 +260,7 @@ std::array<double, 4> GhostFluidUtilities::getBilinearlyProbedCell(const std::ve
 {
     std::array<double, 2> exactProbeCoor = probeCoor(i_levelSet, i_coor, i_dx, i_dy);
 
-    // // DEBUG
+    // DEBUG
     // std::cout << "exactProbeCoor = (" << exactProbeCoor[0] << ", " << exactProbeCoor[1] << ')' << std::endl;
 
     int lowerBound_x = std::floor(exactProbeCoor[0]);
@@ -274,7 +284,7 @@ std::array<double, 4> GhostFluidUtilities::getBilinearlyProbedCell(const std::ve
     std::array<double, 4> upper = sumCell(scalingCell(1 - del_x, nokia_1_cell), scalingCell(del_x, nokia_3_cell));
     std::array<double, 4> lower = sumCell(scalingCell(1 - del_x, nokia_7_cell), scalingCell(del_x, nokia_9_cell));
 
-    // // DEBUG
+    // DEBUG
     // std::array<double, 4> cellToBeReturned = sumCell(scalingCell(1 - del_y, lower), scalingCell(del_y, upper));
     // std::cout << "mirrorCell = (" << cellToBeReturned[0] << ", " << cellToBeReturned[1] << ", " << cellToBeReturned[2] << ", " << cellToBeReturned[3] << ')' << std::endl;
 
@@ -340,7 +350,7 @@ std::array<double, 3> GhostFluidUtilities::HLLC_1D(std::array<double, 3> i_W_L, 
 
     U_star_L = std::array<double, 3>{toroScaler_L * U_star_L[0], toroScaler_L * U_star_L[1], toroScaler_L * U_star_L[2]};
 
-    // // DEBUG
+    // DEBUG
     // std::cout << "my left state is: (" << i_W_L[0] << ", " << i_W_L[1] << ", " << i_W_L[2] << ") " << std::endl;
     // std::cout << "my right state is: (" << i_W_R[0] << ", " << i_W_R[1] << ", " << i_W_R[2] << ") " << std::endl;
     // std::cout << "my starredL state is: (" << U_star_L[0] << ", " << U_star_L[1] << ", " << U_star_L[2] << ") " << std::endl;

@@ -5,8 +5,7 @@
 /*                                                    ##################      */
 /*   By: Zian Huang <zianhuang00@gmail.com>           || room214n.com ||      */
 /*                                                    ##################      */
-/*   Created: 2023/01/21 10:45:26 by Zian Huang                               */
-/*   Updated: 2023/02/01 16:22:08 by Zian Huang                               */
+/*   Created: 2023/02/02 14:53:40 by Zian Huang                               */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -159,7 +158,6 @@ std::vector<std::vector<std::array<double, 4>>> VecTran::ghostCellBoundary(const
 
 std::vector<std::vector<std::array<double, 4>>> VecTran::propagateGhostInterface(const std::vector<std::vector<std::array<double, 4>>> &i_uVec, const std::vector<std::vector<double>> &i_levelSet, double i_dx, double i_dy)
 {
-
     int xVecLen = i_uVec[0].size();
     int yVecLen = i_uVec.size();
     std::vector<std::vector<std::array<double, 4>>> toBeReturnVec;
@@ -180,6 +178,51 @@ std::vector<std::vector<std::array<double, 4>>> VecTran::propagateGhostInterface
     // DEBUG
     std::cout << "after propagation:" << std::endl;
     printDomainDensity(toBeReturnVec);
+    std::cout << "##################################################################################################################" << std::endl;
+
+    return toBeReturnVec;
+}
+
+std::vector<std::vector<std::array<double, 4>>> VecTran::fillGhostRegionWithConstant(const std::vector<std::vector<std::array<double, 4>>> &i_uVec, const std::vector<std::vector<double>> &i_levelSet)
+{
+    int xVecLen = i_uVec[0].size();
+    int yVecLen = i_uVec.size();
+    std::vector<std::vector<std::array<double, 4>>> toBeReturnVec;
+    toBeReturnVec.resize(yVecLen);
+    for (int i = 0; i < yVecLen; ++i)
+    {
+        toBeReturnVec[i].resize(xVecLen);
+    }
+    // potential bug here
+    toBeReturnVec = i_uVec;
+
+    std::vector<std::array<int, 2>> boundaryCoorArr = getBoundaryCellCoor(i_levelSet);
+
+    bool dummie_bool;
+    for (int iter_y = 2; iter_y < yVecLen - 2; ++iter_y)
+    {
+        for (int iter_x = 2; iter_x < xVecLen - 2; ++iter_x)
+        {
+            if (i_levelSet[iter_y][iter_x] < 0)
+            {
+                dummie_bool = false;
+                for (int pt = 0; pt < boundaryCoorArr.size(); ++pt)
+                {
+                    if (iter_x == boundaryCoorArr[pt][0] && iter_y == boundaryCoorArr[pt][1])
+                    {
+                        dummie_bool = true;
+                    }
+                }
+                if (!dummie_bool)
+                {
+                    toBeReturnVec[iter_y][iter_x][0] = 99999.9;
+                    toBeReturnVec[iter_y][iter_x][1] = 99999.9;
+                    toBeReturnVec[iter_y][iter_x][2] = 99999.9;
+                    toBeReturnVec[iter_y][iter_x][3] = 99999.9;
+                }
+            }
+        }
+    }
 
     return toBeReturnVec;
 }
@@ -223,14 +266,14 @@ void VecTran::fastSweepingConstantPropagation(std::vector<std::vector<std::array
                 if (abs(i_levelSet[j][i]) > maxPhi)
                 {
                     // DEBUG
-                    std::cout << "solving at coor " << i << ", " << j << std::endl;
+                    // std::cout << "solving at coor " << i << ", " << j << std::endl;
 
                     maxPhi = abs(i_levelSet[j][i]);
                     tempArr = ghostFluidUtilities.solveForConstantExtrapolation(i_levelSet, i_uVec, std::array<int, 2>{i, j}, i_dx, i_dy);
 
                     // DEBUG
-                    std::cout << "before comparing min" << std::endl;
-                    std::cout << "tempArr = (" << tempArr[0] << ' ' << tempArr[1] << ' ' << tempArr[2] << ' ' << tempArr[3] << ')' << std::endl;
+                    // std::cout << "before comparing min" << std::endl;
+                    // std::cout << "tempArr = (" << tempArr[0] << ' ' << tempArr[1] << ' ' << tempArr[2] << ' ' << tempArr[3] << ')' << std::endl;
 
                     tempArr[0] = std::min(abs(tempArr[0]), abs(i_uVec[j][i][0]));
                     tempArr[1] = std::min(abs(tempArr[1]), abs(i_uVec[j][i][1]));
@@ -238,8 +281,8 @@ void VecTran::fastSweepingConstantPropagation(std::vector<std::vector<std::array
                     tempArr[3] = std::min(abs(tempArr[3]), abs(i_uVec[j][i][3]));
 
                     // DEBUG
-                    std::cout << "after comparing min" << std::endl;
-                    std::cout << "tempArr = (" << tempArr[0] << ' ' << tempArr[1] << ' ' << tempArr[2] << ' ' << tempArr[3] << ')' << std::endl;
+                    // std::cout << "after comparing min" << std::endl;
+                    // std::cout << "tempArr = (" << tempArr[0] << ' ' << tempArr[1] << ' ' << tempArr[2] << ' ' << tempArr[3] << ')' << std::endl;
 
                     std::copy(std::begin(tempArr), std::end(tempArr), std::begin(i_toBeReturned[j][i]));
                 }
