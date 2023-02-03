@@ -25,9 +25,9 @@ inline void printDomainDensity(std::vector<std::vector<std::array<double, 4>>> i
     int xVecLen = i_compDomain[0].size();
     int yVecLen = i_compDomain.size();
 
-    for (int iter_y = 0; iter_y < yVecLen; ++iter_y)
+    for (int iter_y = 2; iter_y < yVecLen - 2; ++iter_y)
     {
-        for (int iter_x = 0; iter_x < xVecLen; ++iter_x)
+        for (int iter_x = 2; iter_x < xVecLen - 2; ++iter_x)
         {
             std::cout << i_compDomain[iter_y][iter_x][0] << ' ';
         }
@@ -73,9 +73,9 @@ inline void printLevelSet(const std::vector<std::vector<double>> &i_levelSet)
     int xVecLen = i_levelSet[0].size();
     int yVecLen = i_levelSet.size();
 
-    for (int iter_y = 0; iter_y < yVecLen; ++iter_y)
+    for (int iter_y = 2; iter_y < yVecLen - 2; ++iter_y)
     {
-        for (int iter_x = 0; iter_x < xVecLen; ++iter_x)
+        for (int iter_x = 2; iter_x < xVecLen - 2; ++iter_x)
         {
             if (i_levelSet[iter_y][iter_x] < 0)
             {

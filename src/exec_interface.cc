@@ -33,7 +33,7 @@ void setInitialConditions(std::vector<std::vector<std::array<double, 4>>> &i_inp
             currX = i_x0 + (i - 2) * dx;
             currY = i_y0 + (j - 2) * dy;
 
-            i_levelSetFunc[j][i] = -(0.1 - pow((pow(currX - 0.5, 2) + pow(currY - 0.5, 2)), 0.5));
+            i_levelSetFunc[j][i] = -(0.28 - pow((pow(currX - 0.5, 2) + pow(currY - 0.5, 2)), 0.5));
         }
     }
 
@@ -143,17 +143,28 @@ int main()
         // testSolverClass.cleanupGhostRegion();
         testSolverClass.propagateGhostCell();
 
-        // // DEBUG
-        // std::cout << "density:" << std::endl;
-        // printDomainDensity(testSolverClass.uVec());
-        // std::cout << std::endl;
+        // DEBUG
+        std::cout << "density before MH sweep x:" << std::endl;
+        printDomainDensity(testSolverClass.uVec());
+        std::cout << std::endl;
 
         testSolverClass.mhHllcSweepX();
         // testSolverClass.slicSweepX();
         testSolverClass.updateBoundaryTrans();
+
+        // DEBUG
+        std::cout << "density after MH sweep x and before sweep y:" << std::endl;
+        printDomainDensity(testSolverClass.uVec());
+        std::cout << std::endl;
+
         testSolverClass.mhHllcSweepY();
         // testSolverClass.slicSweepY();
         testSolverClass.updateBoundaryTrans();
+
+        // DEBUG
+        std::cout << "density after MH sweep y:" << std::endl;
+        printDomainDensity(testSolverClass.uVec());
+        std::cout << std::endl;
 
         if (numIter % 1 == 0)
         {

@@ -145,11 +145,15 @@ std::array<double, 4> GhostFluidUtilities::ghostCellValues(const std::vector<std
 
     std::array<double, 3> starredState = HLLC_1D(riemannLeftState, riemannRightState);
     double finalRho = starredState[0];
-    double finalVelX = -starredState[1] * normalVec[0] + tangentialComponent[0];
-    double finalVelY = -starredState[1] * normalVec[1] + tangentialComponent[1];
-    double finalP = starredState[2];
+    double finalMomentumX = -starredState[1] * normalVec[0] + tangentialComponent[0];
+    double finalMomentumY = -starredState[1] * normalVec[1] + tangentialComponent[1];
+    double finalEnergy = starredState[2];
 
-    std::array<double, 4> toBeReturned = {finalRho, finalRho * finalVelX, finalRho * finalVelY, finalP / (local_gamma - 1) + 0.5 * finalRho * (finalVelX * finalVelX + finalVelY * finalVelY)};
+    std::array<double, 4> toBeReturned = {finalRho, finalMomentumX, finalMomentumY, finalEnergy};
+
+    // DEBUG
+    // std::cout << "mirrorState is: (" << mirrorState[0] << ", " << mirrorState[1] << ", " << mirrorState[2] << ", " << mirrorState[3] << ')' << std::endl;
+    // std::cout << "toBeReturned is: (" << toBeReturned[0] << ", " << toBeReturned[1] << ", " << toBeReturned[2] << ", " << toBeReturned[3] << ')' << std::endl;
 
     return toBeReturned;
 }
@@ -170,7 +174,7 @@ std::array<double, 4> GhostFluidUtilities::solveForConstantExtrapolation(const s
     std::array<double, 4> referenceCell_y;
 
     // DEBUG
-    // if (i_coor[0] == 11 && i_coor[1] == 13)
+    // if (i_coor[0] == 9 && i_coor[1] == 15)
     // {
     //     std::cout << "at coor (" << i_coor[0] << ", " << i_coor[1] << ')' << std::endl;
     //     double upDensity = i_compDomain[i_coor[1] + 1][i_coor[0]][0];
@@ -197,9 +201,10 @@ std::array<double, 4> GhostFluidUtilities::solveForConstantExtrapolation(const s
         referenceCell_y = i_compDomain[i_coor[1] - 1][i_coor[0]];
     }
 
-    double denominator = normalVec[0] / i_dx + normalVec[1] / i_dy;
+    // double scalingConstant = normalVec[0] / i_dx + normalVec[1] / i_dy;
     std::array<double, 4> toBeReturned;
-    toBeReturned = scalingCell(1 / denominator, sumCell(scalingCell(normalVec[0] / i_dx, referenceCell_x), scalingCell(normalVec[1] / i_dy, referenceCell_y)));
+    // toBeReturned = scalingCell(1 / scalingConstant, sumCell(scalingCell(normalVec[0] / i_dx, referenceCell_x), scalingCell(normalVec[1] / i_dy, referenceCell_y)));
+    toBeReturned = sumCell(scalingCell(normalVec[0] * normalVec[0], referenceCell_x), scalingCell(normalVec[1] * normalVec[1], referenceCell_y));
 
     return toBeReturned;
 }
@@ -252,6 +257,7 @@ std::array<double, 2> GhostFluidUtilities::probeCoor(const std::vector<std::vect
 
     // DEBUG
     // std::cout << "at the coor (" << i_currCoor[0] << ", " << i_currCoor[1] << ')' << std::endl;
+    // std::cout << "it is pointed to (" << interfaceX + 1.5 * i_normalVector[0] << ", " << interfaceY + 1.5 * i_normalVector[1] << ')' << std::endl;
 
     return std::array<double, 2>{interfaceX + 1.5 * i_normalVector[0], interfaceY + 1.5 * i_normalVector[1]};
 }
@@ -285,7 +291,17 @@ std::array<double, 4> GhostFluidUtilities::getBilinearlyProbedCell(const std::ve
     std::array<double, 4> lower = sumCell(scalingCell(1 - del_x, nokia_7_cell), scalingCell(del_x, nokia_9_cell));
 
     // DEBUG
+    // std::cout << "at the coor (" << i_coor[0] << ", " << i_coor[1] << ')' << std::endl;
+    // std::cout << "it is directed to (" << exactProbeCoor[0] << ", " << exactProbeCoor[1] << ')' << std::endl;
+    // std::cout << "nokia 1 is located (" << nokia_1[0] << ", " << nokia_1[1] << ')' << std::endl;
+    // std::cout << "nokia 3 is located (" << nokia_3[0] << ", " << nokia_3[1] << ')' << std::endl;
+    // std::cout << "nokia 7 is located (" << nokia_7[0] << ", " << nokia_7[1] << ')' << std::endl;
+    // std::cout << "nokia 9 is located (" << nokia_9[0] << ", " << nokia_9[1] << ')' << std::endl;
     // std::array<double, 4> cellToBeReturned = sumCell(scalingCell(1 - del_y, lower), scalingCell(del_y, upper));
+    // std::cout << "nokia 1 is = (" << nokia_1_cell[0] << ", " << nokia_1_cell[1] << ", " << nokia_1_cell[2] << ", " << nokia_1_cell[3] << ')' << std::endl;
+    // std::cout << "nokia 3 is = (" << nokia_3_cell[0] << ", " << nokia_3_cell[1] << ", " << nokia_3_cell[2] << ", " << nokia_3_cell[3] << ')' << std::endl;
+    // std::cout << "nokia 7 is = (" << nokia_7_cell[0] << ", " << nokia_7_cell[1] << ", " << nokia_7_cell[2] << ", " << nokia_7_cell[3] << ')' << std::endl;
+    // std::cout << "nokia 9 is = (" << nokia_9_cell[0] << ", " << nokia_9_cell[1] << ", " << nokia_9_cell[2] << ", " << nokia_9_cell[3] << ')' << std::endl;
     // std::cout << "mirrorCell = (" << cellToBeReturned[0] << ", " << cellToBeReturned[1] << ", " << cellToBeReturned[2] << ", " << cellToBeReturned[3] << ')' << std::endl;
 
     return sumCell(scalingCell(1 - del_y, lower), scalingCell(del_y, upper));

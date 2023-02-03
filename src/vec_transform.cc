@@ -170,15 +170,17 @@ std::vector<std::vector<std::array<double, 4>>> VecTran::propagateGhostInterface
     toBeReturnVec = i_uVec;
 
     // DEBUG
-    std::cout << "before propagation:" << std::endl;
-    printDomainDensity(i_uVec);
+    // std::cout << "before propagation:" << std::endl;
+    // printDomainDensity(i_uVec);
 
+    fastSweepingConstantPropagation(toBeReturnVec, i_uVec, i_levelSet, i_dx, i_dy);
+    fastSweepingConstantPropagation(toBeReturnVec, i_uVec, i_levelSet, i_dx, i_dy);
     fastSweepingConstantPropagation(toBeReturnVec, i_uVec, i_levelSet, i_dx, i_dy);
 
     // DEBUG
-    std::cout << "after propagation:" << std::endl;
-    printDomainDensity(toBeReturnVec);
-    std::cout << "##################################################################################################################" << std::endl;
+    // std::cout << "after propagation:" << std::endl;
+    // printDomainDensity(toBeReturnVec);
+    // std::cout << "##################################################################################################################" << std::endl;
 
     return toBeReturnVec;
 }
@@ -241,6 +243,10 @@ void VecTran::fastSweepingConstantPropagation(std::vector<std::vector<std::array
     std::array<double, 4> tempArr;
 
     // +ve x axis sweep
+
+    // DEBUG
+    // std::cout << "starting to sweeping the +ve x direction" << std::endl;
+
     for (int j = 2; j < yVecLen - 2; ++j)
     {
         insideRigidBody = false;
@@ -274,11 +280,24 @@ void VecTran::fastSweepingConstantPropagation(std::vector<std::vector<std::array
                     // DEBUG
                     // std::cout << "before comparing min" << std::endl;
                     // std::cout << "tempArr = (" << tempArr[0] << ' ' << tempArr[1] << ' ' << tempArr[2] << ' ' << tempArr[3] << ')' << std::endl;
+                    // std::cout << "i_uVec = (" << i_uVec[j][i][0] << ' ' << i_uVec[j][i][1] << ' ' << i_uVec[j][i][2] << ' ' << i_uVec[j][i][3] << ')' << std::endl;
 
-                    tempArr[0] = std::min(abs(tempArr[0]), abs(i_uVec[j][i][0]));
-                    tempArr[1] = std::min(abs(tempArr[1]), abs(i_uVec[j][i][1]));
-                    tempArr[2] = std::min(abs(tempArr[2]), abs(i_uVec[j][i][2]));
-                    tempArr[3] = std::min(abs(tempArr[3]), abs(i_uVec[j][i][3]));
+                    if (abs(tempArr[0]) > abs(i_uVec[j][i][0]))
+                    {
+                        tempArr[0] = i_uVec[j][i][0];
+                    }
+                    if (abs(tempArr[1]) > abs(i_uVec[j][i][1]))
+                    {
+                        tempArr[1] = i_uVec[j][i][1];
+                    }
+                    if (abs(tempArr[2]) > abs(i_uVec[j][i][2]))
+                    {
+                        tempArr[2] = i_uVec[j][i][2];
+                    }
+                    if (abs(tempArr[3]) > abs(i_uVec[j][i][3]))
+                    {
+                        tempArr[3] = i_uVec[j][i][3];
+                    }
 
                     // DEBUG
                     // std::cout << "after comparing min" << std::endl;
@@ -297,6 +316,10 @@ void VecTran::fastSweepingConstantPropagation(std::vector<std::vector<std::array
     }
 
     // -ve x axis sweep
+
+    // DEBUG
+    // std::cout << "starting to sweeping the -ve x direction" << std::endl;
+
     for (int j = 2; j < yVecLen - 2; ++j)
     {
         insideRigidBody = false;
@@ -327,6 +350,11 @@ void VecTran::fastSweepingConstantPropagation(std::vector<std::vector<std::array
                     maxPhi = abs(i_levelSet[j][i]);
                     tempArr = ghostFluidUtilities.solveForConstantExtrapolation(i_levelSet, i_uVec, std::array<int, 2>{i, j}, i_dx, i_dy);
 
+                    // DEBUG
+                    // std::cout << "before comparing min" << std::endl;
+                    // std::cout << "tempArr = (" << tempArr[0] << ' ' << tempArr[1] << ' ' << tempArr[2] << ' ' << tempArr[3] << ')' << std::endl;
+                    // std::cout << "i_uVec = (" << i_uVec[j][i][0] << ' ' << i_uVec[j][i][1] << ' ' << i_uVec[j][i][2] << ' ' << i_uVec[j][i][3] << ')' << std::endl;
+
                     tempArr[0] = std::min(abs(tempArr[0]), abs(i_uVec[j][i][0]));
                     tempArr[1] = std::min(abs(tempArr[1]), abs(i_uVec[j][i][1]));
                     tempArr[2] = std::min(abs(tempArr[2]), abs(i_uVec[j][i][2]));
@@ -345,6 +373,10 @@ void VecTran::fastSweepingConstantPropagation(std::vector<std::vector<std::array
     }
 
     // +ve y axis sweep
+
+    // DEBUG
+    // std::cout << "starting to sweeping the +ve y direction" << std::endl;
+
     for (int i = 2; i < xVecLen - 2; ++i)
     {
         insideRigidBody = false;
@@ -375,6 +407,11 @@ void VecTran::fastSweepingConstantPropagation(std::vector<std::vector<std::array
                     maxPhi = abs(i_levelSet[j][i]);
                     tempArr = ghostFluidUtilities.solveForConstantExtrapolation(i_levelSet, i_uVec, std::array<int, 2>{i, j}, i_dx, i_dy);
 
+                    // DEBUG
+                    // std::cout << "before comparing min" << std::endl;
+                    // std::cout << "tempArr = (" << tempArr[0] << ' ' << tempArr[1] << ' ' << tempArr[2] << ' ' << tempArr[3] << ')' << std::endl;
+                    // std::cout << "i_uVec = (" << i_uVec[j][i][0] << ' ' << i_uVec[j][i][1] << ' ' << i_uVec[j][i][2] << ' ' << i_uVec[j][i][3] << ')' << std::endl;
+
                     tempArr[0] = std::min(abs(tempArr[0]), abs(i_uVec[j][i][0]));
                     tempArr[1] = std::min(abs(tempArr[1]), abs(i_uVec[j][i][1]));
                     tempArr[2] = std::min(abs(tempArr[2]), abs(i_uVec[j][i][2]));
@@ -393,6 +430,10 @@ void VecTran::fastSweepingConstantPropagation(std::vector<std::vector<std::array
     }
 
     // -ve y axis sweep
+
+    // DEBUG
+    // std::cout << "starting to sweeping the -ve y direction" << std::endl;
+
     for (int i = 2; i < xVecLen - 2; ++i)
     {
         insideRigidBody = false;
@@ -422,6 +463,11 @@ void VecTran::fastSweepingConstantPropagation(std::vector<std::vector<std::array
 
                     maxPhi = abs(i_levelSet[j][i]);
                     tempArr = ghostFluidUtilities.solveForConstantExtrapolation(i_levelSet, i_uVec, std::array<int, 2>{i, j}, i_dx, i_dy);
+
+                    // DEBUG
+                    // std::cout << "before comparing min" << std::endl;
+                    // std::cout << "tempArr = (" << tempArr[0] << ' ' << tempArr[1] << ' ' << tempArr[2] << ' ' << tempArr[3] << ')' << std::endl;
+                    // std::cout << "i_uVec = (" << i_uVec[j][i][0] << ' ' << i_uVec[j][i][1] << ' ' << i_uVec[j][i][2] << ' ' << i_uVec[j][i][3] << ')' << std::endl;
 
                     tempArr[0] = std::min(abs(tempArr[0]), abs(i_uVec[j][i][0]));
                     tempArr[1] = std::min(abs(tempArr[1]), abs(i_uVec[j][i][1]));
