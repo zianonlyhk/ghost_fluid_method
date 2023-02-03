@@ -44,7 +44,7 @@ void setInitialConditions(std::vector<std::vector<std::array<double, 4>>> &i_inp
             currX = i_x0 + (i - 2) * dx;
             currY = i_y0 + (j - 2) * dy;
 
-            if (currX < 0.2)
+            if (currX < 0.1)
             {
                 i_inputVec[j][i] = (std::array<double, 4>){1.3764, 0.394, 0.0, 1.5698};
             }
@@ -91,14 +91,14 @@ int main()
     double y1;
     double c;
     double tStop;
-    nCells_x = 20;
-    nCells_y = 20;
+    nCells_x = 101;
+    nCells_y = 101;
     x0 = 0.0;
     x1 = 1.0;
     y0 = 0.0;
     y1 = 1.0;
     c = 0.9;
-    tStop = 0.4;
+    tStop = 1.2;
 
     std::vector<std::vector<std::array<double, 4>>> compDomain;
     std::vector<std::vector<double>> levelSetCompDomain;
@@ -125,8 +125,8 @@ int main()
     testSolverClass.initiateDataLogging();
 
     // DEBUG
-    testSolverClass.printBoundaryCoor();
-    printLevelSet(testSolverClass.levelSet());
+    // testSolverClass.printBoundaryCoor();
+    // printLevelSet(testSolverClass.levelSet());
 
     double t = 0.0;
     int numIter = 0;
@@ -143,30 +143,20 @@ int main()
         // testSolverClass.cleanupGhostRegion();
         testSolverClass.propagateGhostCell();
 
-        // DEBUG
-        std::cout << "density before MH sweep x:" << std::endl;
-        printDomainDensity(testSolverClass.uVec());
-        std::cout << std::endl;
-
         testSolverClass.mhHllcSweepX();
         // testSolverClass.slicSweepX();
         testSolverClass.updateBoundaryTrans();
-
-        // DEBUG
-        std::cout << "density after MH sweep x and before sweep y:" << std::endl;
-        printDomainDensity(testSolverClass.uVec());
-        std::cout << std::endl;
 
         testSolverClass.mhHllcSweepY();
         // testSolverClass.slicSweepY();
         testSolverClass.updateBoundaryTrans();
 
         // DEBUG
-        std::cout << "density after MH sweep y:" << std::endl;
-        printDomainDensity(testSolverClass.uVec());
-        std::cout << std::endl;
+        // std::cout << "density after MH sweep y:" << std::endl;
+        // printDomainDensity(testSolverClass.uVec());
+        // std::cout << std::endl;
 
-        if (numIter % 1 == 0)
+        if (numIter % 3 == 0)
         {
             testSolverClass.writeToFiles(t);
             std::cout << t << " / " << testSolverClass.tStop() << std::endl;

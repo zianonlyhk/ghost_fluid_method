@@ -201,8 +201,8 @@ std::array<double, 4> GhostFluidUtilities::solveForConstantExtrapolation(const s
         referenceCell_y = i_compDomain[i_coor[1] - 1][i_coor[0]];
     }
 
-    // double scalingConstant = normalVec[0] / i_dx + normalVec[1] / i_dy;
     std::array<double, 4> toBeReturned;
+    // double scalingConstant = normalVec[0] / i_dx + normalVec[1] / i_dy;
     // toBeReturned = scalingCell(1 / scalingConstant, sumCell(scalingCell(normalVec[0] / i_dx, referenceCell_x), scalingCell(normalVec[1] / i_dy, referenceCell_y)));
     toBeReturned = sumCell(scalingCell(normalVec[0] * normalVec[0], referenceCell_x), scalingCell(normalVec[1] * normalVec[1], referenceCell_y));
 

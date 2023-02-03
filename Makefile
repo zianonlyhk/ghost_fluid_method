@@ -9,29 +9,32 @@
 #                                                                              #
 # **************************************************************************** #
 
-src_dir = src
-obj_dir = obj
-bin_dir = bin
+objects = obj/flux_func.o obj/ghost_fluid_utilities.o obj/vec_transform.o obj/gfm_2d_euler_solver.o  obj/exec_interface.o
+source_files = src/flux_func.cc src/ghost_fluid_utilities.cc src/vec_transform.cc src/gfm_2d_euler_solver.cc  src/exec_interface.cc 
+inline_source_files = src/inline/cell_operation.hh src/inline/debug_tools.hh src/inline/primitive_tran.hh 
 
-objects = $(obj_dir)/flux_func.o $(obj_dir)/gfm_2d_euler_solver.o $(obj_dir)/vec_transform.o $(obj_dir)/exec_interface.o $(obj_dir)/ghost_fluid_utilities.o
+run_simulation: $(objects)
+	g++ $(objects) -o bin/run_simulation
 
-all: flux_func.o gfm_2d_euler_solver.o vec_transform.o exec_interface.o ghost_fluid_utilities.o
-	g++ -o $(bin_dir)/gfm_2d_euler_solver $(objects)
+obj/exec_interface.o: src/exec_interface.cc $(inline_source_files)
+	g++ -c -O3 src/exec_interface.cc -o obj/exec_interface.o
 
-exec_interface.o: $(src_dir)/exec_interface.cc
-	g++ -c -O3 $(src_dir)/exec_interface.cc -o $(obj_dir)/exec_interface.o
+obj/gfm_2d_euler_solver.o: src/gfm_2d_euler_solver.cc $(inline_source_files)
+	g++ -c -O3 src/gfm_2d_euler_solver.cc -o obj/gfm_2d_euler_solver.o
 
-gfm_2d_euler_solver.o: $(src_dir)/gfm_2d_euler_solver.cc
-	g++ -c -O3 $(src_dir)/gfm_2d_euler_solver.cc -o $(obj_dir)/gfm_2d_euler_solver.o
+obj/vec_transform.o: src/vec_transform.cc $(inline_source_files)
+	g++ -c -O3 src/vec_transform.cc -o obj/vec_transform.o
 
-vec_transform.o: $(src_dir)/vec_transform.cc
-	g++ -c -O3 $(src_dir)/vec_transform.cc -o $(obj_dir)/vec_transform.o
+obj/flux_func.o: src/flux_func.cc $(inline_source_files)
+	g++ -c -O3 src/flux_func.cc -o obj/flux_func.o
 
-flux_func.o: $(src_dir)/flux_func.cc
-	g++ -c -O3 $(src_dir)/flux_func.cc -o $(obj_dir)/flux_func.o
-
-ghost_fluid_utilities.o: $(src_dir)/ghost_fluid_utilities.cc
-	g++ -c -O3 $(src_dir)/ghost_fluid_utilities.cc -o $(obj_dir)/ghost_fluid_utilities.o
+obj/ghost_fluid_utilities.o: src/ghost_fluid_utilities.cc $(inline_source_files)
+	g++ -c -O3 src/ghost_fluid_utilities.cc -o obj/ghost_fluid_utilities.o
 
 clean:
-	rm $(bin_dir)/gfm_2d_euler_solver $(objects)
+	rm bin/run_simulation $(objects)
+
+clean_data_and_log:
+	rm -r data/*.dat
+	rm -r data/gif/*
+	rm -r debug/*
