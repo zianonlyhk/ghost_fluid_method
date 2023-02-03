@@ -15,6 +15,73 @@
 #include <iostream>
 #include <math.h>
 
+void loadConfig(int &i_nCells_x,
+                int &i_nCells_y,
+                double &i_x0,
+                double &i_x1,
+                double &i_y0,
+                double &i_y1,
+                double &i_c,
+                double &i_tStop)
+{
+    std::ifstream in("./config");
+
+    if (!in.is_open())
+    {
+        std::cout << "cannot load config file" << std::endl;
+    }
+
+    std::string parameter;
+    double double_value;
+    int int_value;
+
+    while (!in.eof())
+    {
+        in >> parameter;
+        if (parameter == "nCells_x")
+        {
+            in >> int_value;
+            i_nCells_x = int_value;
+        }
+        if (parameter == "nCells_y")
+        {
+            in >> int_value;
+            i_nCells_y = int_value;
+        }
+        if (parameter == "x0")
+        {
+            in >> double_value;
+            i_x0 = double_value;
+        }
+        if (parameter == "x1")
+        {
+            in >> double_value;
+            i_x1 = double_value;
+        }
+        if (parameter == "y0")
+        {
+            in >> double_value;
+            i_y0 = double_value;
+        }
+        if (parameter == "y1")
+        {
+            in >> double_value;
+            i_y1 = double_value;
+        }
+        if (parameter == "c")
+        {
+            in >> double_value;
+            i_c = double_value;
+        }
+        if (parameter == "tStop")
+        {
+            in >> double_value;
+            i_tStop = double_value;
+        }
+    }
+    in.close();
+}
+
 void setInitialConditions(std::vector<std::vector<std::array<double, 4>>> &i_inputVec, std::vector<std::vector<double>> &i_levelSetFunc, double i_x0, double i_x1, double i_y0, double i_y1)
 {
     int nCell_y = i_inputVec.size() - 4;
@@ -91,14 +158,9 @@ int main()
     double y1;
     double c;
     double tStop;
-    nCells_x = 101;
-    nCells_y = 101;
-    x0 = 0.0;
-    x1 = 1.0;
-    y0 = 0.0;
-    y1 = 1.0;
-    c = 0.9;
-    tStop = 1.2;
+
+    loadConfig(nCells_x, nCells_y, x0, x1, y0, y1, c, tStop);
+    std::cout << nCells_x << " " << nCells_y << " " << x0 << " " << x1 << " " << y0 << " " << y1 << " " << c << " " << tStop << std::endl;
 
     std::vector<std::vector<std::array<double, 4>>> compDomain;
     std::vector<std::vector<double>> levelSetCompDomain;
@@ -155,6 +217,8 @@ int main()
         // std::cout << "density after MH sweep y:" << std::endl;
         // printDomainDensity(testSolverClass.uVec());
         // std::cout << std::endl;
+
+        // update the level set, by solving the level set equation
 
         if (numIter % 3 == 0)
         {

@@ -90,5 +90,6 @@ bin/*
 data/*
 obj/*
 doc/*
-
 debug/*
+
+config
