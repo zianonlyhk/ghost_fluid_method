@@ -184,8 +184,8 @@ void setInitialConditions(std::vector<std::vector<std::array<double, 4>>> &i_inp
             currY = i_y0 + (j - 2) * dy;
 
             // i_levelSetFunc[j][i] = singleCircleLevelSetFunc(0.2, 0.6, 0.5, currX, currY);
-            i_levelSetFunc[j][i] = singleSqaureLevelSetFunc(0.4, 0.6, 0.5, currX, currY);
-            // i_levelSetFunc[j][i] = doubleCircleLevelSetFunc(0.2, 0.2, 0.6, 0.6, 0.25, 0.75, currX, currY);
+            // i_levelSetFunc[j][i] = singleSqaureLevelSetFunc(0.4, 0.6, 0.5, currX, currY);
+            i_levelSetFunc[j][i] = doubleCircleLevelSetFunc(0.2, 0.2, 0.6, 0.6, 0.25, 0.75, currX, currY);
             // i_levelSetFunc[j][i] = doubleCircleLevelSetFunc(0.2, 0.2, 0.6, 0.6, 0.35, 0.65, currX, currY);
         }
     }

@@ -92,6 +92,7 @@ private:
     std::ofstream m_momentumX_Results;
     std::ofstream m_momentumY_Results;
     std::ofstream m_energyResults;
+    std::ofstream m_msResults;
 
     // DYNAMIC ATTRIBUTES
     double m_aMax;
@@ -99,6 +100,7 @@ private:
 
     std::vector<std::vector<std::array<double, 4>>> m_uVec;
     std::vector<std::vector<double>> m_levelSet;
+    std::vector<std::vector<double>> m_mockschlieren;
 };
 
 #endif

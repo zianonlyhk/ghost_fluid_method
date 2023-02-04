@@ -30,7 +30,24 @@ void writeToFileStream(std::ofstream &i_fstream, std::vector<std::vector<std::ar
     {
         for (int i = 2; i < nCell_x + 2; ++i)
         {
-            i_fstream << i_t << ' ' << i_y0 + (j - 2) * i_dy << ' ' << i_x0 + (i - 2) * i_dx << ' ' << i_inputVec[j][i][i_idx] << std::endl;
+            i_fstream << i_t << ' ' << i_x0 + (i - 2) * i_dx << ' ' << i_y0 + (j - 2) * i_dy << ' ' << i_inputVec[j][i][i_idx] << std::endl;
+        }
+
+        i_fstream << std::endl;
+    }
+    i_fstream << std::endl;
+}
+
+void writeToFileStream(std::ofstream &i_fstream, std::vector<std::vector<double>> const &i_mockschlieren, double i_x0, double i_dx, double i_y0, double i_dy, double i_t)
+{
+    int nCell_y = i_mockschlieren.size() - 4;
+    int nCell_x = i_mockschlieren[0].size() - 4;
+
+    for (int j = 2; j < nCell_y + 2; ++j)
+    {
+        for (int i = 2; i < nCell_x + 2; ++i)
+        {
+            i_fstream << i_t << ' ' << i_x0 + (i - 2) * i_dx << ' ' << i_y0 + (j - 2) * i_dy << ' ' << i_mockschlieren[j][i] << std::endl;
         }
 
         i_fstream << std::endl;
@@ -214,6 +231,7 @@ void GFM_2D_EulerSolver::writeToFiles(double i_time)
     writeToFileStream(m_momentumX_Results, m_uVec, m_x0, m_dx, m_y0, m_dy, i_time, 1);
     writeToFileStream(m_momentumY_Results, m_uVec, m_x0, m_dx, m_y0, m_dy, i_time, 2);
     writeToFileStream(m_energyResults, m_uVec, m_x0, m_dx, m_y0, m_dy, i_time, 3);
+    writeToFileStream(m_msResults, m_mockschlieren, m_x0, m_dx, m_y0, m_dy, i_time);
 }
 
 void GFM_2D_EulerSolver::cleanUp()
