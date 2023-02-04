@@ -281,6 +281,8 @@ int main()
 
     testSolverClass.updateBoundaryTrans();
 
+    testSolverClass.calculateMockSchliren();
+
     testSolverClass.initiateDataLogging();
 
     // DEBUG
@@ -309,6 +311,8 @@ int main()
         testSolverClass.mhHllcSweepY();
         // testSolverClass.slicSweepY();
         testSolverClass.updateBoundaryTrans();
+
+        testSolverClass.calculateMockSchliren();
 
         // DEBUG
         // std::cout << "density after MH sweep y:" << std::endl;

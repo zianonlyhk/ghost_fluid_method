@@ -174,8 +174,8 @@ std::vector<std::vector<std::array<double, 4>>> VecTran::propagateGhostInterface
     // printDomainDensity(i_uVec);
 
     fastSweepingConstantPropagation(toBeReturnVec, i_uVec, i_levelSet, i_dx, i_dy);
-    fastSweepingConstantPropagation(toBeReturnVec, i_uVec, i_levelSet, i_dx, i_dy);
-    fastSweepingConstantPropagation(toBeReturnVec, i_uVec, i_levelSet, i_dx, i_dy);
+    // fastSweepingConstantPropagation(toBeReturnVec, i_uVec, i_levelSet, i_dx, i_dy);
+    // fastSweepingConstantPropagation(toBeReturnVec, i_uVec, i_levelSet, i_dx, i_dy);
 
     // DEBUG
     // std::cout << "after propagation:" << std::endl;
@@ -227,6 +227,33 @@ std::vector<std::vector<std::array<double, 4>>> VecTran::fillGhostRegionWithCons
     }
 
     return toBeReturnVec;
+}
+
+std::vector<std::vector<double>> VecTran::mockSchlierenTrans(const std::vector<std::vector<std::array<double, 4>>> &i_uVec, double i_dx, double i_dy)
+{
+    int xVecLen = i_uVec[0].size();
+    int yVecLen = i_uVec.size();
+    std::vector<std::vector<double>> toBeReturnMsVec;
+    toBeReturnMsVec.resize(yVecLen);
+    for (int i = 0; i < yVecLen; ++i)
+    {
+        toBeReturnMsVec[i].resize(xVecLen);
+    }
+
+    double gradRho_x;
+    double gradRho_y;
+    for (int iter_y = 2; iter_y < yVecLen - 2; ++iter_y)
+    {
+        for (int iter_x = 2; iter_x < xVecLen - 2; ++iter_x)
+        {
+            gradRho_x = (i_uVec[iter_y][iter_x + 1][0] - i_uVec[iter_y][iter_x - 1][0]) / 2 / i_dx;
+            gradRho_y = (i_uVec[iter_y + 1][iter_x][0] - i_uVec[iter_y - 1][iter_x][0]) / 2 / i_dy;
+
+            toBeReturnMsVec[iter_y][iter_x] = exp((-20 * pow(gradRho_x * gradRho_x + gradRho_y * gradRho_y, 0.5)) / 1000 / i_uVec[iter_y][iter_x][0]);
+        }
+    }
+
+    return toBeReturnMsVec;
 }
 
 std::vector<std::array<int, 2>> VecTran::getBoundaryCellCoor(const std::vector<std::vector<double>> &i_levelSet)

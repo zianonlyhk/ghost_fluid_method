@@ -47,10 +47,13 @@ public:
     void slicSweepX();
     void slicSweepY();
 
+    void calculateMockSchliren();
+
     void initiateDataLogging();
     void writeToFiles(double time);
     void cleanUp();
 
+    // DEBUG
     void printBoundaryCoor();
 
     // ACCESSING PRIVATE MEMBERS

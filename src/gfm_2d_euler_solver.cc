@@ -212,17 +212,24 @@ void GFM_2D_EulerSolver::slicSweepY()
     m_uVec = vecTran.slicVecTran_y(m_uVec, m_dy, m_dt);
 }
 
+void GFM_2D_EulerSolver::calculateMockSchliren()
+{
+    m_mockschlieren = vecTran.mockSchlierenTrans(m_uVec, m_dx, m_dy);
+}
+
 void GFM_2D_EulerSolver::initiateDataLogging()
 {
     m_rhoResults.open(m_repoDir + (std::string) "data/" + m_name + (std::string) "_rhoResults.dat");
     m_momentumX_Results.open(m_repoDir + (std::string) "data/" + m_name + (std::string) "_momentumX_Results.dat");
     m_momentumY_Results.open(m_repoDir + (std::string) "data/" + m_name + (std::string) "_momentumY_Results.dat");
     m_energyResults.open(m_repoDir + (std::string) "data/" + m_name + (std::string) "_energyResults.dat");
+    m_msResults.open(m_repoDir + (std::string) "data/" + m_name + (std::string) "_msResults.dat");
 
     writeToFileStream(m_rhoResults, m_uVec, m_x0, m_dx, m_y0, m_dy, 0, 0);
     writeToFileStream(m_momentumX_Results, m_uVec, m_x0, m_dx, m_y0, m_dy, 0, 1);
     writeToFileStream(m_momentumY_Results, m_uVec, m_x0, m_dx, m_y0, m_dy, 0, 2);
     writeToFileStream(m_energyResults, m_uVec, m_x0, m_dx, m_y0, m_dy, 0, 3);
+    writeToFileStream(m_msResults, m_mockschlieren, m_x0, m_dx, m_y0, m_dy, 0);
 }
 
 void GFM_2D_EulerSolver::writeToFiles(double i_time)
@@ -240,6 +247,7 @@ void GFM_2D_EulerSolver::cleanUp()
     m_momentumX_Results.close();
     m_momentumY_Results.close();
     m_energyResults.close();
+    m_msResults.close();
 }
 
 const int GFM_2D_EulerSolver::nCell_x() { return m_nCell_x; }
