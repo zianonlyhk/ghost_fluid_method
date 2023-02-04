@@ -15,6 +15,8 @@
 #include <iostream>
 #include <math.h>
 
+#define PI 3.14159265
+
 void loadConfig(int &i_nCells_x,
                 int &i_nCells_y,
                 double &i_x0,
@@ -22,7 +24,8 @@ void loadConfig(int &i_nCells_x,
                 double &i_y0,
                 double &i_y1,
                 double &i_c,
-                double &i_tStop)
+                double &i_tStop,
+                int &i_loggingFactor)
 {
     std::ifstream in("./config");
 
@@ -78,8 +81,88 @@ void loadConfig(int &i_nCells_x,
             in >> double_value;
             i_tStop = double_value;
         }
+        if (parameter == "loggingFactor")
+        {
+            in >> int_value;
+            i_loggingFactor = int_value;
+        }
     }
     in.close();
+}
+
+double singleCircleLevelSetFunc(double i_r, double i_centre_x, double i_centre_y, double i_x, double i_y)
+{
+    return -(i_r - pow((pow(i_x - i_centre_x, 2) + pow(i_y - i_centre_y, 2)), 0.5));
+}
+
+double doubleCircleLevelSetFunc(double i_r1, double i_r2, double i_centre_x1, double i_centre_x2, double i_centre_y1, double i_centre_y2, double i_x, double i_y)
+{
+    double phi1 = -(i_r1 - pow((pow(i_x - i_centre_x1, 2) + pow(i_y - i_centre_y1, 2)), 0.5));
+    double phi2 = -(i_r2 - pow((pow(i_x - i_centre_x2, 2) + pow(i_y - i_centre_y2, 2)), 0.5));
+
+    if (abs(phi1) < abs(phi2))
+    {
+        return phi1;
+    }
+    else
+    {
+        return phi2;
+    }
+}
+
+double singleSqaureLevelSetFunc(double i_l, double i_centre_x, double i_centre_y, double i_x, double i_y)
+{
+    double relative_x_coor = i_x - i_centre_x;
+    double relative_y_coor = i_y - i_centre_y;
+
+    double phi;
+
+    if (relative_x_coor != 0.0)
+    {
+        if (relative_x_coor > 0)
+        {
+            phi = atan(relative_y_coor / relative_x_coor);
+            if (phi < PI / 4 && phi > -PI / 4) // east
+            {
+                return -(i_l / 2 - relative_x_coor);
+            }
+            else if (phi <= -PI / 4) // south
+            {
+                return -(i_l / 2 + relative_y_coor);
+            }
+            else // north
+            {
+                return -(i_l / 2 - relative_y_coor);
+            }
+        }
+        else
+        {
+            phi = atan(-relative_y_coor / relative_x_coor);
+            if (phi < PI / 4 && phi > -PI / 4) // west
+            {
+                return -(i_l / 2 + relative_x_coor);
+            }
+            else if (phi <= -PI / 4) // south
+            {
+                return -(i_l / 2 + relative_y_coor);
+            }
+            else // north
+            {
+                return -(i_l / 2 - relative_y_coor);
+            }
+        }
+    }
+    else
+    {
+        if (relative_y_coor > 0) // north
+        {
+            return -(i_l / 2 - relative_y_coor);
+        }
+        else // south
+        {
+            return -(i_l / 2 + relative_y_coor);
+        }
+    }
 }
 
 void setInitialConditions(std::vector<std::vector<std::array<double, 4>>> &i_inputVec, std::vector<std::vector<double>> &i_levelSetFunc, double i_x0, double i_x1, double i_y0, double i_y1)
@@ -100,7 +183,10 @@ void setInitialConditions(std::vector<std::vector<std::array<double, 4>>> &i_inp
             currX = i_x0 + (i - 2) * dx;
             currY = i_y0 + (j - 2) * dy;
 
-            i_levelSetFunc[j][i] = -(0.28 - pow((pow(currX - 0.5, 2) + pow(currY - 0.5, 2)), 0.5));
+            // i_levelSetFunc[j][i] = singleCircleLevelSetFunc(0.2, 0.6, 0.5, currX, currY);
+            i_levelSetFunc[j][i] = singleSqaureLevelSetFunc(0.4, 0.6, 0.5, currX, currY);
+            // i_levelSetFunc[j][i] = doubleCircleLevelSetFunc(0.2, 0.2, 0.6, 0.6, 0.25, 0.75, currX, currY);
+            // i_levelSetFunc[j][i] = doubleCircleLevelSetFunc(0.2, 0.2, 0.6, 0.6, 0.35, 0.65, currX, currY);
         }
     }
 
@@ -111,7 +197,7 @@ void setInitialConditions(std::vector<std::vector<std::array<double, 4>>> &i_inp
             currX = i_x0 + (i - 2) * dx;
             currY = i_y0 + (j - 2) * dy;
 
-            if (currX < 0.1)
+            if (currX <= 0.15)
             {
                 i_inputVec[j][i] = (std::array<double, 4>){1.3764, 0.394, 0.0, 1.5698};
             }
@@ -159,8 +245,19 @@ int main()
     double c;
     double tStop;
 
-    loadConfig(nCells_x, nCells_y, x0, x1, y0, y1, c, tStop);
-    std::cout << nCells_x << " " << nCells_y << " " << x0 << " " << x1 << " " << y0 << " " << y1 << " " << c << " " << tStop << std::endl;
+    int loggingFactor;
+
+    loadConfig(nCells_x, nCells_y, x0, x1, y0, y1, c, tStop, loggingFactor);
+    // DEBUG
+    // std::cout << "nCells_x = " << nCells_x << "\n"
+    //           << "nCells_y = " << nCells_y << "\n"
+    //           << "x0 = " << x0 << "\n"
+    //           << "x1 = " << x1 << "\n"
+    //           << "y0 = " << y0 << "\n"
+    //           << "y1 = " << y1 << "\n"
+    //           << "c = " << c << "\n"
+    //           << "tStop = " << tStop << "\n"
+    //           << "loggingFactor = " << loggingFactor << std::endl;
 
     std::vector<std::vector<std::array<double, 4>>> compDomain;
     std::vector<std::vector<double>> levelSetCompDomain;
@@ -220,7 +317,7 @@ int main()
 
         // update the level set, by solving the level set equation
 
-        if (numIter % 3 == 0)
+        if (numIter % loggingFactor == 0)
         {
             testSolverClass.writeToFiles(t);
             std::cout << t << " / " << testSolverClass.tStop() << std::endl;
