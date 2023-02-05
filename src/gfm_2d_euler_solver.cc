@@ -163,11 +163,6 @@ void GFM_2D_EulerSolver::updateGhostCellBoundary()
     m_uVec = vecTran.ghostCellBoundary(m_uVec, m_levelSet, m_dx, m_dy);
 }
 
-void GFM_2D_EulerSolver::cleanupGhostRegion()
-{
-    m_uVec = vecTran.fillGhostRegionWithConstant(m_uVec, m_levelSet);
-}
-
 void GFM_2D_EulerSolver::propagateGhostCell()
 {
     m_uVec = vecTran.propagateGhostInterface(m_uVec, m_levelSet, m_dx, m_dy);

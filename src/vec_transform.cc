@@ -185,50 +185,6 @@ std::vector<std::vector<std::array<double, 4>>> VecTran::propagateGhostInterface
     return toBeReturnVec;
 }
 
-std::vector<std::vector<std::array<double, 4>>> VecTran::fillGhostRegionWithConstant(const std::vector<std::vector<std::array<double, 4>>> &i_uVec, const std::vector<std::vector<double>> &i_levelSet)
-{
-    int xVecLen = i_uVec[0].size();
-    int yVecLen = i_uVec.size();
-    std::vector<std::vector<std::array<double, 4>>> toBeReturnVec;
-    toBeReturnVec.resize(yVecLen);
-    for (int i = 0; i < yVecLen; ++i)
-    {
-        toBeReturnVec[i].resize(xVecLen);
-    }
-    // potential bug here
-    toBeReturnVec = i_uVec;
-
-    std::vector<std::array<int, 2>> boundaryCoorArr = getBoundaryCellCoor(i_levelSet);
-
-    bool dummie_bool;
-    for (int iter_y = 2; iter_y < yVecLen - 2; ++iter_y)
-    {
-        for (int iter_x = 2; iter_x < xVecLen - 2; ++iter_x)
-        {
-            if (i_levelSet[iter_y][iter_x] < 0)
-            {
-                dummie_bool = false;
-                for (int pt = 0; pt < boundaryCoorArr.size(); ++pt)
-                {
-                    if (iter_x == boundaryCoorArr[pt][0] && iter_y == boundaryCoorArr[pt][1])
-                    {
-                        dummie_bool = true;
-                    }
-                }
-                if (!dummie_bool)
-                {
-                    toBeReturnVec[iter_y][iter_x][0] = 99999.9;
-                    toBeReturnVec[iter_y][iter_x][1] = 99999.9;
-                    toBeReturnVec[iter_y][iter_x][2] = 99999.9;
-                    toBeReturnVec[iter_y][iter_x][3] = 99999.9;
-                }
-            }
-        }
-    }
-
-    return toBeReturnVec;
-}
-
 std::vector<std::vector<double>> VecTran::mockSchlierenTrans(const std::vector<std::vector<std::array<double, 4>>> &i_uVec, double i_dx, double i_dy)
 {
     int xVecLen = i_uVec[0].size();

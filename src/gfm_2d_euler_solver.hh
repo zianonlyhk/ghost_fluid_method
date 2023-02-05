@@ -37,7 +37,6 @@ public:
     void updateDt();
 
     void updateGhostCellBoundary();
-    void cleanupGhostRegion();
     void propagateGhostCell();
 
     void updateBoundaryTrans();
