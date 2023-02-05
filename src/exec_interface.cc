@@ -17,15 +17,7 @@
 
 #define PI 3.14159265
 
-void loadConfig(int &i_nCells_x,
-                int &i_nCells_y,
-                double &i_x0,
-                double &i_x1,
-                double &i_y0,
-                double &i_y1,
-                double &i_c,
-                double &i_tStop,
-                int &i_loggingFactor)
+void loadConfig(int &i_nCells_x, int &i_nCells_y, double &i_x0, double &i_x1, double &i_y0, double &i_y1, double &i_c, double &i_tStop, int &i_loggingFactor)
 {
     std::ifstream in("./config");
 
@@ -171,7 +163,7 @@ void setInitialConditions(std::vector<std::vector<std::array<double, 4>>> &i_inp
     int nCell_x = i_inputVec[0].size() - 4;
 
     double dx = (i_x1 - i_x0) / nCell_x;
-    double dy = (i_x1 - i_x0) / nCell_y;
+    double dy = (i_y1 - i_y0) / nCell_y;
 
     double currX;
     double currY;
@@ -263,10 +255,10 @@ int main()
     std::vector<std::vector<double>> levelSetCompDomain;
     compDomain.resize(nCells_y + 4);
     levelSetCompDomain.resize(nCells_y + 4);
-    for (int i = 0; i < nCells_y + 4; ++i)
+    for (int j = 0; j < nCells_y + 4; ++j)
     {
-        compDomain[i].resize(nCells_x + 4);
-        levelSetCompDomain[i].resize(nCells_x + 4);
+        compDomain[j].resize(nCells_x + 4);
+        levelSetCompDomain[j].resize(nCells_x + 4);
     }
 
     setInitialConditions(compDomain, levelSetCompDomain, x0, x1, y0, y1);
@@ -299,7 +291,6 @@ int main()
         testSolverClass.updateDt();
 
         t += testSolverClass.dt();
-
         testSolverClass.updateGhostCellBoundary();
         // testSolverClass.cleanupGhostRegion();
         testSolverClass.propagateGhostCell();

@@ -106,7 +106,7 @@ std::vector<std::array<int, 2>> GhostFluidUtilities::ghostBoundaryCellCoor(const
     {
         currPhi = i_levelSet[nCell_y + 1][i];
 
-        for (int j = nCell_x + 1; j > 1; --j)
+        for (int j = nCell_y + 1; j > 1; --j)
         {
             if (currPhi > 0 && i_levelSet[j][i] < 0)
             {

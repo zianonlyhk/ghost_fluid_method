@@ -7,7 +7,6 @@ set output 'gif/energyPlot.gif'
 set xyplane at 0
 set xlabel "x"
 set ylabel "y"
-set zlabel "energy(x,y)"
 stats 'test_energyResults.dat' using 4 nooutput
 set cbrange [STATS_min:STATS_max]
 do for [i=1:int(STATS_blocks)-1] {
