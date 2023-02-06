@@ -157,50 +157,6 @@ double singleSqaureLevelSetFunc(double i_l, double i_centre_x, double i_centre_y
     }
 }
 
-void setInitialConditions(std::vector<std::vector<std::array<double, 4>>> &i_inputVec, std::vector<std::vector<double>> &i_levelSetFunc, double i_x0, double i_x1, double i_y0, double i_y1)
-{
-    int nCell_y = i_inputVec.size() - 4;
-    int nCell_x = i_inputVec[0].size() - 4;
-
-    double dx = (i_x1 - i_x0) / nCell_x;
-    double dy = (i_y1 - i_y0) / nCell_y;
-
-    double currX;
-    double currY;
-
-    for (int j = 0; j < nCell_y + 4; ++j)
-    {
-        for (int i = 0; i < nCell_x + 4; ++i)
-        {
-            currX = i_x0 + (i - 2) * dx;
-            currY = i_y0 + (j - 2) * dy;
-
-            // i_levelSetFunc[j][i] = singleCircleLevelSetFunc(0.2, 0.6, 0.5, currX, currY);
-            // i_levelSetFunc[j][i] = singleSqaureLevelSetFunc(0.4, 0.6, 0.5, currX, currY);
-            i_levelSetFunc[j][i] = doubleCircleLevelSetFunc(0.2, 0.2, 0.6, 0.6, 0.25, 0.75, currX, currY);
-            // i_levelSetFunc[j][i] = doubleCircleLevelSetFunc(0.2, 0.2, 0.6, 0.6, 0.35, 0.65, currX, currY);
-        }
-    }
-
-    for (int j = 2; j < nCell_y + 2; ++j)
-    {
-        for (int i = 2; i < nCell_x + 2; ++i)
-        {
-            currX = i_x0 + (i - 2) * dx;
-            currY = i_y0 + (j - 2) * dy;
-
-            if (currX <= 0.15)
-            {
-                i_inputVec[j][i] = (std::array<double, 4>){1.3764, 0.394, 0.0, 1.5698};
-            }
-            else
-            {
-                i_inputVec[j][i] = (std::array<double, 4>){1, 0.0, 0.0, 1};
-            }
-        }
-    }
-}
-
 void conservativeFormTransform(std::vector<std::vector<std::array<double, 4>>> &i_inputVec)
 {
     double localGamma = 1.4;
@@ -222,6 +178,50 @@ void conservativeFormTransform(std::vector<std::vector<std::array<double, 4>>> &
             i_inputVec[j][i][1] = velX_Copy * i_inputVec[j][i][0];
             i_inputVec[j][i][2] = velY_Copy * i_inputVec[j][i][0];
             i_inputVec[j][i][3] = pressureCopy / (localGamma - 1) + 0.5 * i_inputVec[j][i][0] * (velX_Copy * velX_Copy + velY_Copy * velY_Copy);
+        }
+    }
+}
+
+void setInitialConditions(std::vector<std::vector<std::array<double, 4>>> &i_inputVec, std::vector<std::vector<double>> &i_levelSetFunc, double i_x0, double i_x1, double i_y0, double i_y1)
+{
+    int nCell_y = i_inputVec.size() - 4;
+    int nCell_x = i_inputVec[0].size() - 4;
+
+    double dx = (i_x1 - i_x0) / nCell_x;
+    double dy = (i_y1 - i_y0) / nCell_y;
+
+    double currX;
+    double currY;
+
+    for (int j = 0; j < nCell_y + 4; ++j)
+    {
+        for (int i = 0; i < nCell_x + 4; ++i)
+        {
+            currX = i_x0 + (i - 2) * dx;
+            currY = i_y0 + (j - 2) * dy;
+
+            i_levelSetFunc[j][i] = singleCircleLevelSetFunc(0.2, 0.6, 0.5, currX, currY);
+            // i_levelSetFunc[j][i] = singleSqaureLevelSetFunc(0.4, 0.6, 0.5, currX, currY);
+            // i_levelSetFunc[j][i] = doubleCircleLevelSetFunc(0.2, 0.2, 0.6, 0.6, 0.25, 0.75, currX, currY);
+            // i_levelSetFunc[j][i] = doubleCircleLevelSetFunc(0.2, 0.2, 0.6, 0.6, 0.35, 0.65, currX, currY);
+        }
+    }
+
+    for (int j = 2; j < nCell_y + 2; ++j)
+    {
+        for (int i = 2; i < nCell_x + 2; ++i)
+        {
+            currX = i_x0 + (i - 2) * dx;
+            currY = i_y0 + (j - 2) * dy;
+
+            if (currX <= 0.2)
+            {
+                i_inputVec[j][i] = (std::array<double, 4>){1.3764, 0.394, 0.0, 1.5698};
+            }
+            else
+            {
+                i_inputVec[j][i] = (std::array<double, 4>){1, 0.0, 0.0, 1};
+            }
         }
     }
 }
@@ -291,8 +291,8 @@ int main()
         testSolverClass.updateDt();
 
         t += testSolverClass.dt();
+
         testSolverClass.updateGhostCellBoundary();
-        // testSolverClass.cleanupGhostRegion();
         testSolverClass.propagateGhostCell();
 
         testSolverClass.mhHllcSweepX();
