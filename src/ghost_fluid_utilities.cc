@@ -145,8 +145,8 @@ std::array<double, 4> GhostFluidUtilities::ghostCellValues(const std::vector<std
 
     std::array<double, 3> starredState = HLLC_1D(riemannLeftState, riemannRightState);
     double finalRho = starredState[0];
-    double finalMomentumX = -starredState[1] * normalVec[0] + tangentialComponent[0];
-    double finalMomentumY = -starredState[1] * normalVec[1] + tangentialComponent[1];
+    double finalMomentumX = starredState[1] * (-normalVec[0] + tangentialComponent[0]);
+    double finalMomentumY = starredState[1] * (-normalVec[1] + tangentialComponent[1]);
     double finalEnergy = starredState[2];
 
     std::array<double, 4> toBeReturned = {finalRho, finalMomentumX, finalMomentumY, finalEnergy};
@@ -161,6 +161,11 @@ std::array<double, 4> GhostFluidUtilities::ghostCellValues(const std::vector<std
     // DEBUG
     // std::cout << "mirrorState is: (" << mirrorState[0] << ", " << mirrorState[1] << ", " << mirrorState[2] << ", " << mirrorState[3] << ')' << std::endl;
     // std::cout << "toBeReturned is: (" << toBeReturned[0] << ", " << toBeReturned[1] << ", " << toBeReturned[2] << ", " << toBeReturned[3] << ')' << std::endl;
+    // if (i_coor[0] == 34 && i_coor[1] == 28)
+    // {
+    //     std::cout << "mirrorState is: (" << mirrorState[0] << ", " << mirrorState[1] << ", " << mirrorState[2] << ", " << mirrorState[3] << ')' << std::endl;
+    //     std::cout << "toBeReturned is: (" << toBeReturned[0] << ", " << toBeReturned[1] << ", " << toBeReturned[2] << ", " << toBeReturned[3] << ')' << std::endl;
+    // }
 
     return toBeReturned;
 }
