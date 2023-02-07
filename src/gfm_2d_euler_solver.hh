@@ -29,12 +29,15 @@ public:
     void setLevelSet(std::vector<std::vector<double>> levelSet);
     void setName(std::string name);
     void setRepoDir(std::string repoDir);
+    void setRigidBodyVel(std::array<double, 2> velArr);
 
     // NUMERICAL SCHEME TOOLBOX
     VecTran vecTran;
 
     void updateMaxA(int numIter);
     void updateDt();
+
+    void advectLevelSet();
 
     void updateGhostCellBoundary();
     void propagateGhostCell();
@@ -70,6 +73,7 @@ public:
     const double gamma();
     const double aMax();
     const double dt();
+    const std::array<double, 2> rigidBodyVel();
     const std::vector<std::vector<std::array<double, 4>>> uVec();
     const std::vector<std::vector<double>> levelSet();
 
@@ -99,6 +103,8 @@ private:
     // DYNAMIC ATTRIBUTES
     double m_aMax;
     double m_dt;
+
+    std::array<double, 2> m_rigidBodyVel;
 
     std::vector<std::vector<std::array<double, 4>>> m_uVec;
     std::vector<std::vector<double>> m_levelSet;

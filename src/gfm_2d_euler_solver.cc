@@ -114,6 +114,11 @@ void GFM_2D_EulerSolver::setRepoDir(std::string repoDir)
     m_repoDir = repoDir;
 }
 
+void GFM_2D_EulerSolver::setRigidBodyVel(std::array<double, 2> velArr)
+{
+    m_rigidBodyVel = velArr;
+}
+
 void GFM_2D_EulerSolver::updateMaxA(int i_numIter)
 {
     double localMaxA = 0.0;
@@ -156,6 +161,14 @@ void GFM_2D_EulerSolver::updateDt()
     }
 
     m_dt = m_c * smallerD / m_aMax;
+}
+
+void GFM_2D_EulerSolver::advectLevelSet()
+{
+    // DEBUG
+    // printLevelSet(vecTran.levelSetAdvectionTransform(m_levelSet, m_rigidBodyVel, m_dx, m_dy, m_dt));
+
+    m_levelSet = vecTran.levelSetAdvectionTransform(m_levelSet, m_rigidBodyVel, m_dx, m_dy, m_dt);
 }
 
 void GFM_2D_EulerSolver::updateGhostCellBoundary()
@@ -259,6 +272,7 @@ const double GFM_2D_EulerSolver::c() { return m_c; }
 const double GFM_2D_EulerSolver::gamma() { return m_gamma; }
 const double GFM_2D_EulerSolver::aMax() { return m_aMax; }
 const double GFM_2D_EulerSolver::dt() { return m_dt; }
+const std::array<double, 2> GFM_2D_EulerSolver::rigidBodyVel() { return m_rigidBodyVel; }
 const std::vector<std::vector<std::array<double, 4>>> GFM_2D_EulerSolver::uVec() { return m_uVec; }
 const std::vector<std::vector<double>> GFM_2D_EulerSolver::levelSet() { return m_levelSet; }
 

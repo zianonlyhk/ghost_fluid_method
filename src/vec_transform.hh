@@ -35,7 +35,10 @@ public:
     // mock-schlieren
     std::vector<std::vector<double>> mockSchlierenTrans(const std::vector<std::vector<std::array<double, 4>>> &uVec, double dx, double dy);
 
-    // DEBUG
+    // levelset advection
+    std::vector<std::vector<double>> levelSetAdvectionTransform(const std::vector<std::vector<double>> &levelSet, std::array<double, 2> rigidBodyVel, double dx, double dy, double dt);
+
+    // for debug purpose
     std::vector<std::array<int, 2>> getBoundaryCellCoor(const std::vector<std::vector<double>> &levelSet);
 
 private:

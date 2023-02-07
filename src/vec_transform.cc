@@ -212,6 +212,68 @@ std::vector<std::vector<double>> VecTran::mockSchlierenTrans(const std::vector<s
     return toBeReturnMsVec;
 }
 
+std::vector<std::vector<double>> VecTran::levelSetAdvectionTransform(const std::vector<std::vector<double>> &i_levelSet, std::array<double, 2> i_rigidBodyVel, double i_dx, double i_dy, double i_dt)
+{
+    int xVecLen = i_levelSet[0].size();
+    int yVecLen = i_levelSet.size();
+
+    std::vector<std::vector<double>> toBeReturnVec;
+    toBeReturnVec.resize(yVecLen);
+    for (int i = 0; i < yVecLen; ++i)
+    {
+        toBeReturnVec[i].resize(xVecLen);
+    }
+
+    toBeReturnVec = i_levelSet;
+
+    // std::cout << "currentVel = " << i_rigidBodyVel[0] << ", " << i_rigidBodyVel[1] << std::endl;
+
+    // DEBUG
+    // std::cout << "before : " << i_levelSet[15][15] << std::endl;
+
+    for (int iter_y = 2; iter_y < yVecLen - 2; ++iter_y)
+    {
+        for (int iter_x = 2; iter_x < xVecLen - 2; ++iter_x)
+        {
+            // DEBUG
+            // std::cout << "before : " << i_levelSet[iter_y][iter_x] << std::endl;
+
+            if (i_rigidBodyVel[0] > 0)
+            {
+                toBeReturnVec[iter_y][iter_x] = i_levelSet[iter_y][iter_x] - i_rigidBodyVel[0] * i_dt / i_dx * (i_levelSet[iter_y][iter_x + 1] - i_levelSet[iter_y][iter_x]);
+            }
+            else
+            {
+                toBeReturnVec[iter_y][iter_x] = i_levelSet[iter_y][iter_x] - i_rigidBodyVel[0] * i_dt / i_dy * (i_levelSet[iter_y][iter_x - 1] - i_levelSet[iter_y][iter_x]);
+            }
+
+            // DEBUG
+            // std::cout << " after : " << toBeReturnVec[iter_y][iter_x] << std::endl;
+        }
+    }
+
+    // DEBUG
+    // std::cout << " after : " << toBeReturnVec[15][15] << std::endl;
+
+    // for (int iter_y = 2; iter_y < yVecLen - 2; ++iter_y)
+    // {
+    //     for (int iter_x = 2; iter_x < xVecLen - 2; ++iter_x)
+    //     {
+
+    //         if (i_rigidBodyVel[1] > 0)
+    //         {
+    //             toBeReturnVec[iter_y][iter_x] = i_levelSet[iter_y][iter_x] - i_rigidBodyVel[1] * i_dt / i_dx * (i_levelSet[iter_y + 1][iter_x] - i_levelSet[iter_y][iter_x]);
+    //         }
+    //         else
+    //         {
+    //             toBeReturnVec[iter_y][iter_x] = i_levelSet[iter_y][iter_x] - i_rigidBodyVel[1] * i_dt / i_dx * (i_levelSet[iter_y - 1][iter_x] - i_levelSet[iter_y][iter_x]);
+    //         }
+    //     }
+    // }
+
+    return toBeReturnVec;
+}
+
 std::vector<std::array<int, 2>> VecTran::getBoundaryCellCoor(const std::vector<std::vector<double>> &i_levelSet)
 {
     return ghostFluidUtilities.ghostBoundaryCellCoor(i_levelSet);
