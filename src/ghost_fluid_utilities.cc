@@ -151,6 +151,13 @@ std::array<double, 4> GhostFluidUtilities::ghostCellValues(const std::vector<std
 
     std::array<double, 4> toBeReturned = {finalRho, finalMomentumX, finalMomentumY, finalEnergy};
 
+    // double finalRho = mirrorState[0];
+    // double finalVelX = -normalComponent[0] + tangentialComponent[0];
+    // double finalVelY = -normalComponent[1] + tangentialComponent[1];
+    // double finalMomentumX = finalVelX * finalRho;
+    // double finalMomentumY = finalVelY * finalRho;
+    // double finalEnergy = mirrorState[3] / (local_gamma - 1) + 0.5 * finalRho * (finalVelX * finalVelX + finalVelY * finalVelY);
+
     // DEBUG
     // std::cout << "mirrorState is: (" << mirrorState[0] << ", " << mirrorState[1] << ", " << mirrorState[2] << ", " << mirrorState[3] << ')' << std::endl;
     // std::cout << "toBeReturned is: (" << toBeReturned[0] << ", " << toBeReturned[1] << ", " << toBeReturned[2] << ", " << toBeReturned[3] << ')' << std::endl;
@@ -205,6 +212,17 @@ std::array<double, 4> GhostFluidUtilities::solveForConstantExtrapolation(const s
     // double scalingConstant = normalVec[0] / i_dx + normalVec[1] / i_dy;
     // toBeReturned = scalingCell(1 / scalingConstant, sumCell(scalingCell(normalVec[0] / i_dx, referenceCell_x), scalingCell(normalVec[1] / i_dy, referenceCell_y)));
     toBeReturned = sumCell(scalingCell(normalVec[0] * normalVec[0], referenceCell_x), scalingCell(normalVec[1] * normalVec[1], referenceCell_y));
+
+    // DEBUG
+    // if (i_coor[0] == 16 && i_coor[1] == 16)
+    // {
+    //     std::cout << "############" << std::endl;
+    //     std::cout << "at (16,16), the normal vector is (" << normalVec[0] << ", " << normalVec[1] << ")" << std::endl;
+    //     std::cout << "the reference cell x is " << referenceCell_x[0] << std::endl;
+    //     std::cout << "the reference cell y is " << referenceCell_y[0] << std::endl;
+    //     std::cout << "and the toBeReturned is " << toBeReturned[0] << std::endl;
+    //     std::cout << "############" << std::endl;
+    // }
 
     return toBeReturned;
 }

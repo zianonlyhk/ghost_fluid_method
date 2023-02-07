@@ -265,22 +265,22 @@ void VecTran::fastSweepingConstantPropagation(std::vector<std::vector<std::array
                     // std::cout << "tempArr = (" << tempArr[0] << ' ' << tempArr[1] << ' ' << tempArr[2] << ' ' << tempArr[3] << ')' << std::endl;
                     // std::cout << "i_uVec = (" << i_uVec[j][i][0] << ' ' << i_uVec[j][i][1] << ' ' << i_uVec[j][i][2] << ' ' << i_uVec[j][i][3] << ')' << std::endl;
 
-                    if (abs(tempArr[0]) > abs(i_uVec[j][i][0]))
-                    {
-                        tempArr[0] = i_uVec[j][i][0];
-                    }
-                    if (abs(tempArr[1]) > abs(i_uVec[j][i][1]))
-                    {
-                        tempArr[1] = i_uVec[j][i][1];
-                    }
-                    if (abs(tempArr[2]) > abs(i_uVec[j][i][2]))
-                    {
-                        tempArr[2] = i_uVec[j][i][2];
-                    }
-                    if (abs(tempArr[3]) > abs(i_uVec[j][i][3]))
-                    {
-                        tempArr[3] = i_uVec[j][i][3];
-                    }
+                    // if (abs(tempArr[0]) > abs(i_uVec[j][i][0]))
+                    // {
+                    //     tempArr[0] = i_uVec[j][i][0];
+                    // }
+                    // if (abs(tempArr[1]) > abs(i_uVec[j][i][1]))
+                    // {
+                    //     tempArr[1] = i_uVec[j][i][1];
+                    // }
+                    // if (abs(tempArr[2]) > abs(i_uVec[j][i][2]))
+                    // {
+                    //     tempArr[2] = i_uVec[j][i][2];
+                    // }
+                    // if (abs(tempArr[3]) > abs(i_uVec[j][i][3]))
+                    // {
+                    //     tempArr[3] = i_uVec[j][i][3];
+                    // }
 
                     // DEBUG
                     // std::cout << "after comparing min" << std::endl;
@@ -338,10 +338,22 @@ void VecTran::fastSweepingConstantPropagation(std::vector<std::vector<std::array
                     // std::cout << "tempArr = (" << tempArr[0] << ' ' << tempArr[1] << ' ' << tempArr[2] << ' ' << tempArr[3] << ')' << std::endl;
                     // std::cout << "i_uVec = (" << i_uVec[j][i][0] << ' ' << i_uVec[j][i][1] << ' ' << i_uVec[j][i][2] << ' ' << i_uVec[j][i][3] << ')' << std::endl;
 
-                    tempArr[0] = std::min(abs(tempArr[0]), abs(i_uVec[j][i][0]));
-                    tempArr[1] = std::min(abs(tempArr[1]), abs(i_uVec[j][i][1]));
-                    tempArr[2] = std::min(abs(tempArr[2]), abs(i_uVec[j][i][2]));
-                    tempArr[3] = std::min(abs(tempArr[3]), abs(i_uVec[j][i][3]));
+                    // if (abs(tempArr[0]) > abs(i_uVec[j][i][0]))
+                    // {
+                    //     tempArr[0] = i_uVec[j][i][0];
+                    // }
+                    // if (abs(tempArr[1]) > abs(i_uVec[j][i][1]))
+                    // {
+                    //     tempArr[1] = i_uVec[j][i][1];
+                    // }
+                    // if (abs(tempArr[2]) > abs(i_uVec[j][i][2]))
+                    // {
+                    //     tempArr[2] = i_uVec[j][i][2];
+                    // }
+                    // if (abs(tempArr[3]) > abs(i_uVec[j][i][3]))
+                    // {
+                    //     tempArr[3] = i_uVec[j][i][3];
+                    // }
 
                     std::copy(std::begin(tempArr), std::end(tempArr), std::begin(i_toBeReturned[j][i]));
                 }
@@ -395,10 +407,22 @@ void VecTran::fastSweepingConstantPropagation(std::vector<std::vector<std::array
                     // std::cout << "tempArr = (" << tempArr[0] << ' ' << tempArr[1] << ' ' << tempArr[2] << ' ' << tempArr[3] << ')' << std::endl;
                     // std::cout << "i_uVec = (" << i_uVec[j][i][0] << ' ' << i_uVec[j][i][1] << ' ' << i_uVec[j][i][2] << ' ' << i_uVec[j][i][3] << ')' << std::endl;
 
-                    tempArr[0] = std::min(abs(tempArr[0]), abs(i_uVec[j][i][0]));
-                    tempArr[1] = std::min(abs(tempArr[1]), abs(i_uVec[j][i][1]));
-                    tempArr[2] = std::min(abs(tempArr[2]), abs(i_uVec[j][i][2]));
-                    tempArr[3] = std::min(abs(tempArr[3]), abs(i_uVec[j][i][3]));
+                    // if (abs(tempArr[0]) > abs(i_uVec[j][i][0]))
+                    // {
+                    //     tempArr[0] = i_uVec[j][i][0];
+                    // }
+                    // if (abs(tempArr[1]) > abs(i_uVec[j][i][1]))
+                    // {
+                    //     tempArr[1] = i_uVec[j][i][1];
+                    // }
+                    // if (abs(tempArr[2]) > abs(i_uVec[j][i][2]))
+                    // {
+                    //     tempArr[2] = i_uVec[j][i][2];
+                    // }
+                    // if (abs(tempArr[3]) > abs(i_uVec[j][i][3]))
+                    // {
+                    //     tempArr[3] = i_uVec[j][i][3];
+                    // }
 
                     std::copy(std::begin(tempArr), std::end(tempArr), std::begin(i_toBeReturned[j][i]));
                 }
@@ -452,10 +476,22 @@ void VecTran::fastSweepingConstantPropagation(std::vector<std::vector<std::array
                     // std::cout << "tempArr = (" << tempArr[0] << ' ' << tempArr[1] << ' ' << tempArr[2] << ' ' << tempArr[3] << ')' << std::endl;
                     // std::cout << "i_uVec = (" << i_uVec[j][i][0] << ' ' << i_uVec[j][i][1] << ' ' << i_uVec[j][i][2] << ' ' << i_uVec[j][i][3] << ')' << std::endl;
 
-                    tempArr[0] = std::min(abs(tempArr[0]), abs(i_uVec[j][i][0]));
-                    tempArr[1] = std::min(abs(tempArr[1]), abs(i_uVec[j][i][1]));
-                    tempArr[2] = std::min(abs(tempArr[2]), abs(i_uVec[j][i][2]));
-                    tempArr[3] = std::min(abs(tempArr[3]), abs(i_uVec[j][i][3]));
+                    // if (abs(tempArr[0]) > abs(i_uVec[j][i][0]))
+                    // {
+                    //     tempArr[0] = i_uVec[j][i][0];
+                    // }
+                    // if (abs(tempArr[1]) > abs(i_uVec[j][i][1]))
+                    // {
+                    //     tempArr[1] = i_uVec[j][i][1];
+                    // }
+                    // if (abs(tempArr[2]) > abs(i_uVec[j][i][2]))
+                    // {
+                    //     tempArr[2] = i_uVec[j][i][2];
+                    // }
+                    // if (abs(tempArr[3]) > abs(i_uVec[j][i][3]))
+                    // {
+                    //     tempArr[3] = i_uVec[j][i][3];
+                    // }
 
                     std::copy(std::begin(tempArr), std::end(tempArr), std::begin(i_toBeReturned[j][i]));
                 }

@@ -19,12 +19,7 @@
 
 void loadConfig(int &i_nCells_x, int &i_nCells_y, double &i_x0, double &i_x1, double &i_y0, double &i_y1, double &i_c, double &i_tStop, int &i_loggingFactor)
 {
-    std::ifstream in("./config");
-
-    if (!in.is_open())
-    {
-        std::cout << "cannot load config file" << std::endl;
-    }
+    std::ifstream in("./config.txt");
 
     std::string parameter;
     double double_value;
@@ -157,6 +152,11 @@ double singleSqaureLevelSetFunc(double i_l, double i_centre_x, double i_centre_y
     }
 }
 
+double oneD_WallLevelSetFunc(double i_centre_x, double i_x, double i_y)
+{
+    return -i_x + i_centre_x;
+}
+
 void conservativeFormTransform(std::vector<std::vector<std::array<double, 4>>> &i_inputVec)
 {
     double localGamma = 1.4;
@@ -204,6 +204,7 @@ void setInitialConditions(std::vector<std::vector<std::array<double, 4>>> &i_inp
             // i_levelSetFunc[j][i] = singleSqaureLevelSetFunc(0.4, 0.6, 0.5, currX, currY);
             // i_levelSetFunc[j][i] = doubleCircleLevelSetFunc(0.2, 0.2, 0.6, 0.6, 0.25, 0.75, currX, currY);
             // i_levelSetFunc[j][i] = doubleCircleLevelSetFunc(0.2, 0.2, 0.6, 0.6, 0.35, 0.65, currX, currY);
+            // i_levelSetFunc[j][i] = oneD_WallLevelSetFunc(0.6, currX, currY)
         }
     }
 
