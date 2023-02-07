@@ -242,17 +242,6 @@ int main()
     int loggingFactor;
 
     loadConfig(nCells_x, nCells_y, x0, x1, y0, y1, c, tStop, loggingFactor);
-    // DEBUG
-    // std::cout << "nCells_x = " << nCells_x << "\n"
-    //           << "nCells_y = " << nCells_y << "\n"
-    //           << "x0 = " << x0 << "\n"
-    //           << "x1 = " << x1 << "\n"
-    //           << "y0 = " << y0 << "\n"
-    //           << "y1 = " << y1 << "\n"
-    //           << "c = " << c << "\n"
-    //           << "tStop = " << tStop << "\n"
-    //           << "loggingFactor = " << loggingFactor << std::endl;
-
     std::vector<std::vector<std::array<double, 4>>> compDomain;
     std::vector<std::vector<double>> levelSetCompDomain;
     compDomain.resize(nCells_y + 4);
@@ -289,6 +278,10 @@ int main()
     int numIter = 0;
     do
     {
+        // DEBUG
+        // printDomainDensity(testSolverClass.uVec());
+        // printLevelSet(testSolverClass.levelSet());
+
         ++numIter;
 
         testSolverClass.updateMaxA(numIter);
@@ -296,16 +289,8 @@ int main()
 
         t += testSolverClass.dt();
 
-        // DEBUG
-        // std::cout << "before propagating ghost cell:" << std::endl;
-        // printDomainDensity(testSolverClass.uVec());
-
         testSolverClass.updateGhostCellBoundary();
         testSolverClass.propagateGhostCell();
-
-        // DEBUG
-        // std::cout << "right after propagating ghost cell:" << std::endl;
-        // printDomainDensity(testSolverClass.uVec());
 
         testSolverClass.mhHllcSweepX();
         // testSolverClass.slicSweepX();
@@ -318,13 +303,6 @@ int main()
         testSolverClass.calculateMockSchliren();
 
         testSolverClass.advectLevelSet();
-
-        // DEBUG
-        // printDomainDensity(testSolverClass.uVec());
-        // std::cout << std::endl;
-        // printLevelSet(testSolverClass.levelSet());
-
-        // update the level set, by solving the level set equation
 
         if (numIter % loggingFactor == 0)
         {

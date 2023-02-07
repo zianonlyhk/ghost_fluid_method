@@ -181,6 +181,9 @@ std::vector<std::vector<std::array<double, 4>>> VecTran::ghostCellBoundary(const
 
 std::vector<std::vector<std::array<double, 4>>> VecTran::propagateGhostInterface(const std::vector<std::vector<std::array<double, 4>>> &i_uVec, const std::vector<std::vector<double>> &i_levelSet, double i_dx, double i_dy)
 {
+    // DEBUG
+    // printDomainDensity(i_uVec);
+
     int xVecLen = i_uVec[0].size();
     int yVecLen = i_uVec.size();
     std::vector<std::vector<std::array<double, 4>>> toBeReturnVec;
@@ -192,18 +195,9 @@ std::vector<std::vector<std::array<double, 4>>> VecTran::propagateGhostInterface
     // potential bug here
     toBeReturnVec = i_uVec;
 
-    // DEBUG
-    // std::cout << "before propagation:" << std::endl;
-    // printDomainDensity(i_uVec);
-
     fastSweepingConstantPropagation(toBeReturnVec, i_uVec, i_levelSet, i_dx, i_dy);
     // fastSweepingConstantPropagation(toBeReturnVec, i_uVec, i_levelSet, i_dx, i_dy);
     // fastSweepingConstantPropagation(toBeReturnVec, i_uVec, i_levelSet, i_dx, i_dy);
-
-    // DEBUG
-    // std::cout << "after propagation:" << std::endl;
-    // printDomainDensity(toBeReturnVec);
-    // std::cout << "##################################################################################################################" << std::endl;
 
     return toBeReturnVec;
 }
@@ -249,17 +243,10 @@ std::vector<std::vector<double>> VecTran::levelSetAdvectionTransform(const std::
 
     toBeReturnVec = i_levelSet;
 
-    // DEBUG
-    // std::cout << "currentVel = " << i_rigidBodyVel[0] << ", " << i_rigidBodyVel[1] << std::endl;
-    // std::cout << "before : " << i_levelSet[15][15] << std::endl;
-
     for (int iter_y = 2; iter_y < yVecLen - 2; ++iter_y)
     {
         for (int iter_x = 2; iter_x < xVecLen - 2; ++iter_x)
         {
-            // DEBUG
-            // std::cout << "before : " << i_levelSet[iter_y][iter_x] << std::endl;
-
             if (i_rigidBodyVel[0] > 0)
             {
                 toBeReturnVec[iter_y][iter_x] = i_levelSet[iter_y][iter_x] - i_rigidBodyVel[0] * i_dt / i_dx * (i_levelSet[iter_y][iter_x + 1] - i_levelSet[iter_y][iter_x]);
@@ -268,14 +255,8 @@ std::vector<std::vector<double>> VecTran::levelSetAdvectionTransform(const std::
             {
                 toBeReturnVec[iter_y][iter_x] = i_levelSet[iter_y][iter_x] - i_rigidBodyVel[0] * i_dt / i_dy * (i_levelSet[iter_y][iter_x] - i_levelSet[iter_y][iter_x - 1]);
             }
-
-            // DEBUG
-            // std::cout << " after : " << toBeReturnVec[iter_y][iter_x] << std::endl;
         }
     }
-
-    // DEBUG
-    // std::cout << " after : " << toBeReturnVec[15][15] << std::endl;
 
     std::vector<std::vector<double>> toBeReturnVecAgain;
     toBeReturnVecAgain.resize(yVecLen);
@@ -353,11 +334,6 @@ void VecTran::fastSweepingConstantPropagation(std::vector<std::vector<std::array
                     maxPhi = abs(i_levelSet[j][i]);
                     tempArr = ghostFluidUtilities.solveForConstantExtrapolation(i_levelSet, i_uVec, std::array<int, 2>{i, j}, i_dx, i_dy);
 
-                    // DEBUG
-                    // std::cout << "before comparing min" << std::endl;
-                    // std::cout << "tempArr = (" << tempArr[0] << ' ' << tempArr[1] << ' ' << tempArr[2] << ' ' << tempArr[3] << ')' << std::endl;
-                    // std::cout << "i_uVec = (" << i_uVec[j][i][0] << ' ' << i_uVec[j][i][1] << ' ' << i_uVec[j][i][2] << ' ' << i_uVec[j][i][3] << ')' << std::endl;
-
                     // if (abs(tempArr[0]) > abs(i_uVec[j][i][0]))
                     // {
                     //     tempArr[0] = i_uVec[j][i][0];
@@ -374,10 +350,6 @@ void VecTran::fastSweepingConstantPropagation(std::vector<std::vector<std::array
                     // {
                     //     tempArr[3] = i_uVec[j][i][3];
                     // }
-
-                    // DEBUG
-                    // std::cout << "after comparing min" << std::endl;
-                    // std::cout << "tempArr = (" << tempArr[0] << ' ' << tempArr[1] << ' ' << tempArr[2] << ' ' << tempArr[3] << ')' << std::endl;
 
                     std::copy(std::begin(tempArr), std::end(tempArr), std::begin(i_toBeReturned[j][i]));
                 }
@@ -426,28 +398,6 @@ void VecTran::fastSweepingConstantPropagation(std::vector<std::vector<std::array
                     maxPhi = abs(i_levelSet[j][i]);
                     tempArr = ghostFluidUtilities.solveForConstantExtrapolation(i_levelSet, i_uVec, std::array<int, 2>{i, j}, i_dx, i_dy);
 
-                    // DEBUG
-                    // std::cout << "before comparing min" << std::endl;
-                    // std::cout << "tempArr = (" << tempArr[0] << ' ' << tempArr[1] << ' ' << tempArr[2] << ' ' << tempArr[3] << ')' << std::endl;
-                    // std::cout << "i_uVec = (" << i_uVec[j][i][0] << ' ' << i_uVec[j][i][1] << ' ' << i_uVec[j][i][2] << ' ' << i_uVec[j][i][3] << ')' << std::endl;
-
-                    // if (abs(tempArr[0]) > abs(i_uVec[j][i][0]))
-                    // {
-                    //     tempArr[0] = i_uVec[j][i][0];
-                    // }
-                    // if (abs(tempArr[1]) > abs(i_uVec[j][i][1]))
-                    // {
-                    //     tempArr[1] = i_uVec[j][i][1];
-                    // }
-                    // if (abs(tempArr[2]) > abs(i_uVec[j][i][2]))
-                    // {
-                    //     tempArr[2] = i_uVec[j][i][2];
-                    // }
-                    // if (abs(tempArr[3]) > abs(i_uVec[j][i][3]))
-                    // {
-                    //     tempArr[3] = i_uVec[j][i][3];
-                    // }
-
                     std::copy(std::begin(tempArr), std::end(tempArr), std::begin(i_toBeReturned[j][i]));
                 }
                 else
@@ -495,28 +445,6 @@ void VecTran::fastSweepingConstantPropagation(std::vector<std::vector<std::array
                     maxPhi = abs(i_levelSet[j][i]);
                     tempArr = ghostFluidUtilities.solveForConstantExtrapolation(i_levelSet, i_uVec, std::array<int, 2>{i, j}, i_dx, i_dy);
 
-                    // DEBUG
-                    // std::cout << "before comparing min" << std::endl;
-                    // std::cout << "tempArr = (" << tempArr[0] << ' ' << tempArr[1] << ' ' << tempArr[2] << ' ' << tempArr[3] << ')' << std::endl;
-                    // std::cout << "i_uVec = (" << i_uVec[j][i][0] << ' ' << i_uVec[j][i][1] << ' ' << i_uVec[j][i][2] << ' ' << i_uVec[j][i][3] << ')' << std::endl;
-
-                    // if (abs(tempArr[0]) > abs(i_uVec[j][i][0]))
-                    // {
-                    //     tempArr[0] = i_uVec[j][i][0];
-                    // }
-                    // if (abs(tempArr[1]) > abs(i_uVec[j][i][1]))
-                    // {
-                    //     tempArr[1] = i_uVec[j][i][1];
-                    // }
-                    // if (abs(tempArr[2]) > abs(i_uVec[j][i][2]))
-                    // {
-                    //     tempArr[2] = i_uVec[j][i][2];
-                    // }
-                    // if (abs(tempArr[3]) > abs(i_uVec[j][i][3]))
-                    // {
-                    //     tempArr[3] = i_uVec[j][i][3];
-                    // }
-
                     std::copy(std::begin(tempArr), std::end(tempArr), std::begin(i_toBeReturned[j][i]));
                 }
                 else
@@ -563,28 +491,6 @@ void VecTran::fastSweepingConstantPropagation(std::vector<std::vector<std::array
 
                     maxPhi = abs(i_levelSet[j][i]);
                     tempArr = ghostFluidUtilities.solveForConstantExtrapolation(i_levelSet, i_uVec, std::array<int, 2>{i, j}, i_dx, i_dy);
-
-                    // DEBUG
-                    // std::cout << "before comparing min" << std::endl;
-                    // std::cout << "tempArr = (" << tempArr[0] << ' ' << tempArr[1] << ' ' << tempArr[2] << ' ' << tempArr[3] << ')' << std::endl;
-                    // std::cout << "i_uVec = (" << i_uVec[j][i][0] << ' ' << i_uVec[j][i][1] << ' ' << i_uVec[j][i][2] << ' ' << i_uVec[j][i][3] << ')' << std::endl;
-
-                    // if (abs(tempArr[0]) > abs(i_uVec[j][i][0]))
-                    // {
-                    //     tempArr[0] = i_uVec[j][i][0];
-                    // }
-                    // if (abs(tempArr[1]) > abs(i_uVec[j][i][1]))
-                    // {
-                    //     tempArr[1] = i_uVec[j][i][1];
-                    // }
-                    // if (abs(tempArr[2]) > abs(i_uVec[j][i][2]))
-                    // {
-                    //     tempArr[2] = i_uVec[j][i][2];
-                    // }
-                    // if (abs(tempArr[3]) > abs(i_uVec[j][i][3]))
-                    // {
-                    //     tempArr[3] = i_uVec[j][i][3];
-                    // }
 
                     std::copy(std::begin(tempArr), std::end(tempArr), std::begin(i_toBeReturned[j][i]));
                 }

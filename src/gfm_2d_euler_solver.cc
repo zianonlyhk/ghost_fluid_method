@@ -165,9 +165,6 @@ void GFM_2D_EulerSolver::updateDt()
 
 void GFM_2D_EulerSolver::advectLevelSet()
 {
-    // DEBUG
-    // printLevelSet(vecTran.levelSetAdvectionTransform(m_levelSet, m_rigidBodyVel, m_dx, m_dy, m_dt));
-
     m_levelSet = vecTran.levelSetAdvectionTransform(m_levelSet, m_rigidBodyVel, m_dx, m_dy, m_dt);
 }
 
