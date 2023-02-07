@@ -1,9 +1,9 @@
-nCells_x 41
-nCells_y 41
+nCells_x 101
+nCells_y 51
 x0 0.0
 x1 2.0
 y0 0.0
 y1 1.0
 c 0.999
-tStop 1.0
-loggingFactor 5
+tStop 0.8
+loggingFactor 2

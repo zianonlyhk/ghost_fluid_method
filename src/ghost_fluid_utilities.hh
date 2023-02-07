@@ -23,7 +23,7 @@ public:
     std::vector<std::array<int, 2>> ghostBoundaryCellCoor(const std::vector<std::vector<double>> &levelSet);
 
     std::array<double, 4> ghostCellValues(const std::vector<std::vector<double>> &levelSet, const std::vector<std::vector<std::array<double, 4>>> &compDomain, std::array<int, 2> coor, double dx, double dy);
-    // std::array<double, 4> ghostCellValues(const std::vector<std::vector<double>> &levelSet, const std::vector<std::vector<std::array<double, 4>>> &compDomain, std::array<int, 2> coor, std::array<double, 2> rigidBodyVel);
+    std::array<double, 4> ghostCellValues(const std::vector<std::vector<double>> &levelSet, const std::vector<std::vector<std::array<double, 4>>> &compDomain, std::array<int, 2> coor, double dx, double dy, std::array<double, 2> rigidBodyVel);
 
     std::array<double, 4> solveForConstantExtrapolation(const std::vector<std::vector<double>> &levelSet, const std::vector<std::vector<std::array<double, 4>>> &compDomain, std::array<int, 2> coor, double dx, double dy);
 

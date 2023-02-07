@@ -30,6 +30,7 @@ public:
 
     // GFM transformation functions
     std::vector<std::vector<std::array<double, 4>>> ghostCellBoundary(const std::vector<std::vector<std::array<double, 4>>> &uVec, const std::vector<std::vector<double>> &levelSet, double dx, double dy);
+    std::vector<std::vector<std::array<double, 4>>> ghostCellBoundary(const std::vector<std::vector<std::array<double, 4>>> &uVec, const std::vector<std::vector<double>> &levelSet, double dx, double dy, std::array<double, 2> rigidBodyVel);
     std::vector<std::vector<std::array<double, 4>>> propagateGhostInterface(const std::vector<std::vector<std::array<double, 4>>> &uVec, const std::vector<std::vector<double>> &levelSet, double dx, double dy);
 
     // mock-schlieren

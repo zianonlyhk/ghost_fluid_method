@@ -173,7 +173,7 @@ void GFM_2D_EulerSolver::advectLevelSet()
 
 void GFM_2D_EulerSolver::updateGhostCellBoundary()
 {
-    m_uVec = vecTran.ghostCellBoundary(m_uVec, m_levelSet, m_dx, m_dy);
+    m_uVec = vecTran.ghostCellBoundary(m_uVec, m_levelSet, m_dx, m_dy, m_rigidBodyVel);
 }
 
 void GFM_2D_EulerSolver::propagateGhostCell()
