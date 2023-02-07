@@ -168,9 +168,35 @@ void GFM_2D_EulerSolver::advectLevelSet()
     m_levelSet = vecTran.levelSetAdvectionTransform(m_levelSet, m_rigidBodyVel, m_dx, m_dy, m_dt);
 }
 
-void GFM_2D_EulerSolver::updateGhostCellBoundary()
+void GFM_2D_EulerSolver::updateLevelSetBoundaryTrans()
 {
-    m_uVec = vecTran.ghostCellBoundary(m_uVec, m_levelSet, m_dx, m_dy, m_rigidBodyVel);
+    for (int i = 2; i < m_nCell_y + 2; ++i)
+    {
+        m_levelSet[i][0] = m_levelSet[i][3];
+        m_levelSet[i][1] = m_levelSet[i][2];
+        m_levelSet[i][m_nCell_x + 3] = m_levelSet[i][m_nCell_x];
+        m_levelSet[i][m_nCell_x + 2] = m_levelSet[i][m_nCell_x + 1];
+    }
+
+    for (int i = 2; i < m_nCell_x + 2; ++i)
+    {
+        m_levelSet[0][i] = m_levelSet[3][i];
+        m_levelSet[1][i] = m_levelSet[2][i];
+        m_levelSet[m_nCell_y + 3][i] = m_levelSet[m_nCell_y][i];
+        m_levelSet[m_nCell_y + 2][i] = m_levelSet[m_nCell_y + 1][i];
+    }
+}
+
+void GFM_2D_EulerSolver::updateGhostCellBoundary(bool i_moving)
+{
+    if (i_moving)
+    {
+        m_uVec = vecTran.ghostCellBoundary(m_uVec, m_levelSet, m_dx, m_dy, m_rigidBodyVel);
+    }
+    else
+    {
+        m_uVec = vecTran.ghostCellBoundary(m_uVec, m_levelSet, m_dx, m_dy);
+    }
 }
 
 void GFM_2D_EulerSolver::propagateGhostCell()
@@ -229,12 +255,14 @@ void GFM_2D_EulerSolver::initiateDataLogging()
     m_momentumY_Results.open(m_repoDir + (std::string) "data/" + m_name + (std::string) "_momentumY_Results.dat");
     m_energyResults.open(m_repoDir + (std::string) "data/" + m_name + (std::string) "_energyResults.dat");
     m_msResults.open(m_repoDir + (std::string) "data/" + m_name + (std::string) "_msResults.dat");
+    m_levelSetResults.open(m_repoDir + (std::string) "data/" + m_name + (std::string) "_levelSetResults.dat");
 
     writeToFileStream(m_rhoResults, m_uVec, m_x0, m_dx, m_y0, m_dy, 0, 0);
     writeToFileStream(m_momentumX_Results, m_uVec, m_x0, m_dx, m_y0, m_dy, 0, 1);
     writeToFileStream(m_momentumY_Results, m_uVec, m_x0, m_dx, m_y0, m_dy, 0, 2);
     writeToFileStream(m_energyResults, m_uVec, m_x0, m_dx, m_y0, m_dy, 0, 3);
     writeToFileStream(m_msResults, m_mockschlieren, m_x0, m_dx, m_y0, m_dy, 0);
+    writeToFileStream(m_levelSetResults, m_levelSet, m_x0, m_dx, m_y0, m_dy, 0);
 }
 
 void GFM_2D_EulerSolver::writeToFiles(double i_time)
@@ -244,6 +272,7 @@ void GFM_2D_EulerSolver::writeToFiles(double i_time)
     writeToFileStream(m_momentumY_Results, m_uVec, m_x0, m_dx, m_y0, m_dy, i_time, 2);
     writeToFileStream(m_energyResults, m_uVec, m_x0, m_dx, m_y0, m_dy, i_time, 3);
     writeToFileStream(m_msResults, m_mockschlieren, m_x0, m_dx, m_y0, m_dy, i_time);
+    writeToFileStream(m_levelSetResults, m_levelSet, m_x0, m_dx, m_y0, m_dy, i_time);
 }
 
 void GFM_2D_EulerSolver::cleanUp()
@@ -253,6 +282,7 @@ void GFM_2D_EulerSolver::cleanUp()
     m_momentumY_Results.close();
     m_energyResults.close();
     m_msResults.close();
+    m_levelSetResults.close();
 }
 
 const int GFM_2D_EulerSolver::nCell_x() { return m_nCell_x; }

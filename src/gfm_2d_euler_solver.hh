@@ -38,8 +38,9 @@ public:
     void updateDt();
 
     void advectLevelSet();
+    void updateLevelSetBoundaryTrans();
 
-    void updateGhostCellBoundary();
+    void updateGhostCellBoundary(bool moving);
     void propagateGhostCell();
 
     void updateBoundaryTrans();
@@ -99,6 +100,7 @@ private:
     std::ofstream m_momentumY_Results;
     std::ofstream m_energyResults;
     std::ofstream m_msResults;
+    std::ofstream m_levelSetResults;
 
     // DYNAMIC ATTRIBUTES
     double m_aMax;

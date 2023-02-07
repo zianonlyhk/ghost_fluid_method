@@ -182,6 +182,10 @@ void conservativeFormTransform(std::vector<std::vector<std::array<double, 4>>> &
     }
 }
 
+// #############################################################################################################################################################################################
+// things up there are probably fine -----------------------------------------------------------------------------------------------------------------------------------------------------------
+// #############################################################################################################################################################################################
+
 void setInitialConditions(std::vector<std::vector<std::array<double, 4>>> &i_inputVec, std::vector<std::vector<double>> &i_levelSetFunc, double i_x0, double i_x1, double i_y0, double i_y1)
 {
     int nCell_y = i_inputVec.size() - 4;
@@ -200,7 +204,7 @@ void setInitialConditions(std::vector<std::vector<std::array<double, 4>>> &i_inp
             currX = i_x0 + (i - 2) * dx;
             currY = i_y0 + (j - 2) * dy;
 
-            i_levelSetFunc[j][i] = singleCircleLevelSetFunc(0.2, 1.5, 0.3, currX, currY);
+            i_levelSetFunc[j][i] = singleCircleLevelSetFunc(0.2, 0.6, 0.5, currX, currY);
             // i_levelSetFunc[j][i] = singleSqaureLevelSetFunc(0.4, 0.6, 0.5, currX, currY);
             // i_levelSetFunc[j][i] = doubleCircleLevelSetFunc(0.2, 0.2, 0.6, 0.6, 0.25, 0.75, currX, currY);
             // i_levelSetFunc[j][i] = doubleCircleLevelSetFunc(0.2, 0.2, 0.6, 0.6, 0.35, 0.65, currX, currY);
@@ -217,8 +221,8 @@ void setInitialConditions(std::vector<std::vector<std::array<double, 4>>> &i_inp
 
             if (currX <= 0.2)
             {
-                // i_inputVec[j][i] = (std::array<double, 4>){1.3764, 0.394, 0.0, 1.5698};
-                i_inputVec[j][i] = (std::array<double, 4>){1, 0.0, 0.0, 1};
+                i_inputVec[j][i] = (std::array<double, 4>){1.3764, 0.394, 0.0, 1.5698};
+                // i_inputVec[j][i] = (std::array<double, 4>){1, 0.0, 0.0, 1};
             }
             else
             {
@@ -262,7 +266,7 @@ int main()
     testSolverClass.setRepoDir((std::string) "/Users/zianhuang/Room214N/dev/mphil/MPhil_writtenAssignment_GFM/");
     testSolverClass.setLevelSet(levelSetCompDomain);
 
-    testSolverClass.setRigidBodyVel(std::array<double, 2>{0.5, 0.2});
+    testSolverClass.setRigidBodyVel(std::array<double, 2>{0.0, 0.0});
 
     testSolverClass.updateBoundaryTrans();
 
@@ -289,7 +293,7 @@ int main()
 
         t += testSolverClass.dt();
 
-        testSolverClass.updateGhostCellBoundary();
+        testSolverClass.updateGhostCellBoundary(false);
         testSolverClass.propagateGhostCell();
 
         testSolverClass.mhHllcSweepX();
@@ -302,7 +306,8 @@ int main()
 
         testSolverClass.calculateMockSchliren();
 
-        testSolverClass.advectLevelSet();
+        // testSolverClass.advectLevelSet();
+        // testSolverClass.updateLevelSetBoundaryTrans();
 
         if (numIter % loggingFactor == 0)
         {
