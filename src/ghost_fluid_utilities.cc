@@ -127,7 +127,8 @@ std::array<double, 4> GhostFluidUtilities::ghostCellValues(const std::vector<std
 {
     double local_gamma = 1.4;
 
-    std::array<double, 2> normalVec = normalUnitVector(i_levelSet, i_coor[0], i_coor[1], i_dx, i_dy);
+    std::array<double, 2> normalVec_ghostCell = normalUnitVector(i_levelSet, i_coor[0], i_coor[1], i_dx, i_dy);
+    std::array<double, 2> normalVec_realFluid = {normalVec_ghostCell[0], normalVec_ghostCell[1]};
     std::array<double, 4> mirrorState = getBilinearlyProbedCell(i_compDomain, i_levelSet, i_coor, i_dx, i_dy);
 
     // turn into primitive form here
@@ -135,9 +136,9 @@ std::array<double, 4> GhostFluidUtilities::ghostCellValues(const std::vector<std
     double mirrorVelY = primitiveY_Vel(mirrorState);
     double mirrorP = primitivePressure(mirrorState);
 
-    double dotProduct = -normalVec[0] * mirrorVelX - normalVec[1] * mirrorVelY;
+    double dotProduct = normalVec_realFluid[0] * mirrorVelX + normalVec_realFluid[1] * mirrorVelY;
 
-    std::array<double, 2> normalComponent = {dotProduct * mirrorVelX, dotProduct * mirrorVelX};
+    std::array<double, 2> normalComponent = {dotProduct * normalVec_realFluid[0], dotProduct * normalVec_realFluid[1]};
     std::array<double, 2> tangentialComponent = {mirrorVelX - normalComponent[0], mirrorVelY - normalComponent[1]};
 
     std::array<double, 3> riemannLeftState = {mirrorState[0], dotProduct, mirrorP};
@@ -145,9 +146,9 @@ std::array<double, 4> GhostFluidUtilities::ghostCellValues(const std::vector<std
 
     std::array<double, 3> starredState = HLLC_1D(riemannLeftState, riemannRightState);
     double finalRho = starredState[0];
-    double finalMomentumX = starredState[1] * (-normalVec[0] + tangentialComponent[0]);
-    double finalMomentumY = starredState[1] * (-normalVec[1] + tangentialComponent[1]);
-    double finalEnergy = starredState[2];
+    double finalMomentumX = starredState[1] * normalVec_realFluid[0] + tangentialComponent[0] * finalRho;
+    double finalMomentumY = starredState[1] * normalVec_realFluid[1] + tangentialComponent[1] * finalRho;
+    double finalEnergy = starredState[2] + 0.5 * finalRho * (tangentialComponent[0] * tangentialComponent[0] + tangentialComponent[1] * tangentialComponent[1]);
 
     std::array<double, 4> toBeReturned = {finalRho, finalMomentumX, finalMomentumY, finalEnergy};
 
@@ -172,33 +173,60 @@ std::array<double, 4> GhostFluidUtilities::ghostCellValues(const std::vector<std
 
 std::array<double, 4> GhostFluidUtilities::ghostCellValues(const std::vector<std::vector<double>> &i_levelSet, const std::vector<std::vector<std::array<double, 4>>> &i_compDomain, std::array<int, 2> i_coor, double i_dx, double i_dy, std::array<double, 2> i_rigidBodyVel)
 {
+    // double local_gamma = 1.4;
+
+    // std::array<double, 2> normalVec_ghostCell = normalUnitVector(i_levelSet, i_coor[0], i_coor[1], i_dx, i_dy);
+    // std::array<double, 2> normalVec_realFluid = {normalVec_ghostCell[0], normalVec_ghostCell[1]};
+    // std::array<double, 4> mirrorState = getBilinearlyProbedCell(i_compDomain, i_levelSet, i_coor, i_dx, i_dy);
+
+    // // turn into primitive form here
+    // double mirrorVelX = primitiveX_Vel(mirrorState);
+    // double mirrorVelY = primitiveY_Vel(mirrorState);
+    // double mirrorP = primitivePressure(mirrorState);
+
+    // double dotProduct = normalVec_realFluid[0] * mirrorVelX + normalVec_realFluid[1] * mirrorVelY;
+
+    // std::array<double, 2> normalComponent = {dotProduct * normalVec_realFluid[0], dotProduct * normalVec_realFluid[1]};
+    // std::array<double, 2> tangentialComponent = {mirrorVelX - normalComponent[0], mirrorVelY - normalComponent[1]};
+
+    // std::array<double, 3> riemannLeftState = {mirrorState[0], dotProduct, mirrorP};
+    // std::array<double, 3> riemannRightState = {mirrorState[0], -dotProduct, mirrorP};
+
+    // std::array<double, 3> starredState = HLLC_1D(riemannLeftState, riemannRightState);
+    // double finalRho = starredState[0];
+    // double finalMomentumX = starredState[1] * normalVec_realFluid[0] + tangentialComponent[0] * finalRho;
+    // double finalMomentumY = starredState[1] * normalVec_realFluid[1] + tangentialComponent[1] * finalRho;
+    // double finalEnergy = starredState[2] + 0.5 * finalRho * (tangentialComponent[0] * tangentialComponent[0] + tangentialComponent[1] * tangentialComponent[1]);
+
+    // std::array<double, 4> toBeReturned = {finalRho, finalMomentumX, finalMomentumY, finalEnergy};
+
     double local_gamma = 1.4;
 
-    std::array<double, 2> normalVec = normalUnitVector(i_levelSet, i_coor[0], i_coor[1], i_dx, i_dy);
+    std::array<double, 2> normalVec_ghostCell = normalUnitVector(i_levelSet, i_coor[0], i_coor[1], i_dx, i_dy);
+    std::array<double, 2> normalVec_realFluid = {normalVec_ghostCell[0], normalVec_ghostCell[1]};
     std::array<double, 4> mirrorState = getBilinearlyProbedCell(i_compDomain, i_levelSet, i_coor, i_dx, i_dy);
 
     // turn into primitive form here
     double mirrorVelX = primitiveX_Vel(mirrorState);
     double mirrorVelY = primitiveY_Vel(mirrorState);
-
     double mirrorP = primitivePressure(mirrorState);
 
-    double dotProduct = -normalVec[0] * mirrorVelX - normalVec[1] * mirrorVelY;
+    double dotProduct = normalVec_realFluid[0] * mirrorVelX + normalVec_realFluid[1] * mirrorVelY;
 
-    double rigidBodyVelDotProd = normalVec[0] * i_rigidBodyVel[0] + normalVec[1] * i_rigidBodyVel[1];
-
+    double rigidBodyVelDotProd = normalVec_ghostCell[0] * i_rigidBodyVel[0] + normalVec_ghostCell[1] * i_rigidBodyVel[1];
     std::array<double, 2> normalComponent = {dotProduct * mirrorVelX + rigidBodyVelDotProd * i_rigidBodyVel[0], dotProduct * mirrorVelX + rigidBodyVelDotProd * i_rigidBodyVel[1]};
+
+    // std::array<double, 2> normalComponent = {dotProduct * normalVec_realFluid[0], dotProduct * normalVec_realFluid[1]};
     std::array<double, 2> tangentialComponent = {mirrorVelX + i_rigidBodyVel[0] - normalComponent[0], mirrorVelY + i_rigidBodyVel[1] - normalComponent[1]};
 
     std::array<double, 3> riemannLeftState = {mirrorState[0], dotProduct, mirrorP};
     std::array<double, 3> riemannRightState = {mirrorState[0], -dotProduct - rigidBodyVelDotProd, mirrorP};
 
     std::array<double, 3> starredState = HLLC_1D(riemannLeftState, riemannRightState);
-
     double finalRho = starredState[0];
-    double finalMomentumX = starredState[1] * (-normalVec[0] + tangentialComponent[0]);
-    double finalMomentumY = starredState[1] * (-normalVec[1] + tangentialComponent[1]);
-    double finalEnergy = starredState[2];
+    double finalMomentumX = starredState[1] * normalVec_realFluid[0] - tangentialComponent[0] * normalVec_realFluid[0];
+    double finalMomentumY = starredState[1] * normalVec_realFluid[1] - tangentialComponent[1] * normalVec_realFluid[0];
+    double finalEnergy = starredState[2] + 0.5 * finalRho * (tangentialComponent[0] * tangentialComponent[0] + tangentialComponent[1] * tangentialComponent[1]);
 
     std::array<double, 4> toBeReturned = {finalRho, finalMomentumX, finalMomentumY, finalEnergy};
 

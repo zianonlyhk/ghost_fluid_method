@@ -5,5 +5,5 @@ x1 1.0
 y0 0.0
 y1 1.0
 c 0.999
-tStop 0.8
-loggingFactor 3
+tStop 2.0
+loggingFactor 20

@@ -247,14 +247,7 @@ std::vector<std::vector<double>> VecTran::levelSetAdvectionTransform(const std::
     {
         for (int iter_x = 2; iter_x < xVecLen - 2; ++iter_x)
         {
-            if (i_rigidBodyVel[0] > 0)
-            {
-                toBeReturnVec[iter_y][iter_x] = i_levelSet[iter_y][iter_x] - i_rigidBodyVel[0] * i_dt / i_dx * (i_levelSet[iter_y][iter_x + 1] - i_levelSet[iter_y][iter_x]);
-            }
-            else
-            {
-                toBeReturnVec[iter_y][iter_x] = i_levelSet[iter_y][iter_x] - i_rigidBodyVel[0] * i_dt / i_dy * (i_levelSet[iter_y][iter_x] - i_levelSet[iter_y][iter_x - 1]);
-            }
+            toBeReturnVec[iter_y][iter_x] = i_levelSet[iter_y][iter_x] - i_rigidBodyVel[0] * i_dt / i_dx * (i_levelSet[iter_y][iter_x + 1] - i_levelSet[iter_y][iter_x]);
         }
     }
 
@@ -271,15 +264,7 @@ std::vector<std::vector<double>> VecTran::levelSetAdvectionTransform(const std::
     {
         for (int iter_x = 2; iter_x < xVecLen - 2; ++iter_x)
         {
-
-            if (i_rigidBodyVel[1] > 0)
-            {
-                toBeReturnVecAgain[iter_y][iter_x] = toBeReturnVec[iter_y][iter_x] - i_rigidBodyVel[1] * i_dt / i_dx * (toBeReturnVec[iter_y + 1][iter_x] - toBeReturnVec[iter_y][iter_x]);
-            }
-            else
-            {
-                toBeReturnVecAgain[iter_y][iter_x] = toBeReturnVec[iter_y][iter_x] - i_rigidBodyVel[1] * i_dt / i_dx * (toBeReturnVec[iter_y - 1][iter_x] - toBeReturnVec[iter_y][iter_x]);
-            }
+            toBeReturnVecAgain[iter_y][iter_x] = toBeReturnVec[iter_y][iter_x] - i_rigidBodyVel[1] * i_dt / i_dy * (toBeReturnVec[iter_y + 1][iter_x] - toBeReturnVec[iter_y][iter_x]);
         }
     }
 
