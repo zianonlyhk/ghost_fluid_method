@@ -171,6 +171,8 @@ void GFM_2D_EulerSolver::updateDt()
 void GFM_2D_EulerSolver::advectLevelSet()
 {
     m_levelSet = vecTran.levelSetAdvectionTransform(m_levelSet, m_rigidBodyVel, m_dx, m_dy, m_dt);
+    m_rigidBodyCentreCoor[0] += m_rigidBodyVel[0] * m_dt;
+    m_rigidBodyCentreCoor[1] += m_rigidBodyVel[1] * m_dt;
 }
 
 void GFM_2D_EulerSolver::updateLevelSetBoundaryTrans()
@@ -198,7 +200,7 @@ void GFM_2D_EulerSolver::accelerateRigidBody_circ()
     double rNorm = sqrt(rVec[0] * rVec[0] + rVec[1] * rVec[1]);
     std::array<double, 2> rVecNormalised = {rVec[0] / rNorm, rVec[1] / rNorm};
 
-    double aNorm = sqrt(m_rigidBodyVel[0] * m_rigidBodyVel[0] + m_rigidBodyVel[1] * m_rigidBodyVel[1]) / rNorm;
+    double aNorm = (m_rigidBodyVel[0] * m_rigidBodyVel[0] + m_rigidBodyVel[1] * m_rigidBodyVel[1]) / rNorm;
     std::array<double, 2> acceleration = {aNorm * rVecNormalised[0], aNorm * rVecNormalised[1]};
 
     m_rigidBodyVel[0] += acceleration[0] * m_dt;

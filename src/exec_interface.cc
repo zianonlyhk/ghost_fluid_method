@@ -270,7 +270,7 @@ int main()
     testSolverClass.setRepoDir((std::string) "/Users/zianhuang/Room214N/dev/mphil/MPhil_writtenAssignment_GFM/");
     testSolverClass.setLevelSet(levelSetCompDomain);
 
-    testSolverClass.setRigidBodyVel(std::array<double, 2>{0.0, -1.0});
+    testSolverClass.setRigidBodyVel(std::array<double, 2>{0.0, -0.77});
     testSolverClass.setRigidBodyCentreCoor(std::array<double, 2>{0.2, 0.5});
 
     testSolverClass.updateBoundaryTrans();
