@@ -30,6 +30,7 @@ public:
     void setName(std::string name);
     void setRepoDir(std::string repoDir);
     void setRigidBodyVel(std::array<double, 2> velArr);
+    void setRigidBodyCentreCoor(std::array<double, 2> coorArr);
 
     // NUMERICAL SCHEME TOOLBOX
     VecTran vecTran;
@@ -39,6 +40,7 @@ public:
 
     void advectLevelSet();
     void updateLevelSetBoundaryTrans();
+    void accelerateRigidBody_circ();
 
     void updateGhostCellBoundary(bool moving);
     void propagateGhostCell();
@@ -106,6 +108,7 @@ private:
     double m_aMax;
     double m_dt;
 
+    std::array<double, 2> m_rigidBodyCentreCoor;
     std::array<double, 2> m_rigidBodyVel;
 
     std::vector<std::vector<std::array<double, 4>>> m_uVec;

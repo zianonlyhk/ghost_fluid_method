@@ -210,7 +210,7 @@ void setInitialConditions(std::vector<std::vector<std::array<double, 4>>> &i_inp
             // i_levelSetFunc[j][i] = doubleCircleLevelSetFunc(0.2, 0.2, 0.6, 0.6, 0.35, 0.65, currX, currY);
             // i_levelSetFunc[j][i] = oneD_WallLevelSetFunc(0.6, currX, currY);
 
-            i_levelSetFunc[j][i] = singleCircleLevelSetFunc(0.2, 2.5, 0.5, currX, currY);
+            i_levelSetFunc[j][i] = singleCircleLevelSetFunc(0.15, 0.2, 0.5, currX, currY);
         }
     }
 
@@ -225,10 +225,12 @@ void setInitialConditions(std::vector<std::vector<std::array<double, 4>>> &i_inp
             {
                 // i_inputVec[j][i] = (std::array<double, 4>){1.3764, 0.394, 0.0, 1.5698};
                 i_inputVec[j][i] = (std::array<double, 4>){1, 0.0, 0.0, 1};
+                // i_inputVec[j][i] = (std::array<double, 4>){1, 1.0, 0.0, 1};
             }
             else
             {
                 i_inputVec[j][i] = (std::array<double, 4>){1, 0.0, 0.0, 1};
+                // i_inputVec[j][i] = (std::array<double, 4>){1, 1.0, 0.0, 1};
             }
         }
     }
@@ -268,7 +270,8 @@ int main()
     testSolverClass.setRepoDir((std::string) "/Users/zianhuang/Room214N/dev/mphil/MPhil_writtenAssignment_GFM/");
     testSolverClass.setLevelSet(levelSetCompDomain);
 
-    testSolverClass.setRigidBodyVel(std::array<double, 2>{-1.0, 0.0});
+    testSolverClass.setRigidBodyVel(std::array<double, 2>{0.0, -1.0});
+    testSolverClass.setRigidBodyCentreCoor(std::array<double, 2>{0.2, 0.5});
 
     testSolverClass.updateBoundaryTrans();
 
@@ -306,7 +309,7 @@ int main()
         testSolverClass.updateBoundaryTrans();
 
         testSolverClass.calculateMockSchliren();
-
+        testSolverClass.accelerateRigidBody_circ();
         testSolverClass.advectLevelSet();
         testSolverClass.updateLevelSetBoundaryTrans();
 

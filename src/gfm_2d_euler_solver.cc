@@ -119,6 +119,11 @@ void GFM_2D_EulerSolver::setRigidBodyVel(std::array<double, 2> velArr)
     m_rigidBodyVel = velArr;
 }
 
+void GFM_2D_EulerSolver::setRigidBodyCentreCoor(std::array<double, 2> coorArr)
+{
+    m_rigidBodyCentreCoor = coorArr;
+}
+
 void GFM_2D_EulerSolver::updateMaxA(int i_numIter)
 {
     double localMaxA = 0.0;
@@ -185,6 +190,19 @@ void GFM_2D_EulerSolver::updateLevelSetBoundaryTrans()
         m_levelSet[m_nCell_y + 3][i] = m_levelSet[m_nCell_y][i];
         m_levelSet[m_nCell_y + 2][i] = m_levelSet[m_nCell_y + 1][i];
     }
+}
+
+void GFM_2D_EulerSolver::accelerateRigidBody_circ()
+{
+    std::array<double, 2> rVec = {(m_x1 + m_x0) / 2 - m_rigidBodyCentreCoor[0], (m_y1 + m_y0) / 2 - m_rigidBodyCentreCoor[1]};
+    double rNorm = sqrt(rVec[0] * rVec[0] + rVec[1] * rVec[1]);
+    std::array<double, 2> rVecNormalised = {rVec[0] / rNorm, rVec[1] / rNorm};
+
+    double aNorm = sqrt(m_rigidBodyVel[0] * m_rigidBodyVel[0] + m_rigidBodyVel[1] * m_rigidBodyVel[1]) / rNorm;
+    std::array<double, 2> acceleration = {aNorm * rVecNormalised[0], aNorm * rVecNormalised[1]};
+
+    m_rigidBodyVel[0] += acceleration[0] * m_dt;
+    m_rigidBodyVel[1] += acceleration[1] * m_dt;
 }
 
 void GFM_2D_EulerSolver::updateGhostCellBoundary(bool i_moving)
