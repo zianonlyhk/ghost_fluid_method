@@ -206,11 +206,11 @@ void setInitialConditions(std::vector<std::vector<std::array<double, 4>>> &i_inp
 
             // i_levelSetFunc[j][i] = singleCircleLevelSetFunc(0.2, 0.6, 0.5, currX, currY);
             // i_levelSetFunc[j][i] = singleSqaureLevelSetFunc(0.4, 0.6, 0.5, currX, currY);
-            i_levelSetFunc[j][i] = doubleCircleLevelSetFunc(0.2, 0.2, 0.6, 0.6, 0.25, 0.75, currX, currY);
+            // i_levelSetFunc[j][i] = doubleCircleLevelSetFunc(0.2, 0.2, 0.6, 0.6, 0.25, 0.75, currX, currY);
             // i_levelSetFunc[j][i] = doubleCircleLevelSetFunc(0.2, 0.2, 0.6, 0.6, 0.35, 0.65, currX, currY);
             // i_levelSetFunc[j][i] = oneD_WallLevelSetFunc(0.6, currX, currY);
 
-            // i_levelSetFunc[j][i] = singleCircleLevelSetFunc(0.2, 1.5, 0.5, currX, currY);
+            i_levelSetFunc[j][i] = singleCircleLevelSetFunc(0.2, 2.5, 0.5, currX, currY);
         }
     }
 
@@ -223,8 +223,8 @@ void setInitialConditions(std::vector<std::vector<std::array<double, 4>>> &i_inp
 
             if (currX <= 0.2)
             {
-                i_inputVec[j][i] = (std::array<double, 4>){1.3764, 0.394, 0.0, 1.5698};
-                // i_inputVec[j][i] = (std::array<double, 4>){1, 0.0, 0.0, 1};
+                // i_inputVec[j][i] = (std::array<double, 4>){1.3764, 0.394, 0.0, 1.5698};
+                i_inputVec[j][i] = (std::array<double, 4>){1, 0.0, 0.0, 1};
             }
             else
             {
@@ -295,8 +295,8 @@ int main()
 
         t += testSolverClass.dt();
 
-        // testSolverClass.updateGhostCellBoundary(true);
-        testSolverClass.updateGhostCellBoundary(false);
+        testSolverClass.updateGhostCellBoundary(true);
+        // testSolverClass.updateGhostCellBoundary(false);
         testSolverClass.propagateGhostCell();
 
         testSolverClass.mhHllcSweepX();
@@ -307,8 +307,8 @@ int main()
 
         testSolverClass.calculateMockSchliren();
 
-        // testSolverClass.advectLevelSet();
-        // testSolverClass.updateLevelSetBoundaryTrans();
+        testSolverClass.advectLevelSet();
+        testSolverClass.updateLevelSetBoundaryTrans();
 
         if (numIter % loggingFactor == 0)
         {
