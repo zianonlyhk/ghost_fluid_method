@@ -263,6 +263,61 @@ std::array<double, 4> GhostFluidUtilities::solveForConstantExtrapolation(const s
     return toBeReturned;
 }
 
+double GhostFluidUtilities::solveForLevelSetReinit(const std::vector<std::vector<double>> &i_levelSet, std::array<int, 2> i_coor, double i_dx, double i_dy)
+{
+    std::array<double, 2> normalVec = normalUnitVector(i_levelSet, i_coor[0], i_coor[1], i_dx, i_dy);
+
+    double refPhi_x;
+    double refPhi_y;
+
+    double survivingRef;
+    double survivingDspace;
+
+    if (normalVec[0] > 0)
+    {
+        refPhi_x = i_levelSet[i_coor[1]][i_coor[0] + 1];
+    }
+    else
+    {
+        refPhi_x = i_levelSet[i_coor[1]][i_coor[0] - 1];
+    }
+    if (normalVec[1] > 0)
+    {
+        refPhi_y = i_levelSet[i_coor[1] + 1][i_coor[0]];
+    }
+    else
+    {
+        refPhi_y = i_levelSet[i_coor[1] - 1][i_coor[0]];
+    }
+
+    double coef_A;
+    double coef_B;
+    double coef_C;
+
+    coef_A = 1 / (i_dx * i_dx) + 1 / (i_dy * i_dy);
+    coef_B = -2 * refPhi_x / (i_dx * i_dx) - 2 * refPhi_y / (i_dy * i_dy);
+    coef_C = refPhi_x * refPhi_x / (i_dx * i_dx) + refPhi_y * refPhi_y / (i_dy * i_dy) - 1;
+
+    if (coef_B * coef_B - 4 * coef_A * coef_C < 0) // we then need to take extra care
+    {
+        if (abs(refPhi_x) < abs(refPhi_y))
+        {
+            survivingRef = refPhi_x;
+            survivingDspace = i_dx;
+        }
+        else
+        {
+            survivingRef = refPhi_y;
+            survivingDspace = i_dy;
+        }
+        return -survivingDspace + survivingRef;
+    }
+    else
+    {
+        return (-coef_B - sqrt(coef_B * coef_B - 4 * coef_A * coef_C)) / 2 / coef_A;
+    }
+}
+
 // private:
 // #########################################################################################################################################################################
 // 漢界 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------

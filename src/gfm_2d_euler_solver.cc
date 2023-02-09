@@ -207,6 +207,11 @@ void GFM_2D_EulerSolver::accelerateRigidBody_circ()
     m_rigidBodyVel[1] += acceleration[1] * m_dt;
 }
 
+void GFM_2D_EulerSolver::reinitLevelSet()
+{
+    m_levelSet = vecTran.reinitLevelSetInsideRB(m_levelSet, m_dx, m_dy);
+}
+
 void GFM_2D_EulerSolver::updateGhostCellBoundary(bool i_moving)
 {
     if (i_moving)

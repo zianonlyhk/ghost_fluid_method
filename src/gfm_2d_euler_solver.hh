@@ -41,6 +41,7 @@ public:
     void advectLevelSet();
     void updateLevelSetBoundaryTrans();
     void accelerateRigidBody_circ();
+    void reinitLevelSet();
 
     void updateGhostCellBoundary(bool moving);
     void propagateGhostCell();

@@ -313,6 +313,11 @@ int main()
         testSolverClass.advectLevelSet();
         testSolverClass.updateLevelSetBoundaryTrans();
 
+        if (numIter % 3 == 0)
+        {
+            testSolverClass.reinitLevelSet();
+        }
+
         if (numIter % loggingFactor == 0)
         {
             testSolverClass.writeToFiles(t);

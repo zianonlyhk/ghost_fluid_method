@@ -285,6 +285,171 @@ std::vector<std::vector<double>> VecTran::levelSetAdvectionTransform(const std::
     return toBeReturnVecAgain;
 }
 
+std::vector<std::vector<double>> VecTran::reinitLevelSetInsideRB(const std::vector<std::vector<double>> &i_levelSet, double i_dx, double i_dy)
+{
+    int xVecLen = i_levelSet[0].size();
+    int yVecLen = i_levelSet.size();
+
+    std::vector<std::vector<double>> toBeReturnLevelSet;
+    toBeReturnLevelSet.resize(yVecLen);
+    for (int i = 0; i < yVecLen; ++i)
+    {
+        toBeReturnLevelSet[i].resize(xVecLen);
+    }
+
+    toBeReturnLevelSet = i_levelSet;
+
+    bool insideRigidBody;
+
+    std::vector<std::array<int, 2>> boundaryCoorArr = getBoundaryCellCoor(i_levelSet);
+
+    bool updateLocalLevelSet;
+
+    // +ve x sweep
+    for (int j = 2; j < yVecLen - 2; ++j)
+    {
+        insideRigidBody = false;
+        for (int i = 2; i < xVecLen - 2; ++i)
+        {
+            if (i_levelSet[j][i] <= 0 && !insideRigidBody)
+            {
+                insideRigidBody = true;
+                continue;
+            }
+
+            if (insideRigidBody)
+            {
+                if (i_levelSet[j][i + 1] > 0)
+                {
+                    break;
+                }
+                updateLocalLevelSet = true;
+
+                for (int dummie = 0; dummie < boundaryCoorArr.size(); ++dummie)
+                {
+                    if (boundaryCoorArr[dummie][0] == i && boundaryCoorArr[dummie][1] == j)
+                    {
+                        updateLocalLevelSet = false;
+                        break;
+                    }
+                }
+                if (updateLocalLevelSet)
+                {
+                    toBeReturnLevelSet[j][i] = ghostFluidUtilities.solveForLevelSetReinit(i_levelSet, std::array<int, 2>{i, j}, i_dx, i_dy);
+                }
+            }
+        }
+    }
+
+    // -ve x sweep
+    for (int j = 2; j < yVecLen - 2; ++j)
+    {
+        insideRigidBody = false;
+        for (int i = xVecLen - 3; i > 1; --i)
+        {
+            if (i_levelSet[j][i] <= 0 && !insideRigidBody)
+            {
+                insideRigidBody = true;
+                continue;
+            }
+
+            if (insideRigidBody)
+            {
+                if (i_levelSet[j][i + 1] > 0)
+                {
+                    break;
+                }
+                updateLocalLevelSet = true;
+
+                for (int dummie = 0; dummie < boundaryCoorArr.size(); ++dummie)
+                {
+                    if (boundaryCoorArr[dummie][0] == i && boundaryCoorArr[dummie][1] == j)
+                    {
+                        updateLocalLevelSet = false;
+                        break;
+                    }
+                }
+                if (updateLocalLevelSet)
+                {
+                    toBeReturnLevelSet[j][i] = ghostFluidUtilities.solveForLevelSetReinit(i_levelSet, std::array<int, 2>{i, j}, i_dx, i_dy);
+                }
+            }
+        }
+    }
+
+    for (int i = 2; i < xVecLen - 2; ++i)
+    {
+        insideRigidBody = false;
+        for (int j = 2; j < yVecLen - 2; ++j)
+        {
+            if (i_levelSet[j][i] <= 0 && !insideRigidBody)
+            {
+                insideRigidBody = true;
+                continue;
+            }
+
+            if (insideRigidBody)
+            {
+                if (i_levelSet[j][i + 1] > 0)
+                {
+                    break;
+                }
+                updateLocalLevelSet = true;
+
+                for (int dummie = 0; dummie < boundaryCoorArr.size(); ++dummie)
+                {
+                    if (boundaryCoorArr[dummie][0] == i && boundaryCoorArr[dummie][1] == j)
+                    {
+                        updateLocalLevelSet = false;
+                        break;
+                    }
+                }
+                if (updateLocalLevelSet)
+                {
+                    toBeReturnLevelSet[j][i] = ghostFluidUtilities.solveForLevelSetReinit(i_levelSet, std::array<int, 2>{i, j}, i_dx, i_dy);
+                }
+            }
+        }
+    }
+
+    for (int i = 2; i < xVecLen - 2; ++i)
+    {
+        insideRigidBody = false;
+        for (int j = yVecLen - 3; j > 1; --j)
+        {
+            if (i_levelSet[j][i] <= 0 && !insideRigidBody)
+            {
+                insideRigidBody = true;
+                continue;
+            }
+
+            if (insideRigidBody)
+            {
+                if (i_levelSet[j][i + 1] > 0)
+                {
+                    break;
+                }
+                updateLocalLevelSet = true;
+
+                for (int dummie = 0; dummie < boundaryCoorArr.size(); ++dummie)
+                {
+                    if (boundaryCoorArr[dummie][0] == i && boundaryCoorArr[dummie][1] == j)
+                    {
+                        updateLocalLevelSet = false;
+                        break;
+                    }
+                }
+                if (updateLocalLevelSet)
+                {
+                    toBeReturnLevelSet[j][i] = ghostFluidUtilities.solveForLevelSetReinit(i_levelSet, std::array<int, 2>{i, j}, i_dx, i_dy);
+                }
+            }
+        }
+    }
+
+    return toBeReturnLevelSet;
+}
+
 std::vector<std::array<int, 2>> VecTran::getBoundaryCellCoor(const std::vector<std::vector<double>> &i_levelSet)
 {
     return ghostFluidUtilities.ghostBoundaryCellCoor(i_levelSet);

@@ -38,6 +38,7 @@ public:
 
     // levelset advection
     std::vector<std::vector<double>> levelSetAdvectionTransform(const std::vector<std::vector<double>> &levelSet, std::array<double, 2> rigidBodyVel, double dx, double dy, double dt);
+    std::vector<std::vector<double>> reinitLevelSetInsideRB(const std::vector<std::vector<double>> &levelSet, double dx, double dy);
 
     // for debug purpose
     std::vector<std::array<int, 2>> getBoundaryCellCoor(const std::vector<std::vector<double>> &levelSet);
