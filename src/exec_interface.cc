@@ -18,27 +18,11 @@
 
 #define PI 3.14159265
 
-void loadConfig(int &i_nCells_x,
-                int &i_nCells_y,
-                double &i_x0,
-                double &i_x1,
-                double &i_y0,
-                double &i_y1,
-                double &i_c,
-                double &i_tStop,
-                int &i_loggingFactor,
-                int &i_reinitFactor,
-                int &i_rigidBodyType,
-                int &i_movingRigidBody,
-                std::array<double, 2> &i_initRigidBodyVel,
-                std::array<double, 2> &i_initRigidBodyLoc,
-                double &i_rigidBodyRadiusOrLength,
-                double &i_rigidBodyAdditionalFactor,
-                std::array<double, 4> &i_leftState,
-                std::array<double, 4> &i_rightState,
-                double &i_leftRightStateBoundary,
-                std::string &i_runName,
-                std::string &i_repoDir)
+void loadConfig(int &i_nCells_x, int &i_nCells_y, double &i_x0, double &i_x1, double &i_y0, double &i_y1, double &i_c, double &i_tStop, int &i_loggingFactor, int &i_reinitFactor,
+                int &i_rigidBodyType, int &i_movingRigidBody, int &i_acceleratingRigidBody, std::array<double, 2> &i_initRigidBodyVel, std::array<double, 2> &i_initRigidBodyLoc,
+                double &i_rigidBodyRadiusOrLength, double &i_rigidBodyAdditionalFactor,
+                std::array<double, 4> &i_leftState, std::array<double, 4> &i_rightState, double &i_leftRightStateBoundary,
+                std::string &i_runName, std::string &i_repoDir)
 {
     std::ifstream in("./config.txt");
 
@@ -112,6 +96,11 @@ void loadConfig(int &i_nCells_x,
             in >> int_value;
             i_movingRigidBody = int_value;
         }
+        else if (parameter == "acceleratingRigidBody")
+        {
+            in >> int_value;
+            i_acceleratingRigidBody = int_value;
+        }
         else if (parameter == "initRigidBodyVel")
         {
             in >> double_value;
@@ -172,10 +161,6 @@ void loadConfig(int &i_nCells_x,
         {
             in >> string_value;
             i_repoDir = string_value;
-        }
-        else
-        {
-            in >> string_value;
         }
     }
     in.close();
@@ -339,7 +324,9 @@ void setInitialConditions(std::vector<std::vector<std::array<double, 4>>> &i_inp
     }
 }
 
-void setInitialConditions(std::vector<std::vector<std::array<double, 4>>> &i_inputVec, std::vector<std::vector<double>> &i_levelSetFunc, double i_x0, double i_x1, double i_y0, double i_y1, int i_rigidBodyType, double i_rbRadiusOrLen, double i_rbAdditionalFactor, std::array<double, 2> i_initRigidBodyLoc, std::array<double, 4> i_leftState, std::array<double, 4> i_righState, double i_lrStateBoundary)
+void setInitialConditions(std::vector<std::vector<std::array<double, 4>>> &i_inputVec, std::vector<std::vector<double>> &i_levelSetFunc, double i_x0, double i_x1, double i_y0, double i_y1,
+                          int i_rigidBodyType, double i_rbRadiusOrLen, double i_rbAdditionalFactor, std::array<double, 2> i_initRigidBodyLoc,
+                          std::array<double, 4> i_leftState, std::array<double, 4> i_righState, double i_lrStateBoundary)
 {
     int nCell_y = i_inputVec.size() - 4;
     int nCell_x = i_inputVec[0].size() - 4;
@@ -363,15 +350,15 @@ void setInitialConditions(std::vector<std::vector<std::array<double, 4>>> &i_inp
             }
             else if (i_rigidBodyType == 3)
             {
-                i_levelSetFunc[j][i] = doubleCircleLevelSetFunc(i_rbRadiusOrLen, i_rbRadiusOrLen, i_initRigidBodyLoc[0], i_initRigidBodyLoc[0], i_initRigidBodyLoc[1] - i_rbAdditionalFactor, i_initRigidBodyLoc[1] + i_rbAdditionalFactor, currX, currY);
-            }
-            else if (i_rigidBodyType == 4)
-            {
-                i_levelSetFunc[j][i] = doubleCircleLevelSetFunc(i_rbRadiusOrLen, i_rbRadiusOrLen, i_initRigidBodyLoc[0], i_initRigidBodyLoc[0], i_initRigidBodyLoc[1] - i_rbAdditionalFactor, i_initRigidBodyLoc[1] + i_rbAdditionalFactor, currX, currY);
+                i_levelSetFunc[j][i] = doubleCircleLevelSetFunc(i_rbRadiusOrLen, i_rbRadiusOrLen,
+                                                                i_initRigidBodyLoc[0], i_initRigidBodyLoc[0],
+                                                                i_initRigidBodyLoc[1] - i_rbAdditionalFactor,
+                                                                i_initRigidBodyLoc[1] + i_rbAdditionalFactor,
+                                                                currX, currY);
             }
             else
             {
-                throw std::invalid_argument("rigidBodyType can only be 1, 2, 3 or 4");
+                throw std::invalid_argument("rigidBodyType can only be 1, 2 or 3");
             }
         }
     }
@@ -409,6 +396,7 @@ int main()
     int reinitFactor;
     int rigidBodyType;
     int movingRigidBody;
+    int acceleratingRigidBody;
     std::array<double, 2> initRigidBodyVel;
     std::array<double, 2> initRigidBodyLoc;
     double rigidBodyRadiusOrLength;
@@ -420,7 +408,7 @@ int main()
     std::string repoDir;
 
     loadConfig(nCells_x, nCells_y, x0, x1, y0, y1, c, tStop, loggingFactor,
-               reinitFactor, rigidBodyType, movingRigidBody, initRigidBodyVel,
+               reinitFactor, rigidBodyType, movingRigidBody, acceleratingRigidBody, initRigidBodyVel,
                initRigidBodyLoc, rigidBodyRadiusOrLength, rigidBodyAdditionalFactor,
                leftState, rightState, leftRightStateBoundary, runName, repoDir);
 
@@ -478,7 +466,11 @@ int main()
         testSolverClass.updateBoundaryTrans();
 
         testSolverClass.calculateMockSchliren();
-        testSolverClass.accelerateRigidBody_circ();
+
+        if (acceleratingRigidBody == 1)
+        {
+            testSolverClass.accelerateRigidBody_circ();
+        }
         testSolverClass.advectLevelSet();
         testSolverClass.updateLevelSetBoundaryTrans();
 
