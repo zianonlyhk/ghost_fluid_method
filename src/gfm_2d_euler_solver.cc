@@ -212,9 +212,9 @@ void GFM_2D_EulerSolver::reinitLevelSet()
     m_levelSet = vecTran.reinitLevelSetInsideRB(m_levelSet, m_dx, m_dy);
 }
 
-void GFM_2D_EulerSolver::updateGhostCellBoundary(bool i_moving)
+void GFM_2D_EulerSolver::updateGhostCellBoundary(int i_moving)
 {
-    if (i_moving)
+    if (i_moving == 1)
     {
         m_uVec = vecTran.ghostCellBoundary(m_uVec, m_levelSet, m_dx, m_dy, m_rigidBodyVel);
     }

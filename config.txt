@@ -5,5 +5,17 @@ x1 1.0
 y0 0.0
 y1 1.0
 c 0.999
-tStop 3.5
+tStop 0.5
 loggingFactor 10
+reinitFactor 3
+rigidBodyType 1
+movingRigidBody 1
+initRigidBodyVel 0.0 -0.7
+initRigidBodyLoc 0.2 0.5
+rigidBodyRadiusOrLength 0.15
+rigidBodyAdditionalFactor 0.25
+leftState 1.0 0.0 0.0 1.0
+rightState 1.0 0.0 0.0 1.0
+leftRightStateBoundary 0.2
+runName test
+repoDir /Users/zianhuang/Room214N/dev/mphil/MPhil_writtenAssignment_GFM/
