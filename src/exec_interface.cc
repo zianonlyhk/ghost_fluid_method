@@ -180,14 +180,7 @@ double doubleCircleLevelSetFunc(double i_r1, double i_r2, double i_centre_x1, do
     double phi1 = -(i_r1 - pow((pow(i_x - i_centre_x1, 2) + pow(i_y - i_centre_y1, 2)), 0.5));
     double phi2 = -(i_r2 - pow((pow(i_x - i_centre_x2, 2) + pow(i_y - i_centre_y2, 2)), 0.5));
 
-    if (abs(phi1) < abs(phi2))
-    {
-        return phi1;
-    }
-    else
-    {
-        return phi2;
-    }
+    return std::min(phi1, phi2);
 }
 
 double singleSqaureLevelSetFunc(double i_l, double i_centre_x, double i_centre_y, double i_x, double i_y)
