@@ -142,7 +142,7 @@ void GFM_2D_EulerSolver::updateMaxA(int i_numIter)
         }
     }
 
-    // in the first 10 iterations of the numerical scheme, bigger "aMax"
+    // in the first 10 iterations of the numerical scheme, bigger aMax
     if (i_numIter < 10)
     {
         m_aMax = localMaxA * 3;

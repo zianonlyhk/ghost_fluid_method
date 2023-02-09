@@ -17,8 +17,6 @@
 #include <algorithm>
 #include <math.h>
 
-// Definitions #####################################################################################
-
 VecTran::VecTran() {}
 
 std::vector<std::vector<std::array<double, 4>>> VecTran::slicVecTran_x(const std::vector<std::vector<std::array<double, 4>>> &i_inputU_Vec, double i_dx, double i_dt)

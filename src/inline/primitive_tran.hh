@@ -26,7 +26,7 @@ inline double primitiveY_Vel(std::array<double, 4> i_uVector_i)
 
 inline double primitivePressure(std::array<double, 4> i_uVector_i)
 {
-    // only applicable to air modelling
+    // only applicable to ideal gas modelling
     double localGamma = 1.4;
 
     return (localGamma - 1) * (i_uVector_i[3] - (i_uVector_i[1] * i_uVector_i[1] + i_uVector_i[2] * i_uVector_i[2]) / 2 / i_uVector_i[0]);

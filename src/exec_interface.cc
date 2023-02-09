@@ -27,6 +27,8 @@ void loadConfig(int &i_nCells_x, int &i_nCells_y, double &i_x0, double &i_x1, do
     std::ifstream in("./config.txt");
 
     std::string parameter;
+
+    // dummie disposable variables
     double double_value;
     int int_value;
     std::string string_value;
@@ -35,7 +37,9 @@ void loadConfig(int &i_nCells_x, int &i_nCells_y, double &i_x0, double &i_x1, do
 
     while (!in.eof())
     {
+        // if no read string fits the required parameter, do nothing
         in >> parameter;
+
         if (parameter == "nCells_x")
         {
             in >> int_value;
@@ -271,9 +275,10 @@ void conservativeFormTransform(std::vector<std::vector<std::array<double, 4>>> &
     }
 }
 
-// #############################################################################################################################################################################################
-// #############################################################################################################################################################################################
+// #########################################################################################################################################################################################
+// #########################################################################################################################################################################################
 
+// manual initial state setting
 void setInitialConditions(std::vector<std::vector<std::array<double, 4>>> &i_inputVec, std::vector<std::vector<double>> &i_levelSetFunc, double i_x0, double i_x1, double i_y0, double i_y1)
 {
     int nCell_y = i_inputVec.size() - 4;
@@ -297,7 +302,6 @@ void setInitialConditions(std::vector<std::vector<std::array<double, 4>>> &i_inp
             // i_levelSetFunc[j][i] = doubleCircleLevelSetFunc(0.2, 0.2, 0.6, 0.6, 0.25, 0.75, currX, currY);
             // i_levelSetFunc[j][i] = doubleCircleLevelSetFunc(0.2, 0.2, 0.6, 0.6, 0.35, 0.65, currX, currY);
             // i_levelSetFunc[j][i] = oneD_WallLevelSetFunc(0.6, currX, currY);
-
             i_levelSetFunc[j][i] = singleCircleLevelSetFunc(0.15, 0.2, 0.5, currX, currY);
         }
     }
@@ -324,6 +328,7 @@ void setInitialConditions(std::vector<std::vector<std::array<double, 4>>> &i_inp
     }
 }
 
+// initial conditions read from config.txt
 void setInitialConditions(std::vector<std::vector<std::array<double, 4>>> &i_inputVec, std::vector<std::vector<double>> &i_levelSetFunc, double i_x0, double i_x1, double i_y0, double i_y1,
                           int i_rigidBodyType, double i_rbRadiusOrLen, double i_rbAdditionalFactor, std::array<double, 2> i_initRigidBodyLoc,
                           std::array<double, 4> i_leftState, std::array<double, 4> i_righState, double i_lrStateBoundary)
@@ -412,7 +417,7 @@ int main()
                initRigidBodyLoc, rigidBodyRadiusOrLength, rigidBodyAdditionalFactor,
                leftState, rightState, leftRightStateBoundary, runName, repoDir);
 
-    // size the computational domain and the level set grid
+    // size the computational domain and the level set grid by {nCells_x, nCells_y}
     std::vector<std::vector<std::array<double, 4>>> compDomain;
     std::vector<std::vector<double>> levelSetCompDomain;
     compDomain.resize(nCells_y + 4);
@@ -429,18 +434,17 @@ int main()
                          leftState, rightState, leftRightStateBoundary);
     conservativeFormTransform(compDomain);
 
+    // constructing solver class and initiate with read states
     GFM_2D_EulerSolver testSolverClass(compDomain, nCells_x, nCells_y);
     testSolverClass.setBound(x0, x1, y0, y1, tStop);
     testSolverClass.setCFL(c);
     testSolverClass.setName(runName);
     testSolverClass.setRepoDir(repoDir);
     testSolverClass.setLevelSet(levelSetCompDomain);
-
     testSolverClass.setRigidBodyVel(initRigidBodyVel);
     testSolverClass.setRigidBodyCentreCoor(initRigidBodyLoc);
 
     testSolverClass.updateBoundaryTrans();
-
     testSolverClass.calculateMockSchliren();
 
     testSolverClass.initiateDataLogging();
@@ -456,12 +460,12 @@ int main()
 
         t += testSolverClass.dt();
 
+        // if movingRigidBody == 1, consider rigid body velocity in ghost cell boundary Riemann problem
         testSolverClass.updateGhostCellBoundary(movingRigidBody);
         testSolverClass.propagateGhostCell();
 
         testSolverClass.mhHllcSweepX();
         testSolverClass.updateBoundaryTrans();
-
         testSolverClass.mhHllcSweepY();
         testSolverClass.updateBoundaryTrans();
 
