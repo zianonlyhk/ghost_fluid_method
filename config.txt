@@ -8,18 +8,17 @@ nCells_y 101
 
 ###### TEMPORAL PARAMETERS ######
 c 0.999
-tStop 2.0
+tStop 1.0
 
 ###### RIGID BODY DYNAMICS ######
 initRigidBodyLoc 0.6 0.5
 initRigidBodyVel 0.0 0.0
-movingRigidBody 0
 acceleratingRigidBody 0
 
 ###### RIGID BODY GEOMETRY ######
-rigidBodyType 3
+rigidBodyType 1
 rigidBodyRadiusOrLength 0.2
-rigidBodyAdditionalFactor 0.15
+rigidBodyAdditionalFactor 0.25
 reinitFactor 3
 
 ###### LEFT AND RIGHT STATES ######

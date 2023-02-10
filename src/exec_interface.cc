@@ -19,7 +19,7 @@
 #define PI 3.14159265
 
 void loadConfig(int &i_nCells_x, int &i_nCells_y, double &i_x0, double &i_x1, double &i_y0, double &i_y1, double &i_c, double &i_tStop, int &i_loggingFactor, int &i_reinitFactor,
-                int &i_rigidBodyType, int &i_movingRigidBody, int &i_acceleratingRigidBody, std::array<double, 2> &i_initRigidBodyVel, std::array<double, 2> &i_initRigidBodyLoc,
+                int &i_rigidBodyType, int &i_acceleratingRigidBody, std::array<double, 2> &i_initRigidBodyVel, std::array<double, 2> &i_initRigidBodyLoc,
                 double &i_rigidBodyRadiusOrLength, double &i_rigidBodyAdditionalFactor,
                 std::array<double, 4> &i_leftState, std::array<double, 4> &i_rightState, double &i_leftRightStateBoundary,
                 std::string &i_runName, std::string &i_repoDir)
@@ -94,11 +94,6 @@ void loadConfig(int &i_nCells_x, int &i_nCells_y, double &i_x0, double &i_x1, do
         {
             in >> int_value;
             i_rigidBodyType = int_value;
-        }
-        else if (parameter == "movingRigidBody")
-        {
-            in >> int_value;
-            i_movingRigidBody = int_value;
         }
         else if (parameter == "acceleratingRigidBody")
         {
@@ -393,7 +388,6 @@ int main()
     int loggingFactor;
     int reinitFactor;
     int rigidBodyType;
-    int movingRigidBody;
     int acceleratingRigidBody;
     std::array<double, 2> initRigidBodyVel;
     std::array<double, 2> initRigidBodyLoc;
@@ -406,7 +400,7 @@ int main()
     std::string repoDir;
 
     loadConfig(nCells_x, nCells_y, x0, x1, y0, y1, c, tStop, loggingFactor,
-               reinitFactor, rigidBodyType, movingRigidBody, acceleratingRigidBody, initRigidBodyVel,
+               reinitFactor, rigidBodyType, acceleratingRigidBody, initRigidBodyVel,
                initRigidBodyLoc, rigidBodyRadiusOrLength, rigidBodyAdditionalFactor,
                leftState, rightState, leftRightStateBoundary, runName, repoDir);
 
@@ -453,8 +447,7 @@ int main()
 
         t += testSolverClass.dt();
 
-        // if movingRigidBody == 1, consider rigid body velocity in ghost cell boundary Riemann problem
-        testSolverClass.updateGhostCellBoundary(movingRigidBody);
+        testSolverClass.updateGhostCellBoundary();
         testSolverClass.propagateGhostCell();
 
         testSolverClass.mhHllcSweepX();

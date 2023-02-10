@@ -43,7 +43,7 @@ public:
     void accelerateRigidBody_circ();
     void reinitLevelSet();
 
-    void updateGhostCellBoundary(int moving);
+    void updateGhostCellBoundary();
     void propagateGhostCell();
 
     void updateBoundaryTrans();
