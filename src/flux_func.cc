@@ -16,6 +16,32 @@
 #include <algorithm>
 #include <iostream>
 
+std::array<double, 4> vanLeerLimiter(std::array<double, 4> i_arr0, std::array<double, 4> i_arr1, std::array<double, 4> i_arr2)
+{
+    std::array<double, 4> delta_formerHalf = diffCell(i_arr1, i_arr0);
+    std::array<double, 4> delta_laterHalf = diffCell(i_arr2, i_arr1);
+
+    std::array<double, 4> r = divisionCell(delta_formerHalf, delta_laterHalf);
+
+    std::array<double, 4> e_L = divisionCell(scalingCell(2, r), scalarAdditionCell(1, r));
+    std::array<double, 4> e_R = scalarDivisionCell(2, scalarAdditionCell(1, r));
+
+    std::array<double, 4> cellToBeReturned;
+    for (int i = 0; i < 4; ++i)
+    {
+        if (r[i] < 0.0 || r[i] != r[i])
+        {
+            cellToBeReturned[i] = 0;
+        }
+        else
+        {
+            cellToBeReturned[i] = std::min(e_L[i], e_R[i]);
+        }
+    }
+
+    return cellToBeReturned;
+};
+
 std::array<double, 4> minbeeLimiter(std::array<double, 4> i_arr0, std::array<double, 4> i_arr1, std::array<double, 4> i_arr2)
 {
     std::array<double, 4> delta_formerHalf = diffCell(i_arr1, i_arr0);
@@ -29,7 +55,7 @@ std::array<double, 4> minbeeLimiter(std::array<double, 4> i_arr0, std::array<dou
     std::array<double, 4> cellToBeReturned;
     for (int i = 0; i < 4; ++i)
     {
-        if (r[i] <= 0)
+        if (r[i] < 0.0 || r[i] != r[i])
         {
             cellToBeReturned[i] = 0;
         }
@@ -59,7 +85,7 @@ std::array<double, 4> superbeeLimiter(std::array<double, 4> i_arr0, std::array<d
     std::array<double, 4> cellToBeReturned;
     for (int i = 0; i < 4; ++i)
     {
-        if (r[i] <= 0)
+        if (r[i] < 0.0 || r[i] != r[i])
         {
             cellToBeReturned[i] = 0;
         }

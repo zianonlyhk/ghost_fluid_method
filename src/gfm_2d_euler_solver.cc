@@ -16,7 +16,8 @@
 
 double calcMaxA_eachArr(std::array<double, 4> i_uVec, double i_gamma)
 {
-    double maxA = sqrt(primitiveX_Vel(i_uVec) * primitiveX_Vel(i_uVec) + primitiveY_Vel(i_uVec) * primitiveY_Vel(i_uVec)) + sqrt(i_gamma * primitivePressure(i_uVec) / i_uVec[0]);
+    double biggerAbsVel = std::max(abs(primitiveX_Vel(i_uVec)), abs(primitiveY_Vel(i_uVec)));
+    double maxA = biggerAbsVel + sqrt(i_gamma * primitivePressure(i_uVec) / i_uVec[0]);
 
     return maxA;
 }

@@ -182,7 +182,7 @@ std::array<double, 4> GhostFluidUtilities::ghostCellValues(const std::vector<std
     std::array<double, 2> normalComponent = {dotProduct * normalVec_realFluid[0], dotProduct * normalVec_realFluid[1]};
     std::array<double, 2> tangentialComponent = {mirrorVelX - normalComponent[0], mirrorVelY - normalComponent[1]};
 
-    std::array<double, 3> riemannLeftState = {mirrorState[0], dotProduct + rigidBodyVelDotProd, mirrorP};
+    std::array<double, 3> riemannLeftState = {mirrorState[0], dotProduct, mirrorP};
     std::array<double, 3> riemannRightState = {mirrorState[0], -dotProduct - rigidBodyVelDotProd, mirrorP};
 
     std::array<double, 3> starredState = HLLC_1D(riemannLeftState, riemannRightState);
