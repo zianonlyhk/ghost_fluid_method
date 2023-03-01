@@ -81,7 +81,7 @@ void writeToFileStream(std::ofstream &i_fstream, std::vector<std::vector<std::ar
             for (int i = 2; i < nCell_x + 2; ++i)
             {
                 double velSquare = primitiveX_Vel(i_inputVec[j][i]) * primitiveX_Vel(i_inputVec[j][i]) + primitiveY_Vel(i_inputVec[j][i]) * primitiveY_Vel(i_inputVec[j][i]);
-                double itnEnergy = primitivePressure(i_inputVec[j][i]) / (1.4 - 1) + 0.5 * i_inputVec[j][i][0] * velSquare;
+                double itnEnergy = (i_inputVec[j][i][3] - 0.5 * i_inputVec[j][i][0] * velSquare) / i_inputVec[j][i][0];
                 i_fstream << i_t << ' ' << i_x0 + (i - 2) * i_dx << ' ' << i_y0 + (j - 2) * i_dy << ' ' << itnEnergy << std::endl;
             }
 

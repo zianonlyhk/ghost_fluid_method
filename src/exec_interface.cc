@@ -424,9 +424,11 @@ int main()
     testSolverClass.setRigidBodyCentreCoor(initRigidBodyLoc);
 
     testSolverClass.updateBoundaryTrans();
+    // testSolverClass.updateBoundaryReflect();
     testSolverClass.calculateMockSchliren();
 
     testSolverClass.initiateDataLogging();
+    std::cout << 1 << ": " << 0 << " / " << testSolverClass.tStop() << std::endl;
 
     double t = 0.0;
     int numIter = 0;
@@ -444,12 +446,10 @@ int main()
 
         testSolverClass.mhHllcSweepX();
         testSolverClass.updateBoundaryTrans();
+        // testSolverClass.updateBoundaryReflect();
         testSolverClass.mhHllcSweepY();
         testSolverClass.updateBoundaryTrans();
-        // testSolverClass.slicSweepX();
-        // testSolverClass.updateBoundaryTrans();
-        // testSolverClass.slicSweepY();
-        // testSolverClass.updateBoundaryTrans();
+        // testSolverClass.updateBoundaryReflect();
 
         testSolverClass.calculateMockSchliren();
 
@@ -468,7 +468,7 @@ int main()
         if (numIter % loggingFactor == 0)
         {
             testSolverClass.writeToFiles(t);
-            std::cout << t << " / " << testSolverClass.tStop() << std::endl;
+            std::cout << numIter / loggingFactor + 1 << ": " << t << " / " << testSolverClass.tStop() << std::endl;
         }
 
     } while (t < testSolverClass.tStop());
