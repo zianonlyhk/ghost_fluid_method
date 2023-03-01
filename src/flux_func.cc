@@ -358,8 +358,8 @@ std::array<double, 4> FluxFunc::HLLC_Riemannflux_x(std::array<double, 4> i_UL, s
         q_R = 1;
     }
 
-    double S_L = std::min(u_L - a_L * q_L, u_R - a_R * q_R);
-    double S_R = std::min(u_L + a_L * q_L, u_R + a_R * q_R);
+    double S_L = u_L - a_L * q_L;
+    double S_R = u_R + a_R * q_R;
 
     double S_star = (p_R - p_L + rho_L * u_L * (S_L - u_L) - rho_R * u_R * (S_R - u_R)) / (rho_L * (S_L - u_L) - rho_R * (S_R - u_R));
 
