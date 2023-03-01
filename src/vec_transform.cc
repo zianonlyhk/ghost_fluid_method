@@ -524,6 +524,33 @@ void VecTran::fastSweepingConstantPropagation(std::vector<std::vector<std::array
             }
         }
     }
+    for (int j = yVecLen - 3; j > 1; --j)
+    {
+        insideRigidBody = false;
+        for (int i = 2; i < xVecLen - 2; ++i)
+        {
+            if (i_levelSet[j][i] <= 0 && !insideRigidBody)
+            {
+                insideRigidBody = true;
+                maxPhi = abs(i_levelSet[j][i]);
+                continue;
+            }
+
+            if (insideRigidBody) // starting to propagate each cell
+            {
+                if (abs(i_levelSet[j][i]) > maxPhi)
+                {
+                    maxPhi = abs(i_levelSet[j][i]);
+                    tempArr = ghostFluidUtilities.solveForConstantExtrapolation(i_levelSet, i_uVec, std::array<int, 2>{i, j}, i_dx, i_dy);
+                    std::copy(std::begin(tempArr), std::end(tempArr), std::begin(i_toBeReturned[j][i]));
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
+    }
 
     // -ve x axis sweep
 
@@ -566,6 +593,35 @@ void VecTran::fastSweepingConstantPropagation(std::vector<std::vector<std::array
                 {
                     // DEBUG
                     // std::cout << "just crossed the max, breaking" << std::endl;
+                    break;
+                }
+            }
+        }
+    }
+    for (int j = yVecLen - 3; j > 1; --j)
+    {
+        insideRigidBody = false;
+        for (int i = xVecLen - 3; i > 1; --i)
+        {
+            if (i_levelSet[j][i] <= 0 && !insideRigidBody)
+            {
+
+                insideRigidBody = true;
+                maxPhi = abs(i_levelSet[j][i]);
+                continue;
+            }
+            if (insideRigidBody) // starting to propagate each cell
+            {
+                // only solve if the next phi is bigger so not maxed yet
+                if (abs(i_levelSet[j][i]) > maxPhi)
+                {
+                    maxPhi = abs(i_levelSet[j][i]);
+                    tempArr = ghostFluidUtilities.solveForConstantExtrapolation(i_levelSet, i_uVec, std::array<int, 2>{i, j}, i_dx, i_dy);
+
+                    std::copy(std::begin(tempArr), std::end(tempArr), std::begin(i_toBeReturned[j][i]));
+                }
+                else
+                {
                     break;
                 }
             }
@@ -618,6 +674,33 @@ void VecTran::fastSweepingConstantPropagation(std::vector<std::vector<std::array
             }
         }
     }
+    for (int i = xVecLen - 3; i > 1; --i)
+    {
+        insideRigidBody = false;
+        for (int j = 2; j < yVecLen - 2; ++j)
+        {
+            if (i_levelSet[j][i] <= 0 && !insideRigidBody)
+            {
+                insideRigidBody = true;
+                maxPhi = abs(i_levelSet[j][i]);
+                continue;
+            }
+            if (insideRigidBody) // starting to propagate each cell
+            {
+                // only solve if the next phi is bigger so not maxed yet
+                if (abs(i_levelSet[j][i]) > maxPhi)
+                {
+                    maxPhi = abs(i_levelSet[j][i]);
+                    tempArr = ghostFluidUtilities.solveForConstantExtrapolation(i_levelSet, i_uVec, std::array<int, 2>{i, j}, i_dx, i_dy);
+                    std::copy(std::begin(tempArr), std::end(tempArr), std::begin(i_toBeReturned[j][i]));
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
+    }
 
     // -ve y axis sweep
 
@@ -660,6 +743,34 @@ void VecTran::fastSweepingConstantPropagation(std::vector<std::vector<std::array
                 {
                     // DEBUG
                     // std::cout << "just crossed the max, breaking" << std::endl;
+                    break;
+                }
+            }
+        }
+    }
+    for (int i = xVecLen - 3; i > 1; --i)
+    {
+        insideRigidBody = false;
+        for (int j = yVecLen - 3; j > 1; --j)
+        {
+            if (i_levelSet[j][i] <= 0 && !insideRigidBody)
+            {
+                insideRigidBody = true;
+                maxPhi = abs(i_levelSet[j][i]);
+                continue;
+            }
+
+            if (insideRigidBody) // starting to propagate each cell
+            {
+                // only solve if the next phi is bigger so not maxed yet
+                if (abs(i_levelSet[j][i]) > maxPhi)
+                {
+                    maxPhi = abs(i_levelSet[j][i]);
+                    tempArr = ghostFluidUtilities.solveForConstantExtrapolation(i_levelSet, i_uVec, std::array<int, 2>{i, j}, i_dx, i_dy);
+                    std::copy(std::begin(tempArr), std::end(tempArr), std::begin(i_toBeReturned[j][i]));
+                }
+                else
+                {
                     break;
                 }
             }

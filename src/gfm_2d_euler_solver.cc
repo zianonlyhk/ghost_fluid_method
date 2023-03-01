@@ -242,6 +242,33 @@ void GFM_2D_EulerSolver::updateBoundaryTrans()
     }
 }
 
+void GFM_2D_EulerSolver::updateBoundaryReflect()
+{
+    for (int i = 2; i < m_nCell_y + 2; ++i)
+    {
+        m_uVec[i][0] = m_uVec[i][3];
+        m_uVec[i][1] = m_uVec[i][2];
+        m_uVec[i][m_nCell_x + 3] = m_uVec[i][m_nCell_x];
+        m_uVec[i][m_nCell_x + 2] = m_uVec[i][m_nCell_x + 1];
+        m_uVec[i][0][1] *= -1;
+        m_uVec[i][1][1] *= -1;
+        m_uVec[i][m_nCell_x + 3][1] *= -1;
+        m_uVec[i][m_nCell_x + 2][1] *= -1;
+    }
+
+    for (int i = 2; i < m_nCell_x + 2; ++i)
+    {
+        m_uVec[0][i] = m_uVec[3][i];
+        m_uVec[1][i] = m_uVec[2][i];
+        m_uVec[m_nCell_y + 3][i] = m_uVec[m_nCell_y][i];
+        m_uVec[m_nCell_y + 2][i] = m_uVec[m_nCell_y + 1][i];
+        m_uVec[0][i][2] *= -1;
+        m_uVec[1][i][2] *= -1;
+        m_uVec[m_nCell_y + 3][i][2] *= -1;
+        m_uVec[m_nCell_y + 2][i][2] *= -1;
+    }
+}
+
 void GFM_2D_EulerSolver::mhHllcSweepX()
 {
     m_uVec = vecTran.musclHancockVecTranHLLC_x(m_uVec, m_dx, m_dt);

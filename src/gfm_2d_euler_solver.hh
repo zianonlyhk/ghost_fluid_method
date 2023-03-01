@@ -47,6 +47,7 @@ public:
     void propagateGhostCell();
 
     void updateBoundaryTrans();
+    void updateBoundaryReflect();
 
     void mhHllcSweepX();
     void mhHllcSweepY();
