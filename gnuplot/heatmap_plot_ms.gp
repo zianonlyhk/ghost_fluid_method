@@ -2,6 +2,7 @@
 
 cd 'data'
 
+set palette gray
 set terminal gif animate delay 5
 set output 'gif/msPlot.gif'
 set xyplane at 0

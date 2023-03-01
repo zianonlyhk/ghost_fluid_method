@@ -100,11 +100,15 @@ private:
     std::string m_name;
     std::string m_repoDir;
     std::ofstream m_rhoResults;
-    std::ofstream m_momentumX_Results;
-    std::ofstream m_momentumY_Results;
-    std::ofstream m_energyResults;
+    std::ofstream m_velMagResults;
+    std::ofstream m_pressureResults;
+    std::ofstream m_itnEnergyResults;
     std::ofstream m_msResults;
-    std::ofstream m_levelSetResults;
+
+    // std::ofstream m_momentumX_Results;
+    // std::ofstream m_momentumY_Results;
+    // std::ofstream m_energyResults;
+    // std::ofstream m_levelSetResults;
 
     // DYNAMIC ATTRIBUTES
     double m_aMax;

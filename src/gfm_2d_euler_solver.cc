@@ -13,6 +13,7 @@
 #include "inline/primitive_tran.hh"
 #include "inline/debug_tools.hh"
 #include <math.h>
+#include <stdexcept>
 
 double calcMaxA_eachArr(std::array<double, 4> i_uVec, double i_gamma)
 {
@@ -27,16 +28,72 @@ void writeToFileStream(std::ofstream &i_fstream, std::vector<std::vector<std::ar
     int nCell_y = i_inputVec.size() - 4;
     int nCell_x = i_inputVec[0].size() - 4;
 
-    for (int j = 2; j < nCell_y + 2; ++j)
+    // if i_idx=0 then plot {density}
+    if (i_idx == 0)
     {
-        for (int i = 2; i < nCell_x + 2; ++i)
+        for (int j = 2; j < nCell_y + 2; ++j)
         {
-            i_fstream << i_t << ' ' << i_x0 + (i - 2) * i_dx << ' ' << i_y0 + (j - 2) * i_dy << ' ' << i_inputVec[j][i][i_idx] << std::endl;
-        }
+            for (int i = 2; i < nCell_x + 2; ++i)
+            {
+                i_fstream << i_t << ' ' << i_x0 + (i - 2) * i_dx << ' ' << i_y0 + (j - 2) * i_dy << ' ' << i_inputVec[j][i][0] << std::endl;
+            }
 
+            i_fstream << std::endl;
+        }
         i_fstream << std::endl;
     }
-    i_fstream << std::endl;
+
+    // if i_idx=1 then plot {velMag}
+    else if (i_idx == 1)
+    {
+        for (int j = 2; j < nCell_y + 2; ++j)
+        {
+            for (int i = 2; i < nCell_x + 2; ++i)
+            {
+                double velMag = sqrt(primitiveX_Vel(i_inputVec[j][i]) * primitiveX_Vel(i_inputVec[j][i]) + primitiveY_Vel(i_inputVec[j][i]) * primitiveY_Vel(i_inputVec[j][i]));
+                i_fstream << i_t << ' ' << i_x0 + (i - 2) * i_dx << ' ' << i_y0 + (j - 2) * i_dy << ' ' << velMag << std::endl;
+            }
+
+            i_fstream << std::endl;
+        }
+        i_fstream << std::endl;
+    }
+    // if i_idx=2 then plot {pressure}
+    else if (i_idx == 2)
+    {
+        for (int j = 2; j < nCell_y + 2; ++j)
+        {
+            for (int i = 2; i < nCell_x + 2; ++i)
+            {
+                i_fstream << i_t << ' ' << i_x0 + (i - 2) * i_dx << ' ' << i_y0 + (j - 2) * i_dy << ' ' << primitivePressure(i_inputVec[j][i]) << std::endl;
+            }
+
+            i_fstream << std::endl;
+        }
+        i_fstream << std::endl;
+    }
+
+    // if i_idx=3 then plot {itnEnergy}
+    else if (i_idx == 3)
+    {
+        for (int j = 2; j < nCell_y + 2; ++j)
+        {
+            for (int i = 2; i < nCell_x + 2; ++i)
+            {
+                double velSquare = primitiveX_Vel(i_inputVec[j][i]) * primitiveX_Vel(i_inputVec[j][i]) + primitiveY_Vel(i_inputVec[j][i]) * primitiveY_Vel(i_inputVec[j][i]);
+                double itnEnergy = primitivePressure(i_inputVec[j][i]) / (1.4 - 1) + 0.5 * i_inputVec[j][i][0] * velSquare;
+                i_fstream << i_t << ' ' << i_x0 + (i - 2) * i_dx << ' ' << i_y0 + (j - 2) * i_dy << ' ' << itnEnergy << std::endl;
+            }
+
+            i_fstream << std::endl;
+        }
+        i_fstream << std::endl;
+    }
+
+    else
+    {
+        throw std::invalid_argument("idx at write file can only be 0,1,2,3");
+    }
 }
 
 void writeToFileStream(std::ofstream &i_fstream, std::vector<std::vector<double>> const &i_mockschlieren, double i_x0, double i_dx, double i_y0, double i_dy, double i_t)
@@ -297,38 +354,34 @@ void GFM_2D_EulerSolver::calculateMockSchliren()
 void GFM_2D_EulerSolver::initiateDataLogging()
 {
     m_rhoResults.open(m_repoDir + (std::string) "data/" + m_name + (std::string) "_rhoResults.dat");
-    m_momentumX_Results.open(m_repoDir + (std::string) "data/" + m_name + (std::string) "_momentumX_Results.dat");
-    m_momentumY_Results.open(m_repoDir + (std::string) "data/" + m_name + (std::string) "_momentumY_Results.dat");
-    m_energyResults.open(m_repoDir + (std::string) "data/" + m_name + (std::string) "_energyResults.dat");
+    m_velMagResults.open(m_repoDir + (std::string) "data/" + m_name + (std::string) "_velMagResults.dat");
+    m_pressureResults.open(m_repoDir + (std::string) "data/" + m_name + (std::string) "_pressureResults.dat");
+    m_itnEnergyResults.open(m_repoDir + (std::string) "data/" + m_name + (std::string) "_itnEnergyResults.dat");
     m_msResults.open(m_repoDir + (std::string) "data/" + m_name + (std::string) "_msResults.dat");
-    m_levelSetResults.open(m_repoDir + (std::string) "data/" + m_name + (std::string) "_levelSetResults.dat");
 
     writeToFileStream(m_rhoResults, m_uVec, m_x0, m_dx, m_y0, m_dy, 0, 0);
-    writeToFileStream(m_momentumX_Results, m_uVec, m_x0, m_dx, m_y0, m_dy, 0, 1);
-    writeToFileStream(m_momentumY_Results, m_uVec, m_x0, m_dx, m_y0, m_dy, 0, 2);
-    writeToFileStream(m_energyResults, m_uVec, m_x0, m_dx, m_y0, m_dy, 0, 3);
+    writeToFileStream(m_velMagResults, m_uVec, m_x0, m_dx, m_y0, m_dy, 0, 1);
+    writeToFileStream(m_pressureResults, m_uVec, m_x0, m_dx, m_y0, m_dy, 0, 2);
+    writeToFileStream(m_itnEnergyResults, m_uVec, m_x0, m_dx, m_y0, m_dy, 0, 3);
     writeToFileStream(m_msResults, m_mockschlieren, m_x0, m_dx, m_y0, m_dy, 0);
-    writeToFileStream(m_levelSetResults, m_levelSet, m_x0, m_dx, m_y0, m_dy, 0);
 }
 
 void GFM_2D_EulerSolver::writeToFiles(double i_time)
 {
     writeToFileStream(m_rhoResults, m_uVec, m_x0, m_dx, m_y0, m_dy, i_time, 0);
-    writeToFileStream(m_momentumX_Results, m_uVec, m_x0, m_dx, m_y0, m_dy, i_time, 1);
-    writeToFileStream(m_momentumY_Results, m_uVec, m_x0, m_dx, m_y0, m_dy, i_time, 2);
-    writeToFileStream(m_energyResults, m_uVec, m_x0, m_dx, m_y0, m_dy, i_time, 3);
+    writeToFileStream(m_velMagResults, m_uVec, m_x0, m_dx, m_y0, m_dy, i_time, 1);
+    writeToFileStream(m_pressureResults, m_uVec, m_x0, m_dx, m_y0, m_dy, i_time, 2);
+    writeToFileStream(m_itnEnergyResults, m_uVec, m_x0, m_dx, m_y0, m_dy, i_time, 3);
     writeToFileStream(m_msResults, m_mockschlieren, m_x0, m_dx, m_y0, m_dy, i_time);
-    writeToFileStream(m_levelSetResults, m_levelSet, m_x0, m_dx, m_y0, m_dy, i_time);
 }
 
 void GFM_2D_EulerSolver::cleanUp()
 {
     m_rhoResults.close();
-    m_momentumX_Results.close();
-    m_momentumY_Results.close();
-    m_energyResults.close();
+    m_velMagResults.close();
+    m_pressureResults.close();
+    m_itnEnergyResults.close();
     m_msResults.close();
-    m_levelSetResults.close();
 }
 
 const int GFM_2D_EulerSolver::nCell_x() { return m_nCell_x; }
