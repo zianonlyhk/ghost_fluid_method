@@ -1,8 +1,8 @@
 #! /opt/homebrew/bin/gnuplot
 
 cd 'data'
-
 set size ratio 0.5
+set palette gray
 set terminal gif animate delay 5
 set output 'gif/rhoPlot.gif'
 set xyplane at 0

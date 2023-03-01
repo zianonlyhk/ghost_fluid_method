@@ -284,13 +284,7 @@ void setInitialConditions(std::vector<std::vector<std::array<double, 4>>> &i_inp
         {
             currX = i_x0 + (i - 2) * dx;
             currY = i_y0 + (j - 2) * dy;
-
-            // i_levelSetFunc[j][i] = singleCircleLevelSetFunc(0.2, 0.6, 0.5, currX, currY);
-            // i_levelSetFunc[j][i] = singleSqaureLevelSetFunc(0.4, 0.6, 0.5, currX, currY);
-            // i_levelSetFunc[j][i] = doubleCircleLevelSetFunc(0.2, 0.2, 0.6, 0.6, 0.25, 0.75, currX, currY);
-            // i_levelSetFunc[j][i] = doubleCircleLevelSetFunc(0.2, 0.2, 0.6, 0.6, 0.35, 0.65, currX, currY);
-            // i_levelSetFunc[j][i] = oneD_WallLevelSetFunc(0.6, currX, currY);
-            i_levelSetFunc[j][i] = singleCircleLevelSetFunc(0.15, 0.2, 0.5, currX, currY);
+            i_levelSetFunc[j][i] = 999;
         }
     }
 
@@ -301,16 +295,14 @@ void setInitialConditions(std::vector<std::vector<std::array<double, 4>>> &i_inp
             currX = i_x0 + (i - 2) * dx;
             currY = i_y0 + (j - 2) * dy;
 
-            if (currX <= 0.2)
+            // if (currX <= 0.5)
+            if (0.4 - sqrt((currX - 1) * (currX - 1) + (currY - 1) * (currY - 1)) > 0)
             {
-                // i_inputVec[j][i] = (std::array<double, 4>){1.3764, 0.394, 0.0, 1.5698};
                 i_inputVec[j][i] = (std::array<double, 4>){1, 0.0, 0.0, 1};
-                // i_inputVec[j][i] = (std::array<double, 4>){1, 1.0, 0.0, 1};
             }
             else
             {
-                i_inputVec[j][i] = (std::array<double, 4>){1, 0.0, 0.0, 1};
-                // i_inputVec[j][i] = (std::array<double, 4>){1, 1.0, 0.0, 1};
+                i_inputVec[j][i] = (std::array<double, 4>){0.125, 0.0, 0.0, 0.1};
             }
         }
     }
@@ -454,6 +446,10 @@ int main()
         testSolverClass.updateBoundaryTrans();
         testSolverClass.mhHllcSweepY();
         testSolverClass.updateBoundaryTrans();
+        // testSolverClass.slicSweepX();
+        // testSolverClass.updateBoundaryTrans();
+        // testSolverClass.slicSweepY();
+        // testSolverClass.updateBoundaryTrans();
 
         testSolverClass.calculateMockSchliren();
 

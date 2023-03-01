@@ -3,26 +3,26 @@ x0 0.0
 x1 1.0
 y0 0.0
 y1 1.0
-nCells_x 201
-nCells_y 201
+nCells_x 221
+nCells_y 221
 
 ###### TEMPORAL PARAMETERS ######
 c 0.999
-tStop 1.5
+tStop 1.0
 
 ###### RIGID BODY DYNAMICS ######
-initRigidBodyLoc 0.6 0.5
-initRigidBodyVel 0.0 0.0
-acceleratingRigidBody 0
+initRigidBodyLoc 0.2 0.5
+initRigidBodyVel 0.0 -1.0
+acceleratingRigidBody 1
 
 ###### RIGID BODY GEOMETRY ######
 rigidBodyType 1
-rigidBodyRadiusOrLength 0.2
+rigidBodyRadiusOrLength 0.15
 rigidBodyAdditionalFactor 0.25
 reinitFactor 1
 
 ###### LEFT AND RIGHT STATES ######
-leftState 1.3764 0.394 0.0 1.5698
+leftState 1.0 0.0 0.0 1.0
 rightState 1.0 0.0 0.0 1.0
 leftRightStateBoundary 0.2
 

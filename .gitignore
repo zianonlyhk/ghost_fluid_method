@@ -86,9 +86,10 @@ Temporary Items
 
 # Zian adding
 
-bin/*
-data/*
-obj/*
-doc/*
-debug/*
-example/*
+bin/
+data/
+obj/
+doc/
+debug/
+example/
+config_files/
