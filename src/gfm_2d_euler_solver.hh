@@ -104,11 +104,7 @@ private:
     std::ofstream m_pressureResults;
     std::ofstream m_itnEnergyResults;
     std::ofstream m_msResults;
-
-    // std::ofstream m_momentumX_Results;
-    // std::ofstream m_momentumY_Results;
-    // std::ofstream m_energyResults;
-    // std::ofstream m_levelSetResults;
+    std::ofstream m_levelSetResults;
 
     // DYNAMIC ATTRIBUTES
     double m_aMax;

@@ -96,16 +96,16 @@ void writeToFileStream(std::ofstream &i_fstream, std::vector<std::vector<std::ar
     }
 }
 
-void writeToFileStream(std::ofstream &i_fstream, std::vector<std::vector<double>> const &i_mockschlieren, double i_x0, double i_dx, double i_y0, double i_dy, double i_t)
+void writeToFileStream(std::ofstream &i_fstream, std::vector<std::vector<double>> const &i_msOrLevelSet, double i_x0, double i_dx, double i_y0, double i_dy, double i_t)
 {
-    int nCell_y = i_mockschlieren.size() - 4;
-    int nCell_x = i_mockschlieren[0].size() - 4;
+    int nCell_y = i_msOrLevelSet.size() - 4;
+    int nCell_x = i_msOrLevelSet[0].size() - 4;
 
     for (int j = 2; j < nCell_y + 2; ++j)
     {
         for (int i = 2; i < nCell_x + 2; ++i)
         {
-            i_fstream << i_t << ' ' << i_x0 + (i - 2) * i_dx << ' ' << i_y0 + (j - 2) * i_dy << ' ' << i_mockschlieren[j][i] << std::endl;
+            i_fstream << i_t << ' ' << i_x0 + (i - 2) * i_dx << ' ' << i_y0 + (j - 2) * i_dy << ' ' << i_msOrLevelSet[j][i] << std::endl;
         }
 
         i_fstream << std::endl;
@@ -358,12 +358,14 @@ void GFM_2D_EulerSolver::initiateDataLogging()
     m_pressureResults.open(m_repoDir + (std::string) "data/" + m_name + (std::string) "_pressureResults.dat");
     m_itnEnergyResults.open(m_repoDir + (std::string) "data/" + m_name + (std::string) "_itnEnergyResults.dat");
     m_msResults.open(m_repoDir + (std::string) "data/" + m_name + (std::string) "_msResults.dat");
+    m_levelSetResults.open(m_repoDir + (std::string) "data/" + m_name + (std::string) "_levelSetResults.dat");
 
     writeToFileStream(m_rhoResults, m_uVec, m_x0, m_dx, m_y0, m_dy, 0, 0);
     writeToFileStream(m_velMagResults, m_uVec, m_x0, m_dx, m_y0, m_dy, 0, 1);
     writeToFileStream(m_pressureResults, m_uVec, m_x0, m_dx, m_y0, m_dy, 0, 2);
     writeToFileStream(m_itnEnergyResults, m_uVec, m_x0, m_dx, m_y0, m_dy, 0, 3);
     writeToFileStream(m_msResults, m_mockschlieren, m_x0, m_dx, m_y0, m_dy, 0);
+    writeToFileStream(m_levelSetResults, m_mockschlieren, m_x0, m_dx, m_y0, m_dy, 0);
 }
 
 void GFM_2D_EulerSolver::writeToFiles(double i_time)
@@ -373,6 +375,7 @@ void GFM_2D_EulerSolver::writeToFiles(double i_time)
     writeToFileStream(m_pressureResults, m_uVec, m_x0, m_dx, m_y0, m_dy, i_time, 2);
     writeToFileStream(m_itnEnergyResults, m_uVec, m_x0, m_dx, m_y0, m_dy, i_time, 3);
     writeToFileStream(m_msResults, m_mockschlieren, m_x0, m_dx, m_y0, m_dy, i_time);
+    writeToFileStream(m_levelSetResults, m_levelSet, m_x0, m_dx, m_y0, m_dy, i_time);
 }
 
 void GFM_2D_EulerSolver::cleanUp()
@@ -382,6 +385,7 @@ void GFM_2D_EulerSolver::cleanUp()
     m_pressureResults.close();
     m_itnEnergyResults.close();
     m_msResults.close();
+    m_levelSetResults.close();
 }
 
 const int GFM_2D_EulerSolver::nCell_x() { return m_nCell_x; }
