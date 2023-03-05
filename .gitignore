@@ -86,10 +86,9 @@ Temporary Items
 
 # Zian adding
 
-bin/
-data/
-obj/
-doc/
-debug/
-example/
-results_configs/
+bin/run_simulation
+data/*
+debug/*
+doc/*
+obj/*.o
+results_configs/*
