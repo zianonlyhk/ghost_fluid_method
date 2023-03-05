@@ -87,7 +87,10 @@ Temporary Items
 # Zian adding
 
 bin/run_simulation
-data/*
+data/*.dat
+data/config.txt
+data/log.txt
+data/gif
 debug/*
 doc/*
 obj/*.o
