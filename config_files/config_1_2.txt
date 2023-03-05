@@ -8,7 +8,7 @@ nCells_y 101
 
 ###### TEMPORAL PARAMETERS ######
 c 0.9
-tStop 2.0
+tStop 0.25
 
 ###### RIGID BODY DYNAMICS ######
 initRigidBodyLoc 0.2 0.5
@@ -17,8 +17,8 @@ acceleratingRigidBody 1
 
 ###### RIGID BODY GEOMETRY ######
 rigidBodyType 1
-rigidBodyRadiusOrLength 0.15
-rigidBodyAdditionalFactor 0.0
+rigidBodyRadiusOrLength 0.125
+rigidBodyAdditionalFactor 0.25
 reinitFactor 1
 
 ###### LEFT AND RIGHT STATES ######
@@ -27,7 +27,7 @@ rightState 1.0 0.0 0.0 1.0
 leftRightStateBoundary 0.2
 
 ###### DATA LOGGING ######
-loggingFactor 10
+loggingFactor 2
 runName test
 
 # edit the directory of the repository here in the format:
