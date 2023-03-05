@@ -84,8 +84,6 @@ Temporary Items
 
 # End of https://www.toptal.com/developers/gitignore/api/macos,c++,visualstudiocode
 
-# Zian adding
-
 bin/run_simulation
 data/*.dat
 data/config.txt

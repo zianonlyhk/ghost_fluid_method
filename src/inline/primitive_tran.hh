@@ -1,14 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                                            */
-/*   primitive_tran.hh                                 Personal Website       */
-/*                                                    ##################      */
-/*   By: Zian Huang <zianhuang00@gmail.com>           || room214n.com ||      */
-/*                                                    ##################      */
-/*   Created: 2023/02/02 14:54:16 by Zian Huang                               */
-/*                                                                            */
-/* ************************************************************************** */
-
 #ifndef INLINE_PRIMITIVE_TRAN_HH
 #define INLINE_PRIMITIVE_TRAN_HH
 

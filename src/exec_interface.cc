@@ -1,14 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                                            */
-/*   exec_interface.cc                                 Personal Website       */
-/*                                                    ##################      */
-/*   By: Zian Huang <zianhuang00@gmail.com>           || room214n.com ||      */
-/*                                                    ##################      */
-/*   Created: 2023/02/02 14:54:13 by Zian Huang                               */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "inline/debug_tools.hh"
 #include "gfm_2d_euler_solver.hh"
 #include <fstream>

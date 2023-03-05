@@ -1,14 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                                            */
-/*   ghost_fluid_utilities.cc                          Personal Website       */
-/*                                                    ##################      */
-/*   By: Zian Huang <zianhuang00@gmail.com>           || room214n.com ||      */
-/*                                                    ##################      */
-/*   Created: 2023/02/02 14:53:49 by Zian Huang                               */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "ghost_fluid_utilities.hh"
 #include "inline/cell_operation.hh"
 #include "inline/primitive_tran.hh"

@@ -1,14 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                                            */
-/*   flux_func.cc                                      Personal Website       */
-/*                                                    ##################      */
-/*   By: Zian Huang <zianhuang00@gmail.com>           || room214n.com ||      */
-/*                                                    ##################      */
-/*   Created: 2023/02/02 14:54:06 by Zian Huang                               */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "flux_func.hh"
 #include "inline/primitive_tran.hh"
 #include "inline/cell_operation.hh"

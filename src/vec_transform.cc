@@ -1,14 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                                            */
-/*   vec_transform.cc                                  Personal Website       */
-/*                                                    ##################      */
-/*   By: Zian Huang <zianhuang00@gmail.com>           || room214n.com ||      */
-/*                                                    ##################      */
-/*   Created: 2023/02/02 14:53:40 by Zian Huang                               */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "vec_transform.hh"
 #include "inline/cell_operation.hh"
 #include "inline/debug_tools.hh"

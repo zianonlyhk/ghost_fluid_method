@@ -1,14 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                                            */
-/*   gfm_2d_euler_solver.cc                            Personal Website       */
-/*                                                    ##################      */
-/*   By: Zian Huang <zianhuang00@gmail.com>           || room214n.com ||      */
-/*                                                    ##################      */
-/*   Created: 2023/02/02 14:53:57 by Zian Huang                               */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "gfm_2d_euler_solver.hh"
 #include "inline/primitive_tran.hh"
 #include "inline/debug_tools.hh"
