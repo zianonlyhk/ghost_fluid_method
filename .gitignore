@@ -84,12 +84,7 @@ Temporary Items
 
 # End of https://www.toptal.com/developers/gitignore/api/macos,c++,visualstudiocode
 
-bin/run_simulation
-data/*.dat
-data/config.txt
-data/log.txt
-data/gif
-debug/*
-doc/*
-obj/*.o
-results_configs/*
+bin/
+obj/
+tmp/
+output/

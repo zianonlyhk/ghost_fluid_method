@@ -4,6 +4,9 @@
 #include <iostream>
 #include <stdexcept>
 #include <math.h>
+#include <filesystem>
+#include <unordered_set>
+#include <functional>
 
 #define PI 3.14159265
 
@@ -13,145 +16,98 @@ void loadConfig(int &i_nCells_x, int &i_nCells_y, double &i_x0, double &i_x1, do
                 std::array<double, 4> &i_leftState, std::array<double, 4> &i_rightState, double &i_leftRightStateBoundary,
                 std::string &i_runName, std::string &i_repoDir)
 {
+    // Set default values for optional parameters
+    i_runName = "test";
+    i_repoDir = std::filesystem::current_path().string();
+    i_reinitFactor = 1;
+
+    // Open config file
     std::ifstream in("./config.txt");
+    if (!in.is_open()) {
+        throw std::runtime_error("Failed to open config.txt");
+    }
+
+    std::unordered_set<std::string> required_params = {
+        "nCells_x", "nCells_y", "x0", "x1", "y0", "y1", 
+        "c", "tStop", "loggingFactor",
+        "rigidBodyType", "initRigidBodyVel", "initRigidBodyLoc",
+        "rigidBodyRadiusOrLength", "leftState", "rightState",
+        "leftRightStateBoundary"
+    };
+
+    auto readInt = [&](int &val, bool positive = false, int min = 0, int max = 0) {
+        if (!(in >> val)) throw std::runtime_error("Invalid integer value");
+        if (positive && val <= 0) throw std::runtime_error("Value must be positive");
+        if (min != max && (val < min || val > max)) throw std::runtime_error("Value must be between " + std::to_string(min) + " and " + std::to_string(max));
+    };
+
+    auto readDouble = [&](double &val, bool positive = false, double min = 0.0, double max = 0.0) {
+        if (!(in >> val)) throw std::runtime_error("Invalid double value");
+        if (positive && val <= 0) throw std::runtime_error("Value must be positive");
+        if (min != max && (val < min || val > max)) throw std::runtime_error("Value must be between " + std::to_string(min) + " and " + std::to_string(max));
+    };
+
+    auto readString = [&](std::string &val) {
+        if (!(in >> val)) throw std::runtime_error("Invalid string value");
+    };
+
+    auto readArray = [&](auto &arr, size_t size) {
+        for (size_t i = 0; i < size; ++i) {
+            if (!(in >> arr[i])) throw std::runtime_error("Invalid array element at index " + std::to_string(i));
+        }
+    };
+
+    // Define parameter handlers
+    std::unordered_map<std::string, std::function<void()>> param_handlers = {
+        {"nCells_x", [&](){ readInt(i_nCells_x, true); required_params.erase("nCells_x"); }},
+        {"nCells_y", [&](){ readInt(i_nCells_y, true); required_params.erase("nCells_y"); }},
+        {"x0", [&](){ readDouble(i_x0); required_params.erase("x0"); }},
+        {"x1", [&](){ readDouble(i_x1); required_params.erase("x1"); }},
+        {"y0", [&](){ readDouble(i_y0); required_params.erase("y0"); }},
+        {"y1", [&](){ readDouble(i_y1); required_params.erase("y1"); }},
+        {"c", [&](){ readDouble(i_c); required_params.erase("c"); }},
+        {"tStop", [&](){ readDouble(i_tStop, true); required_params.erase("tStop"); }},
+        {"loggingFactor", [&](){ readInt(i_loggingFactor, true); required_params.erase("loggingFactor"); }},
+        {"reinitFactor", [&](){ readInt(i_reinitFactor); }},
+        {"rigidBodyType", [&](){ readInt(i_rigidBodyType, false, 1, 3); required_params.erase("rigidBodyType"); }},
+        {"acceleratingRigidBody", [&](){ readInt(i_acceleratingRigidBody); }},
+        {"initRigidBodyVel", [&](){ readArray(i_initRigidBodyVel, 2); required_params.erase("initRigidBodyVel"); }},
+        {"initRigidBodyLoc", [&](){ readArray(i_initRigidBodyLoc, 2); required_params.erase("initRigidBodyLoc"); }},
+        {"rigidBodyRadiusOrLength", [&](){ readDouble(i_rigidBodyRadiusOrLength); required_params.erase("rigidBodyRadiusOrLength"); }},
+        {"rigidBodyAdditionalFactor", [&](){ readDouble(i_rigidBodyAdditionalFactor); }},
+        {"leftState", [&](){ readArray(i_leftState, 4); required_params.erase("leftState"); }},
+        {"rightState", [&](){ readArray(i_rightState, 4); required_params.erase("rightState"); }},
+        {"leftRightStateBoundary", [&](){ 
+            readDouble(i_leftRightStateBoundary); 
+            if (i_leftRightStateBoundary <= i_x0 || i_leftRightStateBoundary >= i_x1) {
+                throw std::runtime_error("leftRightStateBoundary must be between x0 and x1");
+            }
+            required_params.erase("leftRightStateBoundary"); 
+        }},
+        {"runName", [&](){ readString(i_runName); }}
+    };
 
     std::string parameter;
-
-    // dummie disposable variables
-    double double_value;
-    int int_value;
-    std::string string_value;
-    std::array<double, 2> initRigidBody_value;
-    std::array<double, 4> leftRightState_value;
-
-    while (!in.eof())
-    {
-        // if no read string fits the required parameter, do nothing
-        in >> parameter;
-
-        if (parameter == "nCells_x")
-        {
-            in >> int_value;
-            i_nCells_x = int_value;
-        }
-        else if (parameter == "nCells_y")
-        {
-            in >> int_value;
-            i_nCells_y = int_value;
-        }
-        else if (parameter == "x0")
-        {
-            in >> double_value;
-            i_x0 = double_value;
-        }
-        else if (parameter == "x1")
-        {
-            in >> double_value;
-            i_x1 = double_value;
-        }
-        else if (parameter == "y0")
-        {
-            in >> double_value;
-            i_y0 = double_value;
-        }
-        else if (parameter == "y1")
-        {
-            in >> double_value;
-            i_y1 = double_value;
-        }
-        else if (parameter == "c")
-        {
-            in >> double_value;
-            i_c = double_value;
-        }
-        else if (parameter == "tStop")
-        {
-            in >> double_value;
-            i_tStop = double_value;
-        }
-        else if (parameter == "loggingFactor")
-        {
-            in >> int_value;
-            i_loggingFactor = int_value;
-        }
-        else if (parameter == "reinitFactor")
-        {
-            in >> int_value;
-            i_reinitFactor = int_value;
-        }
-        else if (parameter == "rigidBodyType")
-        {
-            in >> int_value;
-            i_rigidBodyType = int_value;
-        }
-        else if (parameter == "acceleratingRigidBody")
-        {
-            in >> int_value;
-            i_acceleratingRigidBody = int_value;
-        }
-        else if (parameter == "initRigidBodyVel")
-        {
-            in >> double_value;
-            i_initRigidBodyVel[0] = double_value;
-            in >> double_value;
-            i_initRigidBodyVel[1] = double_value;
-        }
-        else if (parameter == "initRigidBodyLoc")
-        {
-            in >> double_value;
-            i_initRigidBodyLoc[0] = double_value;
-            in >> double_value;
-            i_initRigidBodyLoc[1] = double_value;
-        }
-        else if (parameter == "rigidBodyRadiusOrLength")
-        {
-            in >> double_value;
-            i_rigidBodyRadiusOrLength = double_value;
-        }
-        else if (parameter == "rigidBodyAdditionalFactor")
-        {
-            in >> double_value;
-            i_rigidBodyAdditionalFactor = double_value;
-        }
-        else if (parameter == "leftState")
-        {
-            in >> double_value;
-            i_leftState[0] = double_value;
-            in >> double_value;
-            i_leftState[1] = double_value;
-            in >> double_value;
-            i_leftState[2] = double_value;
-            in >> double_value;
-            i_leftState[3] = double_value;
-        }
-        else if (parameter == "rightState")
-        {
-            in >> double_value;
-            i_rightState[0] = double_value;
-            in >> double_value;
-            i_rightState[1] = double_value;
-            in >> double_value;
-            i_rightState[2] = double_value;
-            in >> double_value;
-            i_rightState[3] = double_value;
-        }
-        else if (parameter == "leftRightStateBoundary")
-        {
-            in >> double_value;
-            i_leftRightStateBoundary = double_value;
-        }
-        else if (parameter == "runName")
-        {
-            in >> string_value;
-            i_runName = string_value;
-        }
-        else if (parameter == "repoDir")
-        {
-            in >> string_value;
-            i_repoDir = string_value;
+    while (in >> parameter) {
+        try {
+            auto handler = param_handlers.find(parameter);
+            if (handler != param_handlers.end()) {
+                handler->second();
+            }
+        } catch (const std::exception &e) {
+            throw std::runtime_error("Error reading parameter '" + parameter + "': " + e.what());
         }
     }
     in.close();
+
+    if (!required_params.empty()) {
+        std::string missing_params;
+        for (const auto& param : required_params) {
+            missing_params += param + ", ";
+        }
+        missing_params.erase(missing_params.length() - 2);
+        throw std::runtime_error("Missing required parameters in config.txt: " + missing_params);
+    }
 }
 
 double singleCircleLevelSetFunc(double i_r, double i_centre_x, double i_centre_y, double i_x, double i_y)
@@ -403,21 +359,21 @@ int main()
     conservativeFormTransform(compDomain);
 
     // constructing solver class and initiate with read states
-    GFM_2D_EulerSolver testSolverClass(compDomain, nCells_x, nCells_y);
-    testSolverClass.setBound(x0, x1, y0, y1, tStop);
-    testSolverClass.setCFL(c);
-    testSolverClass.setName(runName);
-    testSolverClass.setRepoDir(repoDir);
-    testSolverClass.setLevelSet(levelSetCompDomain);
-    testSolverClass.setRigidBodyVel(initRigidBodyVel);
-    testSolverClass.setRigidBodyCentreCoor(initRigidBodyLoc);
+    GFM_2D_EulerSolver gfmSolverClass(compDomain, nCells_x, nCells_y);
+    gfmSolverClass.setBound(x0, x1, y0, y1, tStop);
+    gfmSolverClass.setCFL(c);
+    gfmSolverClass.setName(runName);
+    gfmSolverClass.setRepoDir(repoDir);
+    gfmSolverClass.setLevelSet(levelSetCompDomain);
+    gfmSolverClass.setRigidBodyVel(initRigidBodyVel);
+    gfmSolverClass.setRigidBodyCentreCoor(initRigidBodyLoc);
 
-    testSolverClass.updateBoundaryTrans();
-    // testSolverClass.updateBoundaryReflect();
-    testSolverClass.calculateMockSchliren();
+    gfmSolverClass.updateBoundaryTrans();
+    // gfmSolverClass.updateBoundaryReflect();
+    gfmSolverClass.calculateMockSchliren();
 
-    testSolverClass.initiateDataLogging();
-    std::cout << 1 << ": " << 0 << " / " << testSolverClass.tStop() << std::endl;
+    gfmSolverClass.initiateOutputLogging();
+    std::cout << 1 << ": " << 0 << " / " << gfmSolverClass.tStop() << std::endl;
 
     double t = 0.0;
     int numIter = 0;
@@ -425,44 +381,44 @@ int main()
     {
         ++numIter;
 
-        testSolverClass.updateMaxA(numIter);
-        testSolverClass.updateDt();
+        gfmSolverClass.updateMaxA(numIter);
+        gfmSolverClass.updateDt();
 
-        t += testSolverClass.dt();
+        t += gfmSolverClass.dt();
 
-        testSolverClass.updateGhostCellBoundary();
-        testSolverClass.propagateGhostCell();
+        gfmSolverClass.updateGhostCellBoundary();
+        gfmSolverClass.propagateGhostCell();
 
-        testSolverClass.mhHllcSweepX();
-        testSolverClass.updateBoundaryTrans();
-        // testSolverClass.updateBoundaryReflect();
-        testSolverClass.mhHllcSweepY();
-        testSolverClass.updateBoundaryTrans();
-        // testSolverClass.updateBoundaryReflect();
+        gfmSolverClass.mhHllcSweepX();
+        gfmSolverClass.updateBoundaryTrans();
+        // gfmSolverClass.updateBoundaryReflect();
+        gfmSolverClass.mhHllcSweepY();
+        gfmSolverClass.updateBoundaryTrans();
+        // gfmSolverClass.updateBoundaryReflect();
 
-        testSolverClass.calculateMockSchliren();
+        gfmSolverClass.calculateMockSchliren();
 
         if (acceleratingRigidBody == 1)
         {
-            testSolverClass.accelerateRigidBody_circ();
+            gfmSolverClass.accelerateRigidBody_circ();
         }
-        testSolverClass.advectLevelSet();
-        testSolverClass.updateLevelSetBoundaryTrans();
+        gfmSolverClass.advectLevelSet();
+        gfmSolverClass.updateLevelSetBoundaryTrans();
 
         if (numIter % reinitFactor == 0)
         {
-            testSolverClass.reinitLevelSet();
+            gfmSolverClass.reinitLevelSet();
         }
 
         if (numIter % loggingFactor == 0)
         {
-            testSolverClass.writeToFiles(t);
-            std::cout << numIter / loggingFactor + 1 << ": " << t << " / " << testSolverClass.tStop() << std::endl;
+            gfmSolverClass.writeToFiles(t);
+            std::cout << numIter / loggingFactor + 1 << ": " << t << " / " << gfmSolverClass.tStop() << std::endl;
         }
 
-    } while (t < testSolverClass.tStop());
+    } while (t < gfmSolverClass.tStop());
 
-    testSolverClass.cleanUp();
+    gfmSolverClass.cleanUp();
 
     return 0;
 }

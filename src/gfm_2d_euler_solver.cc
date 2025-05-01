@@ -340,15 +340,22 @@ void GFM_2D_EulerSolver::calculateMockSchliren()
     m_mockschlieren = vecTran.mockSchlierenTrans(m_uVec, m_dx, m_dy);
 }
 
-void GFM_2D_EulerSolver::initiateDataLogging()
+void GFM_2D_EulerSolver::initiateOutputLogging()
 {
-    m_rhoResults.open(m_repoDir + (std::string) "data/" + m_name + (std::string) "_rhoResults.dat");
-    m_velMagResults.open(m_repoDir + (std::string) "data/" + m_name + (std::string) "_velMagResults.dat");
-    m_pressureResults.open(m_repoDir + (std::string) "data/" + m_name + (std::string) "_pressureResults.dat");
-    m_itnEnergyResults.open(m_repoDir + (std::string) "data/" + m_name + (std::string) "_itnEnergyResults.dat");
-    m_msResults.open(m_repoDir + (std::string) "data/" + m_name + (std::string) "_msResults.dat");
-    m_levelSetResults.open(m_repoDir + (std::string) "data/" + m_name + (std::string) "_levelSetResults.dat");
+    // Create output directory if it doesn't exist
+    std::string outputDir = m_repoDir + "/output";
+    if (system(("mkdir -p " + outputDir).c_str()) != 0) {
+        throw std::runtime_error("Failed to create output directory: " + outputDir);
+    }
 
+    m_rhoResults.open(outputDir + "/" + m_name + "_rhoResults.dat");
+    m_velMagResults.open(outputDir + "/" + m_name + "_velMagResults.dat");
+    m_pressureResults.open(outputDir + "/" + m_name + "_pressureResults.dat");
+    m_itnEnergyResults.open(outputDir + "/" + m_name + "_itnEnergyResults.dat");
+    m_msResults.open(outputDir + "/" + m_name + "_msResults.dat");
+    m_levelSetResults.open(outputDir + "/" + m_name + "_levelSetResults.dat");
+
+    // writing the domain's initial state at time=0
     writeToFileStream(m_rhoResults, m_uVec, m_x0, m_dx, m_y0, m_dy, 0, 0);
     writeToFileStream(m_velMagResults, m_uVec, m_x0, m_dx, m_y0, m_dy, 0, 1);
     writeToFileStream(m_pressureResults, m_uVec, m_x0, m_dx, m_y0, m_dy, 0, 2);

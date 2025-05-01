@@ -1,29 +1,58 @@
-objects = obj/flux_func.o obj/ghost_fluid_utilities.o obj/vec_transform.o obj/gfm_2d_euler_solver.o  obj/exec_interface.o
-source_files = src/flux_func.cc src/ghost_fluid_utilities.cc src/vec_transform.cc src/gfm_2d_euler_solver.cc  src/exec_interface.cc 
-inline_source_files = src/inline/cell_operation.hh src/inline/debug_tools.hh src/inline/primitive_tran.hh 
+# Compiler and flags
+CXX := g++
+CXXFLAGS := -std=c++17
+RELEASE_FLAGS := -O3
 
-run_simulation: $(objects)
-	g++ $(objects) -o bin/run_simulation
+# Directories
+OBJ_DIR := obj
+BIN_DIR := bin
+DATA_DIR := output
+SRC_DIR := src
+INLINE_DIR := $(SRC_DIR)/inline
 
-obj/exec_interface.o: src/exec_interface.cc $(inline_source_files)
-	g++ -c -O3 src/exec_interface.cc -o obj/exec_interface.o
+# Source files
+SOURCES := $(wildcard $(SRC_DIR)/*.cc)
+OBJECTS := $(patsubst $(SRC_DIR)/%.cc,$(OBJ_DIR)/%.o,$(SOURCES))
+INLINE_HEADERS := $(wildcard $(INLINE_DIR)/*.hh)
+EXECUTABLE := $(BIN_DIR)/main
 
-obj/gfm_2d_euler_solver.o: src/gfm_2d_euler_solver.cc $(inline_source_files)
-	g++ -c -O3 src/gfm_2d_euler_solver.cc -o obj/gfm_2d_euler_solver.o
+# Colors for pretty output
+RED := \033[0;31m
+GREEN := \033[0;32m
+YELLOW := \033[0;33m
+NC := \033[0m
 
-obj/vec_transform.o: src/vec_transform.cc $(inline_source_files)
-	g++ -c -O3 src/vec_transform.cc -o obj/vec_transform.o
+.PHONY: all release clean clean_all help
 
-obj/flux_func.o: src/flux_func.cc $(inline_source_files)
-	g++ -c -O3 src/flux_func.cc -o obj/flux_func.o
+all: release
 
-obj/ghost_fluid_utilities.o: src/ghost_fluid_utilities.cc $(inline_source_files)
-	g++ -c -O3 src/ghost_fluid_utilities.cc -o obj/ghost_fluid_utilities.o
+release: CXXFLAGS += $(RELEASE_FLAGS)
+release: $(EXECUTABLE)
+	@echo "$(GREEN)Build completed in release mode$(NC)"
+
+$(EXECUTABLE): $(OBJECTS) | $(BIN_DIR)
+	@echo "$(YELLOW)Linking $(EXECUTABLE)$(NC)"
+	@$(CXX) $(CXXFLAGS) $^ -o $@
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cc $(INLINE_HEADERS) | $(OBJ_DIR)
+	@echo "$(YELLOW)Compiling $<$(NC)"
+	@$(CXX) $(CXXFLAGS) -c $< -o $@
+
+$(BIN_DIR) $(OBJ_DIR) $(DATA_DIR):
+	@mkdir -p $@
+	@echo "$(GREEN)Created directory: $@$(NC)"
 
 clean:
-	rm bin/run_simulation $(objects)
+	@rm -f $(OBJECTS) $(EXECUTABLE)
+	@echo "$(RED)Removed object files and executable$(NC)"
 
-clean_data_and_log:
-	rm -r data/*.dat
-	rm -r data/gif/*
-	rm -r debug/*
+clean_all: clean
+	@rm -rf $(DATA_DIR)/*.dat $(DATA_DIR)/gif/*
+	@echo "$(RED)Removed all generated data and logs$(NC)"
+
+help:
+	@echo "Available targets:"
+	@echo "  all/release - Build in release mode (default)"
+	@echo "  clean       - Remove object files and executable"
+	@echo "  clean_all   - Remove all generated files (including data and logs)"
+	@echo "  help        - Show this help message"

@@ -1,34 +1,72 @@
-###### SPATIAL PARAMETERS ######
-x0 0.0
-x1 1.0
-y0 0.0
-y1 1.0
-nCells_x 101
-nCells_y 101
+# Ghost Fluid Method Configuration File
+# Format: [parameter_name] [value(s)]
 
-###### TEMPORAL PARAMETERS ######
+------------------------------------------
+
+# Left boundary x-coordinate
+x0 0.0
+
+# Right boundary x-coordinate
+x1 1.0
+
+# Bottom boundary y-coordinate
+y0 0.0
+
+# Top boundary y-coordinate
+y1 1.0
+
+------------------------------------------
+
+# Cells in x-direction (must be positive)
+nCells_x 241
+
+# Cells in y-direction (must be positive)
+nCells_y 241
+
+------------------------------------------
+
+# CFL number (0<c≤ 1 for stability)
 c 0.9
+
+# Simulation end time (must be positive)
 tStop 2.0
 
-###### RIGID BODY DYNAMICS ######
+------------------------------------------
+
+# (x,y) coordinates of center
 initRigidBodyLoc 0.2 0.5
+
+# (vx,vy) initial velocity components
 initRigidBodyVel 0.0 -1.0
+
+------------------------------------------
+
+# 1 = enable acceleration, 0 = disable
 acceleratingRigidBody 1
 
-###### RIGID BODY GEOMETRY ######
+# 1=circle, 2=square, 3=double circle
 rigidBodyType 1
-rigidBodyRadiusOrLength 0.15
+
+# Radius for circle, side length for square
+rigidBodyRadiusOrLength 0.125
+
+# Additional parameter (e.g. spacing for double circle)
 rigidBodyAdditionalFactor 0.0
+
+# Reinitialize every N steps (must be positive)
 reinitFactor 1
 
-###### LEFT AND RIGHT STATES ######
+# Left state (rho, u, v, p) Density, x-vel, y-vel, pressure
 leftState 1.0 0.0 0.0 1.0
+
+# Right state (rho, u, v, p) Density, x-vel, y-vel, pressure  
 rightState 1.0 0.0 0.0 1.0
+
+# Boundary between left/right states
 leftRightStateBoundary 0.2
 
-###### DATA LOGGING ######
-loggingFactor 10
-runName test
+# Write output every N steps (must be positive)
+loggingFactor 15
 
-# edit the directory of the repository here in the format:
-repoDir /foo/bar/MPhil_writtenAssignment_GFM-main/
+# Base name for output files
+runName gfm_sim

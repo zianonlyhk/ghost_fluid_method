@@ -45,7 +45,7 @@ public:
 
     void calculateMockSchliren();
 
-    void initiateDataLogging();
+    void initiateOutputLogging();
     void writeToFiles(double time);
     void cleanUp();
 
