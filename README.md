@@ -1,69 +1,106 @@
-# Fluid-structure interaction using the Ghost Fluid Method
+# Ghost Fluid Method for 2D Euler Equations
 
 ## About <a name = "about"></a>
 
-This project is part of the written assignment in the MPhil in Scientific Computing at the University of Cambridge, produced by student 2023P3. This file contains instructions on how one can reproduce the results presented in the final report.
+This project implements the Ghost Fluid Method (GFM) for solving 2D Euler equations with fluid-structure interaction. The code is written in C++ and uses a finite volume approach.
 
-## Unzipping <a name = "getting_started"></a>
+## Getting Started <a name = "getting_started"></a>
 
-Download from the repository to have the zip file "`MPhil_writtenAssignment_GFM-main.zip`".
+### Prerequisites
+- GNU Make
+- C++ compiler (g++ or clang++)
+- Gnuplot (for visualization)
 
-Unzip by first changing to the directory containing the zip file and run:
+### Building the Project
 
-```
-unzip ./MPhil_writtenAssignment_GFM-main.zip
-```
-
-## Editting config file <a name = "usage"></a>
-
-Going to the unzipped directory and edit the file "`./config.txt`":
-```
-cd ./MPhil_writtenAssignment_GFM-main/
-vi ./config.txt
-```
-
-Edit the last line and change the "`/foo/bar`" part into the repository directory:
-`````
-repoDir /foo/bar/MPhil_writtenAssignment_GFM-main/
-`````
-
-For example, with the repository under the user home directory, this line is turned into:
-`````
-repoDir /home/2023P3/MPhil_writtenAssignment_GFM-main/
-`````
-
-## Compilation and execution <a name = "usage"></a>
-
-Compile the binary executable by going to the unzipped directory and using the Make software:
+Compile the code using:
 ```
 make
 ```
 
-The compiled binary is located under "`./bin/`". Start the simulation by running:
+This will build the executable from source files in `src/`.
+
+## Configuration <a name = "usage"></a>
+
+Edit `config.txt` to configure simulation parameters. The key parameters include:
+- Grid resolution
+- Time step settings
+- Physical constants
+- Boundary conditions
+- Output directory
+
+## Running Simulations
+
+After building, run the simulation with:
 ```
-./bin/run_simulation
-```
-
-## Reproducing results
-
-All initial conditions setting files are inside the "`./config_files/`" directory. To reproduce the simulation, simply copy the content in the file except the last line to the "`config.txt`" to overwrite configuration settings. 
-
-When switching to the reflective boundary conditions, the source code file "`./src/exec_interface`" needs to be edited and the binary is required to be recompiled. The reflective boundary conditions can be achieved by commenting out the transmissive update functions and decommenting the refective functions inside the main while loop.
-
-## Simulation data and visualisation
-
-After running the simulation, the results are stored under the "`./data/`" directory. Different physical quantities are recorded in the format "`*Results_dat`".
-
-Each line in a results file has the structure:
-```
-time x-coor y-coor quantity
+./bin/main
 ```
 
-For a cell at location `(x,y)=(0.2,0.5)`, having a pressure `p=1.0` at time `t=0.0`, the corresponding line in the "`*_pressureResults.dat`" is expressed as:
+The solver will:
+1. Read configuration from `config.txt`
+2. Run the simulation
+3. Output results to `./output`
+
+## Code Structure
+
+Key components:
+- `src/main.cc`: Main driver program
+- `src/gfm_2d_euler_solver.cc/hh`: Core solver implementation
+- `src/flux_func.cc/hh`: Riemann solver and flux calculations
+- `src/ghost_fluid_utilities.cc/hh`: GFM-specific operations
+- `src/vec_transform.cc/hh`: Vector/matrix operations
+
+## Visualization
+
+After running the simulation with `./bin/main`, generate animations with:
+```
+gnuplot plot_gif.gp
+```
+
+This will:
+1. Process simulation output from `./output`
+2. Generate visualization frames in `./plots`
+3. Create an animated GIF of the results
+
+## Output Format
+
+Simulation results are stored with the following format:
+```
+time x y value
+```
+
+Where:
+- Blank lines separate y-coordinates
+- Double blank lines separate time steps
+
+Example for pressure at (x=0.2, y=0.5) at t=0.0:
 ```
 0.0 0.2 0.5 1.0
 ```
 
-A blank line is used to indicate a jump to the next row along the y-axis. Two blank lines are used to locate a jump to the next time frame. These separation techniques can be picked up by the two features "`index`" and "`using 2:3:4 with image`" in gnuplot for visualising the simulation.
+A series of data arrays increments in the x-direction, with a newline indicates a jump alongs the y-axis. A double newline refers to a timestep forward, as shown in the following example:
+```
+...
+0.0 0.3 0.4 0.9
+0.0 0.4 0.4 0.9
+0.0 0.5 0.4 0.9
 
-A collection of gnuplot scripts is included in the repository. These scripts are not prepared to run on all platforms. Extra work is requried to adapt these codes to one's use.
+0.0 0.0 0.5 0.9
+0.0 0.1 0.5 0.9
+0.0 0.2 0.5 0.9
+0.0 0.3 0.5 0.9
+0.0 0.4 0.5 0.9
+0.0 0.5 0.5 0.9
+
+
+0.0 0.0 0.0 1.0
+0.0 0.1 0.0 1.0
+...
+```
+
+## License <a name = "license"></a>
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## References
+- Sambasivan, S. K., & UdayKumar, H. S. (2009). Ghost Fluid Method for strong shock interactions Part 2: Immersed Solid boundaries. AIAA Journal, 47(12), 2923–2937. https://doi.org/10.2514/1.43153
