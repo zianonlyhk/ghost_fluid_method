@@ -10,7 +10,7 @@ sim_name = system("awk '/^runName/ {print $2}' ../config.txt")
 
 # Common plot settings variables
 TERM_SETTINGS = "gif animate delay 3"
-PALETTE_SETTINGS = "gray"
+PALETTE_SETTINGS = "cubehelix"
 AXIS_LABELS = 'set xlabel "x"; set ylabel "y"'
 
 # Plot density

@@ -1,0 +1,39 @@
+# =============================================================================
+# MOVING BODY IN FLUID EXAMPLE
+# =============================================================================
+# Accelerating rigid body through initially quiescent fluid
+# Demonstrates fluid-structure interaction with body motion
+
+# Domain Configuration
+x0: 0.0          # Left boundary
+x1: 2.0          # Right boundary
+y0: 0.0          # Bottom boundary
+y1: 2.0          # Top boundary (square domain)
+
+# Grid Resolution
+nCells_x: 200    # Balanced resolution
+nCells_y: 200    # Square grid cells
+
+# Time Integration
+c: 0.9           # Standard CFL
+tStop: 3.0       # Time for significant body motion
+
+# Rigid Body: Accelerating Circle
+rigidBodyType: 1                    # Circle
+initRigidBodyLoc: [1.0, 1.7]       # Start near top
+initRigidBodyVel: [0.0, -0.5]      # Initial downward velocity
+rigidBodyRadiusOrLength: 0.12       # Body radius
+rigidBodyAdditionalFactor: 0.0      # Not used
+acceleratingRigidBody: 1            # Enable fluid forces
+
+# Initial Conditions: Quiescent Fluid
+leftState: [1.0, 0.0, 0.0, 1.0]    # Stationary fluid
+rightState: [1.0, 0.0, 0.0, 1.0]   # Same everywhere
+leftRightStateBoundary: 0.1         # Minimal left region
+
+# Numerical Parameters
+reinitFactor: 2                     # Frequent reinitialization for moving body
+
+# Output
+loggingFactor: 15                   # Regular output for motion tracking
+runName: "moving_body"              # Output prefix

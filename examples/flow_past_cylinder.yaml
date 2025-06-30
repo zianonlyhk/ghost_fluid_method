@@ -1,0 +1,39 @@
+# =============================================================================
+# FLOW PAST CYLINDER EXAMPLE
+# =============================================================================
+# Uniform subsonic flow encounters a stationary cylinder
+# Shows flow separation, wake formation, and vortex shedding
+
+# Domain Configuration  
+x0: 0.0          # Inlet
+x1: 3.0          # Outlet (long for wake development)
+y0: 0.0          # Bottom
+y1: 1.5          # Top
+
+# Grid Resolution
+nCells_x: 300    # Fine resolution for wake capture
+nCells_y: 150    
+
+# Time Integration
+c: 0.9           # Standard CFL for subsonic flow
+tStop: 4.0       # Long time for vortex development
+
+# Rigid Body: Fixed Cylinder
+rigidBodyType: 1                    # Circle (cylinder)
+initRigidBodyLoc: [1.0, 0.75]      # Positioned upstream
+initRigidBodyVel: [0.0, 0.0]       # Stationary cylinder
+rigidBodyRadiusOrLength: 0.15       # Cylinder radius
+rigidBodyAdditionalFactor: 0.0      # Not used
+acceleratingRigidBody: 0            # Fixed cylinder
+
+# Initial Conditions: Uniform Flow
+leftState: [1.0, 0.3, 0.0, 1.0]    # Moving fluid (subsonic)
+rightState: [1.0, 0.3, 0.0, 1.0]   # Same state everywhere
+leftRightStateBoundary: 0.1         # Small inlet region
+
+# Numerical Parameters
+reinitFactor: 3                     # Moderate reinitialization
+
+# Output
+loggingFactor: 20                   # Moderate output frequency
+runName: "flow_cylinder"            # Output prefix

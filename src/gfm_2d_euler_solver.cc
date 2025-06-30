@@ -1,6 +1,7 @@
 #include "gfm_2d_euler_solver.hh"
 #include "inline/primitive_tran.hh"
 #include "inline/debug_tools.hh"
+#include "constants.hh"
 #include <math.h>
 #include <stdexcept>
 
@@ -14,8 +15,8 @@ double calcMaxA_eachArr(std::array<double, 4> i_uVec, double i_gamma)
 
 void writeToFileStream(std::ofstream &i_fstream, std::vector<std::vector<std::array<double, 4>>> const &i_inputVec, double i_x0, double i_dx, double i_y0, double i_dy, double i_t, int i_idx)
 {
-    int nCell_y = i_inputVec.size() - 4;
-    int nCell_x = i_inputVec[0].size() - 4;
+    int nCell_y = i_inputVec.size() - Constants::TOTAL_GHOST_CELLS;
+    int nCell_x = i_inputVec[0].size() - Constants::TOTAL_GHOST_CELLS;
 
     // if i_idx=0 then plot {density}
     if (i_idx == 0)

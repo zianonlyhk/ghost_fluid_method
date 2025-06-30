@@ -1,0 +1,39 @@
+# =============================================================================
+# DOUBLE CIRCLE COMPLEX GEOMETRY
+# =============================================================================
+# Flow interaction with double circle geometry
+# Demonstrates complex geometries and flow channeling effects
+
+# Domain Configuration
+x0: 0.0          # Left boundary
+x1: 2.0          # Right boundary
+y0: 0.0          # Bottom boundary
+y1: 1.5          # Top boundary
+
+# Grid Resolution
+nCells_x: 300    # High resolution for complex geometry
+nCells_y: 225    # Maintains aspect ratio
+
+# Time Integration
+c: 0.8           # Conservative CFL for complex geometry
+tStop: 3.5       # Extended time for flow development
+
+# Rigid Body: Double Circle Configuration
+rigidBodyType: 3                    # Double circle
+initRigidBodyLoc: [0.8, 0.75]      # Center between circles
+initRigidBodyVel: [0.0, 0.0]       # Stationary geometry
+rigidBodyRadiusOrLength: 0.12       # Radius of each circle
+rigidBodyAdditionalFactor: 0.25     # Vertical separation between circles
+acceleratingRigidBody: 0            # Fixed geometry
+
+# Initial Conditions: Moderate Flow
+leftState: [1.2, 0.4, 0.0, 1.3]    # Moderate density/pressure ratio
+rightState: [1.0, 0.0, 0.0, 1.0]   # Standard condition
+leftRightStateBoundary: 0.2         # Upstream condition region
+
+# Numerical Parameters
+reinitFactor: 4                     # Moderate reinitialization
+
+# Output
+loggingFactor: 12                   # Regular output
+runName: "double_circle"            # Output prefix

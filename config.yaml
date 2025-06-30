@@ -1,0 +1,39 @@
+# =============================================================================
+# SHOCK-CIRCLE INTERACTION EXAMPLE
+# =============================================================================
+# Classic test case: High-pressure shock wave hits a stationary circular obstacle
+# Demonstrates shock diffraction, reflection, and vortex formation
+
+# Domain Configuration
+x0: 0.0          # Left boundary
+x1: 2.0          # Right boundary (longer for shock propagation)
+y0: 0.0          # Bottom boundary  
+y1: 1.0          # Top boundary
+
+# Grid Resolution (high resolution for shock capturing)
+nCells_x: 400    
+nCells_y: 200    
+
+# Time Integration
+c: 0.8           # Conservative CFL for shock stability
+tStop: 1.5       # Time for shock to pass circle
+
+# Rigid Body: Stationary Circle
+rigidBodyType: 1                    # Circle
+initRigidBodyLoc: [0.8, 0.5]       # Center of domain vertically
+initRigidBodyVel: [0.0, 0.0]       # Stationary obstacle
+rigidBodyRadiusOrLength: 0.1        # Circle radius
+rigidBodyAdditionalFactor: 0.0      # Not used for circle
+acceleratingRigidBody: 0            # Fixed obstacle
+
+# Initial Conditions: Shock Tube Setup
+leftState: [1.4, 0.0, 0.0, 1.4]    # High pressure/density (shock driver)
+rightState: [1.0, 0.0, 0.0, 1.0]   # Low pressure/density
+leftRightStateBoundary: 0.3         # Initial shock position
+
+# Numerical Parameters
+reinitFactor: 5                     # Frequent reinitialization for sharp interface
+
+# Output
+loggingFactor: 10                   # Output every 10 steps for detailed evolution
+runName: "shock_circle"             # Output file prefix
